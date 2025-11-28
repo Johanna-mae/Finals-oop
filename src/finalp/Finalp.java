@@ -1,6 +1,4 @@
 package finalp;
-import javax.swing.*;
-import java.awt.*;
 
 public class Finalp {
     public static void main(String[] args) {
@@ -13,17 +11,19 @@ public class Finalp {
         sidebar.setBounds(0, 0, 280, 1000);
         frame.add(sidebar);
         
-        
-
         LoanForm form = new LoanForm();
         frame.add(form);
-        
-        
+
+        LoginScreen loginFrame = new LoginScreen();
+        loginFrame.setBounds(50, 50, 960, 720);
+        loginFrame.setVisible(true);
+        loginFrame.setEnabled(true);
+        loginFrame.setTitle("Employee Login");
+        frame.add(loginFrame);
         
     }
-    
 }
-
+/*
 class Frame extends JFrame {
     public Frame() {
         setTitle("PaLoan: Lending Made Easy");
@@ -34,8 +34,9 @@ class Frame extends JFrame {
         setIconImage(image.getImage());
         getContentPane().setBackground(new Color(0xFFFFFF));
     }
-}
+}*/
 
+/*
 class Sidebar extends JPanel {
     public Sidebar() {
         setLayout(null);
@@ -146,8 +147,8 @@ class Sidebar extends JPanel {
 
         setVisible(true);
     }
-}
-
+}*/
+/*
 class LoanForm extends JPanel {
     public LoanForm() {
         setLayout(null); //outside the form
@@ -242,4 +243,49 @@ class LoanForm extends JPanel {
         create.setBounds(770, 500, 150, 40);
         add(create);
     }
-}
+}*/
+/*
+class LoginScreen extends JFrame{
+    public LoginScreen(){
+        add(createLoginPanel());
+        //add(backgroundImage());
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+
+    public JLabel backgroundImage() {
+        JLabel bgImg = new JLabel();
+        ImageIcon bgImageIcon = new ImageIcon("scott-graham-OQMZwNd3ThU-unsplash.jpg");
+        bgImg.setIcon(bgImageIcon);
+        bgImg.setLayout(new BorderLayout());
+
+        return bgImg;
+    }
+    
+
+    private JPanel createLoginPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+    
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setBounds(10, 10, 150, 30);
+        JTextField usernameField = new JTextField();
+        usernameField.setBounds(10, 45, 150, 30);
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setBounds(10, 75, 150, 30);
+        JTextField passwordField = new JTextField();
+        passwordField.setBounds(10, 105, 150, 30);
+        JButton loginButton = new JButton("Login");
+        loginButton.setBounds(10, 140, 75, 30);
+
+        panel.add(usernameLabel);
+        panel.add(usernameField);
+        panel.add(passwordLabel);
+        panel.add(passwordField);
+        panel.add(new JLabel());
+        panel.add(loginButton);
+
+        panel.setBackground(Color.red);
+
+        return panel;
+    }
+}*/
