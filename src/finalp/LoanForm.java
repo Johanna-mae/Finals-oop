@@ -2,6 +2,7 @@ package finalp;
 
 import java.awt.*;
 import javax.swing.*;
+import java.awt.event.*;
 
 class LoanForm extends JPanel {
     public LoanForm() {
@@ -96,5 +97,36 @@ class LoanForm extends JPanel {
         JButton create = new JButton("Create Loan");
         create.setBounds(770, 500, 150, 40);
         add(create);
+        
+        //computation
+        ActionListener compute = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {            
+                try {
+                    double amount = Double.parseDouble(tf2.getText());
+
+                    String r = rate.getSelectedItem().toString().replace("%", "");
+                    double interestRate = Double.parseDouble(r);
+
+                    String t = loanterm.getSelectedItem().toString().split(" ")[0];
+                    int months = Integer.parseInt(t);
+
+                    // compute
+                    double interest = amount * (interestRate / 100);
+                    double totalPayable = amount + interest;
+                    double monthlyPayment = totalPayable / months;
+
+                    tf5.setText(
+                        "Total: ₱" + totalPayable + "   |   Monthly: ₱" + String.format("%.2f", monthlyPayment)
+                    );
+
+                } catch(Exception ex){
+                        tf5.setText("Invalid entry");
+                }
+            };
+        };
+        tf2.addActionListener(compute);
+        rate.addActionListener(compute);
+        loanterm.addActionListener(compute);
     }
 }
