@@ -49,8 +49,5 @@ class ClientsList extends JPanel{
 
             y += 80;
         }
-
-
-
     }
 }
