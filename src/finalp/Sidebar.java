@@ -101,7 +101,7 @@ class Sidebar extends JPanel {
 
         ImageIcon rep = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
         report = new JButton("Reports");
-        report.setBounds(20, 540, 235, 40);
+        report.setBounds(20, 530, 235, 40);
         report.setIcon(rep);
         report.setHorizontalTextPosition(SwingConstants.RIGHT);
         report.setIconTextGap(5);
@@ -109,13 +109,13 @@ class Sidebar extends JPanel {
         
         
         JLabel others = new JLabel("Others");
-        others.setBounds(20, 600, 200, 20);
+        others.setBounds(20, 590, 200, 20);
         others.setFont(new Font("Arial", Font.BOLD, 14));
         add(others);
 
         ImageIcon out = new ImageIcon(Finalp.class.getResource("/finalp/images/logout.png"));
         logout = new JButton("Logout");
-        logout.setBounds(20, 630, 235, 40);
+        logout.setBounds(20, 620, 235, 40);
         logout.setIcon(out);
         logout.setHorizontalTextPosition(SwingConstants.RIGHT);
         logout.setIconTextGap(5);

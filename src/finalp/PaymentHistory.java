@@ -4,6 +4,11 @@ import java.awt.*;
 import javax.swing.*;
 
 class PaymentHistory extends JPanel{
+    JTable tpay;
+
+    CardLayout card;
+    JPanel tcon;
+    
     public PaymentHistory() {
         setLayout(null);
         setBounds(280, 0, 1090, 800);
@@ -22,12 +27,25 @@ class PaymentHistory extends JPanel{
         sep.setBounds(23, 80, 1040, 2);
         add(sep);
 
-        JPanel content = new JPanel();
-        content.setLayout(null);
-        content.setBackground(Color.WHITE);
-        
-        
+        // table
+        card = new CardLayout();
+        tcon = new JPanel(card);
+        tcon.setBounds(40, 100, 1010, 300);
+        tcon.setBackground(new Color(210,210,210));
+        tcon.setLayout(card);
 
+        // pay table
+        String[] col2 = {"Transaction No.", "Account No.", "Amount Paid", "Date Paid"};
+        Object[][] data2 = {
+            {"4567", "10", "₱ 3000", "2025-02-02"},
+            {"3489", "56", "₱ 10000", "2025-02-05"}
+        };
+        tpay = new JTable(data2, col2);
+
+        tcon.add(new JScrollPane(tpay), "payments");
+
+        add(tcon);
         
+       
     }
 }

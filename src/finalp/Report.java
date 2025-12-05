@@ -24,7 +24,9 @@ class Report extends JPanel{
 
         JPanel content = new JPanel();
         content.setLayout(null);
-        content.setBackground(Color.WHITE);
+        content.setBackground(Color. GRAY);
+        content.setBounds(50, 100, 980, 530);
+        add(content);
         
         
 

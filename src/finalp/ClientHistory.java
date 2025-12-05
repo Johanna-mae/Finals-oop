@@ -22,12 +22,32 @@ class ClientHistory extends JPanel{
         sep.setBounds(23, 80, 1040, 2);
         add(sep);
 
-        JPanel content = new JPanel();
-        content.setLayout(null);
-        content.setBackground(Color.WHITE);
-        
-        
+        JLabel completed = new JLabel("Completed/Paid");
+        completed.setFont(new Font("Arial", Font.BOLD, 16));
+        completed.setBounds(37, 100, 300, 30);
+        add(completed);
 
         
+        int y = 150;
+        for (int i = 0; i < 4; i++) {
+
+            JPanel pic = new JPanel();
+            pic.setBackground(new Color(235, 235, 235));
+            pic.setBounds(47, y, 50, 50);
+            pic.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+            add(pic);
+
+            JLabel name = new JLabel("John Doe dela Cruz");
+            name.setFont(new Font("Arial", Font.BOLD, 18));
+            name.setBounds(115, y + 10, 300, 30);
+            add(name);
+
+            JButton status = new JButton("Status");
+            status.setFont(new Font("Arial", Font.PLAIN, 16));
+            status.setBounds(900, y + 10, 100, 30);
+            add(status);
+
+            y += 80;
+        }  
     }
 }
