@@ -3,7 +3,7 @@ package finalp;
 import java.awt.Color;
 import javax.swing.*;
 
-public class Frame extends JFrame {
+class Frame extends JFrame {
     public Frame() {
         setTitle("PaLoan: Lending Made Easy");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

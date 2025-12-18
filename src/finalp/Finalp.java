@@ -5,7 +5,7 @@ public class Finalp {
     public static void main(String[] args) {
         Frame frame = new Frame();
         frame.setBounds(50, 50, 1920,1080);
-        frame.setVisible(true);
+        frame.setVisible(false);
         frame.setEnabled(true);
         
         Sidebar sidebar = new Sidebar();
@@ -151,23 +151,24 @@ public class Finalp {
         
         sidebar.logout.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent c){
-                form.setVisible(false);
-                viewloan.setVisible(false);
-                clientslist.setVisible(false);
-                clienthis.setVisible(false);
-                loanpayment.setVisible(false);
-                paymenthis.setVisible(false);
-                dashboard.setVisible(false);
-                repo.setVisible(false);
+                frame.setVisible(false);
+                
+                LoginScreen loginFrame = new LoginScreen();
+                loginFrame.setBounds(50, 50, 960, 720);
+                loginFrame.setMainFrame(frame);
+                loginFrame.setVisible(true);
+                loginFrame.setEnabled(true);
+                loginFrame.setTitle("Employee Login");
             }
         });
         
+        
         LoginScreen loginFrame = new LoginScreen();
         loginFrame.setBounds(50, 50, 960, 720);
+        loginFrame.setMainFrame(frame);
         loginFrame.setVisible(true);
         loginFrame.setEnabled(true);
         loginFrame.setTitle("Employee Login");
-        frame.add(loginFrame);
         
     }
 }

@@ -14,6 +14,9 @@ class Home extends JPanel{
     CardLayout card;
     JPanel tcon;
     
+    Color NORMAL = new Color(0xAAC3DD);
+    Color ACTIVE = new Color(0x8AA1B9);
+    
     public Home() {
         setLayout(null);
         setBounds(280, 0, 1090, 800);
@@ -32,32 +35,35 @@ class Home extends JPanel{
         //the three panels
         JPanel totalLoans = otherpanel("TOTAL LOANS", "0");
         totalLoans.setBounds(40, 80, 330, 140);
+        totalLoans.setBackground(NORMAL);
         add(totalLoans);
 
         JPanel activeLoans = otherpanel("ACTIVE LOANS", "0");
         activeLoans.setBounds(380, 80, 330, 140);
+        activeLoans.setBackground(NORMAL);
         add(activeLoans);
 
         JPanel settledLoans = otherpanel("SETTLED LOANS", "0");
         settledLoans.setBounds(720, 80, 330, 140);
+        settledLoans.setBackground(NORMAL);
         add(settledLoans);
 
         // mga button sa taas ng table (tabs)
         recloan = new JButton("Recent loans");
         recloan.setBounds(40, 245, 130, 35);
-        recloan.setBackground(new Color(200, 200, 200));
+        recloan.setBackground(ACTIVE);
         add(recloan);
 
         recpay = new JButton("Recent payments");
         recpay.setBounds(170, 245, 150, 35);
-        recpay.setBackground(new Color(230, 230, 230));
+        recpay.setBackground(NORMAL);
         add(recpay);
 
         // table
         card = new CardLayout();
         tcon = new JPanel(card);
         tcon.setBounds(40, 280, 1010, 300);
-        tcon.setBackground(new Color(210,210,210));
+        tcon.setBackground(NORMAL);
         tcon.setLayout(card);
 
         // loan table
@@ -85,8 +91,8 @@ class Home extends JPanel{
         recloan.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent a){
                 card.show(tcon, "loans");
-                recloan.setBackground(new Color(200,200,200));
-                recpay.setBackground(new Color(230,230,230));
+                recloan.setBackground(ACTIVE);
+                recpay.setBackground(NORMAL);
             }
         });
             
@@ -94,8 +100,8 @@ class Home extends JPanel{
         recpay.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent b){
                 card.show(tcon, "payments");
-                recloan.setBackground(new Color(230,230,230));
-                recpay.setBackground(new Color(200,200,200));
+                recloan.setBackground(NORMAL);
+                recpay.setBackground(ACTIVE);
             }
         });
 

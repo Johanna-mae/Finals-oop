@@ -2,8 +2,14 @@ package finalp;
 
 import java.awt.*;
 import javax.swing.*;
+import java.awt.event.*;
 
 class LoanPayment extends JPanel{
+    Color NORMAL = new Color(0xAAC3DD);
+    Color ACTIVE = new Color(0x8AA1B9);
+    
+    JButton selected = null;
+    
     public LoanPayment() {
         setLayout(null);
         setBounds(280, 0, 1090, 800);
@@ -25,7 +31,7 @@ class LoanPayment extends JPanel{
         //for the form
         JPanel box = new JPanel();
         box.setLayout(null);
-        box.setBackground(new Color(240, 240, 240));
+        box.setBackground(NORMAL);
         box.setBounds(170, 135, 750, 340);
         add(box);
 
@@ -55,6 +61,7 @@ class LoanPayment extends JPanel{
         String[] type = {"Card", "E-wallet"};
         JComboBox<String> rate = new JComboBox<>(type);
         rate.setBounds(180, 130, 550, 30);
+        rate.setBackground(NORMAL);
         box.add(rate);
 
         JLabel lbl4 = new JLabel("Payment Amount");
@@ -91,11 +98,51 @@ class LoanPayment extends JPanel{
         //for buttons
         JButton cancel = new JButton("Cancel");
         cancel.setBounds(710, 500, 100, 40);
+        cancel.setBackground(NORMAL);
         add(cancel);
 
         JButton pay = new JButton("Pay");
         pay.setBounds(840, 500, 80, 40);
+        pay.setBackground(NORMAL);
         add(pay);
         
+        //functions ng button mouselistener
+        cancel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                if (selected != cancel) {
+                    cancel.setBackground(ACTIVE);
+                }
+            }
+            public void mouseExited(MouseEvent e) {
+                if (selected != cancel) {
+                    cancel.setBackground(NORMAL);
+                }
+            }
+            public void mousePressed(MouseEvent cl) {
+                selected = cancel;
+
+                cancel.setBackground(ACTIVE);
+                pay.setBackground(NORMAL);
+            }
+        });
+        
+        pay.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                if (selected != pay) {
+                    pay.setBackground(ACTIVE);
+                }
+            }
+            public void mouseExited(MouseEvent e) {
+                if (selected != pay) {
+                    pay.setBackground(NORMAL);
+                }
+            }
+            public void mousePressed(MouseEvent cl) {
+                selected = pay;
+
+                cancel.setBackground(NORMAL);
+                pay.setBackground(ACTIVE);
+            }
+        });
     }
 }

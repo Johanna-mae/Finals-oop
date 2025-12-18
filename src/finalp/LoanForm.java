@@ -5,6 +5,11 @@ import javax.swing.*;
 import java.awt.event.*;
 
 class LoanForm extends JPanel {
+    Color NORMAL = new Color(0xAAC3DD);
+    Color ACTIVE = new Color(0x8AA1B9);
+    
+    JButton selected = null;
+    
     public LoanForm() {
         setLayout(null); //outside the form
         setBounds(280, 0, 1090, 800);
@@ -26,7 +31,7 @@ class LoanForm extends JPanel {
         //for the form
         JPanel box = new JPanel();
         box.setLayout(null);
-        box.setBackground(new Color(240, 240, 240));
+        box.setBackground(NORMAL);
         box.setBounds(170, 135, 750, 340);
         add(box);
 
@@ -56,6 +61,7 @@ class LoanForm extends JPanel {
         String[] rates = {"1%", "2%", "5%", "10%", "15%", "20%"};
         JComboBox<String> rate = new JComboBox<>(rates);
         rate.setBounds(180, 130, 550, 30);
+        rate.setBackground(NORMAL);
         box.add(rate);
 
         JLabel lbl4 = new JLabel("Loan Term");
@@ -66,6 +72,7 @@ class LoanForm extends JPanel {
         String[] terms = {"1 month", "3 months", "6 months", "12 months", "24 months"};
         JComboBox<String> loanterm = new JComboBox<>(terms);
         loanterm.setBounds(180, 180, 550, 30);
+        loanterm.setBackground(NORMAL);
         box.add(loanterm);
 
         JLabel lbl5 = new JLabel("Estimated Amount");
@@ -92,10 +99,13 @@ class LoanForm extends JPanel {
         //for buttons
         JButton cancel = new JButton("Cancel");
         cancel.setBounds(620, 500, 120, 40);
+        cancel.setBackground(NORMAL);
         add(cancel);
+        
 
         JButton create = new JButton("Create Loan");
         create.setBounds(770, 500, 150, 40);
+        create.setBackground(NORMAL);
         add(create);
         
         //computation
@@ -128,5 +138,45 @@ class LoanForm extends JPanel {
         tf2.addActionListener(compute);
         rate.addActionListener(compute);
         loanterm.addActionListener(compute);
+        
+        //functions ng button mouselistener
+        cancel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                if (selected != cancel) {
+                    cancel.setBackground(ACTIVE);
+                }
+            }
+            public void mouseExited(MouseEvent e) {
+                if (selected != cancel) {
+                    cancel.setBackground(NORMAL);
+                }
+            }
+            public void mousePressed(MouseEvent cl) {
+                selected = cancel;
+
+                cancel.setBackground(ACTIVE);
+                create.setBackground(NORMAL);
+            }
+        });
+        
+        create.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                if (selected != create) {
+                    create.setBackground(ACTIVE);
+                }
+            }
+            public void mouseExited(MouseEvent e) {
+                if (selected != create) {
+                    create.setBackground(NORMAL);
+                }
+            }
+            public void mousePressed(MouseEvent cl) {
+                selected = create;
+
+                cancel.setBackground(NORMAL);
+                create.setBackground(ACTIVE);
+            }
+        });
+        
     }
 }

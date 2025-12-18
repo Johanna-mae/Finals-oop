@@ -2,13 +2,23 @@ package finalp;
 
 import java.awt.*;
 import javax.swing.*;
+import java.awt.event.*;
 
 
 
 class LoginScreen extends JFrame{
+    private Frame mainFrame;
+    
+    public void setMainFrame(Frame frame) {
+        this.mainFrame = frame;
+    }
+    
     public LoginScreen(){
         add(createLoginPanel());
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        ImageIcon image = new ImageIcon(Finalp.class.getResource("/finalp/images/logo-icon.png"));
+        setIconImage(image.getImage());
     }
 
     private JPanel createLoginPanel() {
@@ -49,6 +59,23 @@ class LoginScreen extends JFrame{
         JButton loginButton = new JButton("LOGIN");
         loginButton.setBounds(220, 380, 275, 64);
         loginButton.setFont(new Font("Sans Serif", Font.BOLD, 24));
+        loginButton.setBackground(new Color(0xAAC3DD));
+        loginButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                mainFrame.setVisible(true);
+                
+                dispose();
+            }
+        });
+        
+        loginButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                    loginButton.setBackground(new Color(0x8AA1B9));
+            }
+            public void mouseExited(MouseEvent e) {
+                    loginButton.setBackground(new Color(0xAAC3DD));
+            }
+        });
         
         //panel.add(backgroundImageJLabel);
         boundingBox.add(title);
