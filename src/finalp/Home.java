@@ -5,8 +5,8 @@ import javax.swing.*;
 import java.awt.event.*;
 
 class Home extends JPanel{
-    JButton recloan;
-    JButton recpay;
+    JButton recentLoans;
+    JButton recentPayments;
 
     JTable tloans;
     JTable tpay;
@@ -49,15 +49,15 @@ class Home extends JPanel{
         add(settledLoans);
 
         // mga button sa taas ng table (tabs)
-        recloan = new JButton("Recent loans");
-        recloan.setBounds(40, 245, 130, 35);
-        recloan.setBackground(ACTIVE);
-        add(recloan);
+        recentLoans = new JButton("Recent loans");
+        recentLoans.setBounds(40, 245, 130, 35);
+        recentLoans.setBackground(ACTIVE);
+        add(recentLoans);
 
-        recpay = new JButton("Recent payments");
-        recpay.setBounds(170, 245, 150, 35);
-        recpay.setBackground(NORMAL);
-        add(recpay);
+        recentPayments = new JButton("Recent payments");
+        recentPayments.setBounds(170, 245, 150, 35);
+        recentPayments.setBackground(NORMAL);
+        add(recentPayments);
 
         // table
         card = new CardLayout();
@@ -87,21 +87,21 @@ class Home extends JPanel{
 
         add(tcon);
 
-        // events ng recloan at recpay
-        recloan.addActionListener(new ActionListener(){
+        // events ng recentLoans at recentPayments
+        recentLoans.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent a){
                 card.show(tcon, "loans");
-                recloan.setBackground(ACTIVE);
-                recpay.setBackground(NORMAL);
+                recentLoans.setBackground(ACTIVE);
+                recentPayments.setBackground(NORMAL);
             }
         });
             
 
-        recpay.addActionListener(new ActionListener(){
+        recentPayments.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent b){
                 card.show(tcon, "payments");
-                recloan.setBackground(NORMAL);
-                recpay.setBackground(ACTIVE);
+                recentLoans.setBackground(NORMAL);
+                recentPayments.setBackground(ACTIVE);
             }
         });
 

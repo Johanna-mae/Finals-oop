@@ -29,13 +29,13 @@ class Report extends JPanel{
         header.setBounds(20, 25, 400, 40);
         add(header);
         
-        JLabel sub = new JLabel("Comprehensive loan and statistics");
-        sub.setBounds(23, 55, 400, 20);
-        add(sub);
+        JLabel subtitle = new JLabel("Comprehensive loan and statistics");
+        subtitle.setBounds(23, 55, 400, 20);
+        add(subtitle);
 
-        JSeparator sep = new JSeparator();
-        sep.setBounds(23, 80, 1040, 2);
-        add(sep);
+        JSeparator separator = new JSeparator();
+        separator.setBounds(23, 80, 1040, 2);
+        add(separator);
 
         
         JPanel content = new JPanel();

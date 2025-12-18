@@ -103,19 +103,19 @@ class Sidebar extends JPanel {
         reports.setFont(new Font("Arial", Font.BOLD, 14));
         add(reports);
 
-        ImageIcon dash = new ImageIcon(Finalp.class.getResource("/finalp/images/home.png"));
+        ImageIcon dashboard = new ImageIcon(Finalp.class.getResource("/finalp/images/home.png"));
         home = new JButton("Home/Dashboard");
         home.setBounds(20, 480, 235, 40);
-        home.setIcon(dash);
+        home.setIcon(dashboard);
         home.setBackground(NORMAL);
         home.setHorizontalTextPosition(SwingConstants.RIGHT);
         home.setIconTextGap(5);
         add(home);
 
-        ImageIcon rep = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
+        ImageIcon reportsIcon = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
         report = new JButton("Reports");
         report.setBounds(20, 530, 235, 40);
-        report.setIcon(rep);
+        report.setIcon(reportsIcon);
         report.setBackground(NORMAL);
         report.setHorizontalTextPosition(SwingConstants.RIGHT);
         report.setIconTextGap(5);

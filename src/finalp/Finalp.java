@@ -40,9 +40,9 @@ public class Finalp {
         dashboard.setVisible(false);
         frame.add(dashboard);
         
-        Report repo = new Report();
-        repo.setVisible(false);
-        frame.add(repo);
+        Report report = new Report();
+        report.setVisible(false);
+        frame.add(report);
 
         
         sidebar.createloan.addActionListener(new ActionListener() {
@@ -54,7 +54,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 dashboard.setVisible(false);
-                repo.setVisible(false);
+                report.setVisible(false);
             }
         });
 
@@ -67,7 +67,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 dashboard.setVisible(false);
-                repo.setVisible(false);
+                report.setVisible(false);
             } 
         });
         
@@ -80,7 +80,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 dashboard.setVisible(false);
-                repo.setVisible(false);
+                report.setVisible(false);
             }
         });
         
@@ -93,7 +93,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 dashboard.setVisible(false);
-                repo.setVisible(false);
+                report.setVisible(false);
             }
         });
         
@@ -106,7 +106,7 @@ public class Finalp {
                 loanpayment.setVisible(true);
                 paymenthis.setVisible(false);
                 dashboard.setVisible(false);
-                repo.setVisible(false);
+                report.setVisible(false);
             }
         });
         
@@ -119,7 +119,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(true);
                 dashboard.setVisible(false);
-                repo.setVisible(false);
+                report.setVisible(false);
             }
         });
         
@@ -132,7 +132,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 dashboard.setVisible(true);
-                repo.setVisible(false);
+                report.setVisible(false);
             }
         });
         
@@ -145,7 +145,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 dashboard.setVisible(false);
-                repo.setVisible(true);
+                report.setVisible(true);
             }
         });
         
