@@ -10,6 +10,52 @@
 <project name="finalp" default="default" basedir=".">
     <description>Builds, tests, and runs the project finalp.</description>
     <import file="nbproject/build-impl.xml"/>
+
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="dist.dir" value="dist"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/> <javac srcdir="${src.dir}" 
+               destdir="build/classes"
+               classpathref="classpath"
+               includeantruntime="false"/>
+        <copy todir="build/classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    
+    <!-- Run -->
+    <target name="run" depends="compile">
+        <java classname="finalp.Finalp" fork="true">
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement path="build/classes"/> </classpath>
+        </java>
+    </target>
+
+        <!-- Clean -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+    
+    <target name="test" depends="compile">
+        <java classname="finalp.TestConnection" fork="true">
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement path="build/classes"/> </classpath>
+        </java>
+    </target>
+
     <!--
 
     There exist several targets which are by default empty and which can be 

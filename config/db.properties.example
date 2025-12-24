@@ -1,0 +1,6 @@
+# Databse Configuration
+# Copy this file to db.properties and edit with your local credentials
+
+db.url=jdbc:mariadb://localhost:3306/your_database_name
+db.user=root
+db.password=your_password
