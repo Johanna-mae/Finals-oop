@@ -5,6 +5,18 @@ import javax.swing.*;
 import java.awt.event.*;
 
 class LoanForm extends JPanel {
+    CardLayout card;
+    JPanel container;
+
+    // STEP 1 FIELDS
+    JTextField fn, mn, ln, dob, email, contact;
+    JTextField street, brgy, city, province;
+    JTextField employer, validIdNo;
+    JRadioButton male, female;
+    JComboBox<String> civil, empStatus, income, validId;
+
+    JTextArea verifyArea;
+    
     Color NORMAL = new Color(0xAAC3DD);
     Color ACTIVE = new Color(0x8AA1B9);
     
@@ -28,155 +40,465 @@ class LoanForm extends JPanel {
         separator.setBounds(23, 80, 1040, 2);
         add(separator);
 
-        //for the form
-        JPanel box = new JPanel();
-        box.setLayout(null);
-        box.setBackground(NORMAL);
-        box.setBounds(170, 135, 750, 340);
-        add(box);
-
-        JLabel lbl1 = new JLabel("Client's Name");
-        lbl1.setBounds(20, 30, 150, 30);
-        lbl1.setFont(new Font("Arial", Font.BOLD, 15));
-        box.add(lbl1);
-
-        JTextField tf1 = new JTextField();
-        tf1.setBounds(180, 30, 550, 30);
-        box.add(tf1);
-
-        JLabel lbl2 = new JLabel("Loan Amount");
-        lbl2.setBounds(20, 80, 150, 30);
-        lbl2.setFont(new Font("Arial", Font.BOLD, 15));
-        box.add(lbl2);
-
-        JTextField tf2 = new JTextField();
-        tf2.setBounds(180, 80, 550, 30);
-        box.add(tf2);
-
-        JLabel lbl3 = new JLabel("Interest Rate (%)");
-        lbl3.setBounds(20, 130, 150, 30);
-        lbl3.setFont(new Font("Arial", Font.BOLD, 15));
-        box.add(lbl3);
-
-        String[] rates = {"1%", "2%", "5%", "10%", "15%", "20%"};
-        JComboBox<String> rate = new JComboBox<>(rates);
-        rate.setBounds(180, 130, 550, 30);
-        rate.setBackground(NORMAL);
-        box.add(rate);
-
-        JLabel lbl4 = new JLabel("Loan Term");
-        lbl4.setBounds(20, 180, 150, 30);
-        lbl4.setFont(new Font("Arial", Font.BOLD, 15));
-        box.add(lbl4);
-
-        String[] terms = {"1 month", "3 months", "6 months", "12 months", "24 months"};
-        JComboBox<String> loanterm = new JComboBox<>(terms);
-        loanterm.setBounds(180, 180, 550, 30);
-        loanterm.setBackground(NORMAL);
-        box.add(loanterm);
-
-        JLabel lbl5 = new JLabel("Estimated Amount");
-        lbl5.setBounds(20, 230, 150, 30);
-        lbl5.setFont(new Font("Arial", Font.BOLD, 15));
-        box.add(lbl5);
         
-        JTextField tf5 = new JTextField();
-        tf5.setBounds(180, 230, 550, 30);
-        box.add(tf5);
+        card = new CardLayout();
+        container = new JPanel(card);
+        container.setBounds(60, 110, 965, 400);
+        container.setBackground(NORMAL);
+        add(container);
 
-        JLabel lbl6 = new JLabel("Status");
-        lbl6.setBounds(20, 280, 150, 30);
-        lbl6.setFont(new Font("Arial", Font.BOLD, 15));
-        box.add(lbl6);
-        
-        JTextField tf6 = new JTextField();
-        tf6.setBounds(180, 280, 550, 30);
-        box.add(tf6);
-        
+        container.add(step1(), "step1");
+        container.add(step2(), "step2");
+        container.add(step3(), "step3");
+
+        card.show(container, "step1");
+ 
         setVisible(true);
+    }
+    
+    /* ===== STEP 1 ===== */
+    JPanel step1() {
+        JPanel p = new JPanel(null);
+        p.setBackground(NORMAL);
         
         
-        //for buttons
-        JButton cancel = new JButton("Cancel");
-        cancel.setBounds(620, 500, 120, 40);
-        cancel.setBackground(NORMAL);
-        add(cancel);
+        // ===== FIRST NAME =====
+        JLabel firstName = new JLabel("First Name");
+        firstName.setBounds(60, 28, 100, 30);
+        firstName.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(firstName);
+
+        fn = new JTextField();
+        fn.setBounds(160, 28, 150, 30);
+        p.add(fn);
+
+        // ===== MIDDLE NAME =====
+        JLabel lblMn = new JLabel("Middle Name");
+        lblMn.setBounds(340, 28, 100, 30);
+        lblMn.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblMn);
+
+        mn = new JTextField();
+        mn.setBounds(460, 28, 150, 30);
+        p.add(mn);
+
+        // ===== LAST NAME =====
+        JLabel lblLn = new JLabel("Last Name");
+        lblLn.setBounds(640, 28, 100, 30);
+        lblLn.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblLn);
+
+        ln = new JTextField();
+        ln.setBounds(740, 28, 150, 30);
+        p.add(ln);
+
         
-
-        JButton create = new JButton("Create Loan");
-        create.setBounds(770, 500, 150, 40);
-        create.setBackground(NORMAL);
-        add(create);
         
-        //computation
-        ActionListener compute = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {            
-                try {
-                    double amount = Double.parseDouble(tf2.getText());
+        // ===== SEX =====
+        JLabel lblSex = new JLabel("Sex");
+        lblSex.setBounds(60, 75, 150, 30);
+        lblSex.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblSex);
 
-                    String r = rate.getSelectedItem().toString().replace("%", "");
-                    double interestRate = Double.parseDouble(r);
+        male = new JRadioButton("Male");
+        female = new JRadioButton("Female");
 
-                    String t = loanterm.getSelectedItem().toString().split(" ")[0];
-                    int months = Integer.parseInt(t);
+        male.setBounds(160, 75, 80, 30);
+        male.setBackground(NORMAL);
+        female.setBounds(260, 75, 80, 30);
+        female.setBackground(NORMAL);
 
-                    // compute
-                    double interest = amount * (interestRate / 100);
-                    double totalPayable = amount + interest;
-                    double monthlyPayment = totalPayable / months;
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(male);
+        bg.add(female);
 
-                    tf5.setText(
-                        "Total: ₱" + totalPayable + "   |   Monthly: ₱" + String.format("%.2f", monthlyPayment)
-                    );
+        p.add(male);
+        p.add(female);
 
-                } catch(Exception ex){
-                        tf5.setText("Invalid entry");
-                }
-            };
+        // ===== DATE OF BIRTH =====
+        JLabel lblDob = new JLabel("Date of Birth");
+        lblDob.setBounds(340, 75, 150, 30);
+        lblDob.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblDob);
+
+        dob = new JTextField(); 
+        dob.setBounds(460, 75, 150, 30);
+        p.add(dob);
+
+        // ===== EMAIL =====
+        JLabel lblEmail = new JLabel("Email");
+        lblEmail.setBounds(640, 75, 100, 30);
+        lblEmail.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblEmail);
+
+        email = new JTextField();
+        email.setBounds(740, 75, 150, 30);
+        p.add(email);
+
+        
+        
+        // ===== CONTACT =====
+        JLabel lblContact = new JLabel("Contact No.");
+        lblContact.setBounds(60, 122, 150, 30);
+        lblContact.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblContact);
+
+        contact = new JTextField();
+        contact.setBounds(160, 122, 150, 30);
+        p.add(contact);
+
+        // ===== STREET =====
+        JLabel lblStreet = new JLabel("Street");
+        lblStreet.setBounds(340, 122, 150, 30);
+        lblStreet.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblStreet);
+
+        street = new JTextField();
+        street.setBounds(460, 122, 150, 30);
+        p.add(street);
+
+        // ===== BARANGAY =====
+        JLabel lblBrgy = new JLabel("Barangay");
+        lblBrgy.setBounds(640, 122, 150, 30);
+        lblBrgy.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblBrgy);
+
+        brgy = new JTextField();
+        brgy.setBounds(740, 122, 150, 30);
+        p.add(brgy);
+
+        
+        
+        // ===== CITY =====
+        JLabel lblCity = new JLabel("City");
+        lblCity.setBounds(60, 174, 100, 30);
+        lblCity.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblCity);
+
+        city = new JTextField();
+        city.setBounds(160, 169, 150, 30);
+        p.add(city);
+
+        // ===== PROVINCE =====
+        JLabel lblProvince = new JLabel("Province");
+        lblProvince.setBounds(340, 169, 100, 30);
+        lblProvince.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblProvince);
+
+        province = new JTextField();
+        province.setBounds(460, 169, 150, 30);
+        p.add(province);
+
+        // ===== CIVIL STATUS =====
+        JLabel lblCivil = new JLabel("Civil Status");
+        lblCivil.setBounds(640, 169, 100, 30);
+        lblCivil.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblCivil);
+
+        String[] civilStatuses = {
+            "Single",
+            "Married",
+            "Separated",
+            "Widowed"
         };
-        tf2.addActionListener(compute);
-        rate.addActionListener(compute);
-        loanterm.addActionListener(compute);
-        
-        //functions ng button mouselistener
-        cancel.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent c) {
-                if (selected != cancel) {
-                    cancel.setBackground(ACTIVE);
-                }
-            }
-            public void mouseExited(MouseEvent e) {
-                if (selected != cancel) {
-                    cancel.setBackground(NORMAL);
-                }
-            }
-            public void mousePressed(MouseEvent cl) {
-                selected = cancel;
 
-                cancel.setBackground(ACTIVE);
-                create.setBackground(NORMAL);
+        civil = new JComboBox<>(civilStatuses);
+        civil.setBounds(740, 169, 150, 30);
+        civil.setBackground(NORMAL);
+        p.add(civil);
+
+        
+        
+        // ===== EMPLOYMENT STATUS =====
+        JLabel lblEmpStatus = new JLabel("Employment Status");
+        lblEmpStatus.setBounds(60, 216, 160, 30);
+        lblEmpStatus.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblEmpStatus);
+        
+        String[] empStatuses = {
+            "Employed",
+            "Self-Employed",
+            "Unemployed",
+            "Student",
+            "Retired"
+        };
+
+        empStatus = new JComboBox<>(empStatuses);
+        empStatus.setBounds(220, 216, 150, 30);
+        empStatus.setBackground(NORMAL);
+        p.add(empStatus);
+
+        // ===== EMPLOYER NAME =====
+        JLabel lblEmployer = new JLabel("Employer Name");
+        lblEmployer.setBounds(400, 216, 160, 30);
+        lblEmployer.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblEmployer);
+
+        employer = new JTextField();
+        employer.setBounds(530, 216, 150, 30);
+        p.add(employer);
+
+        
+        
+        // ===== MONTHLY INCOME =====
+        JLabel lblIncome = new JLabel("Monthly Income");
+        lblIncome.setBounds(60, 263, 160, 30);
+        lblIncome.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblIncome);
+
+        String[] incomeRanges = {
+            "Below ₱10,000",
+            "₱10,000 – ₱20,000",
+            "₱20,001 – ₱30,000",
+            "₱30,001 – ₱50,000",
+            "₱50,001 – ₱100,000",
+            "Above ₱100,000"
+        };
+
+        income = new JComboBox<>(incomeRanges);
+        income.setBounds(200, 263, 150, 30);
+        income.setBackground(NORMAL);
+        p.add(income);
+
+        // ===== VALID ID =====
+        JLabel lblValidId = new JLabel("Valid ID");
+        lblValidId.setBounds(380, 263, 150, 30);
+        lblValidId.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblValidId);
+
+        String[] validIds = {
+            "Passport",
+            "Driver’s License",
+            "UMID",
+            "PhilSys National ID",
+            "SSS ID",
+            "GSIS ID",
+            "Voter’s ID",
+            "Postal ID",
+            "PRC ID"
+        };
+
+        validId = new JComboBox<>(validIds);
+        validId.setBounds(460, 263, 150, 30);
+        validId.setBackground(NORMAL);
+        p.add(validId);
+        
+        // ===== VALID ID NUMBER =====
+        JLabel lblValidIdNo = new JLabel("Valid ID No.");
+        lblValidIdNo.setBounds(640, 263, 150, 30);
+        lblValidIdNo.setFont(new Font("Arial", Font.BOLD, 14));
+        p.add(lblValidIdNo);
+
+        validIdNo = new JTextField();
+        validIdNo.setBounds(740, 263, 150, 30);
+        p.add(validIdNo);
+        
+        
+
+        // ===== NEXT BUTTON =====
+        JButton next = new JButton("Next");
+        next.setBounds(840, 350, 100, 35);
+        next.setBackground(NORMAL);
+        p.add(next);
+
+        next.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent z) {
+                card.show(container, "step2");
+            }
+        });
+        
+        next.addMouseListener(new MouseAdapter() {
+
+            public void mouseEntered(MouseEvent e) {
+                next.setBackground(ACTIVE);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                next.setBackground(NORMAL);
+            }
+
+            public void mousePressed(MouseEvent e) {
+                next.setBackground(ACTIVE);
+            }
+        });
+        
+        return p;
+    }
+    
+    /* ===== STEP 2 ===== */
+    JPanel step2() {
+        JPanel p = new JPanel(null);
+        p.setBackground(NORMAL);
+
+        JTextArea text = new JTextArea(
+                "DATA PRIVACY ACT\n\n" +
+                "We collect and process your personal information in accordance with the Data Privacy Act of 2012. \n" +
+                "The information you provide will be used solely for loan processing, credit evaluation, identity verification, \n" +
+                "and legal compliance. Reasonable security measures are implemented to protect your data.\n\n" +
+                "TERMS AND CONDITIONS\n\n" +
+                "By proceeding, you confirm that all information provided is true and correct. \n" +
+                "Loan approval is subject to evaluation. Interest rates, fees, and repayment terms \n" +
+                "will be disclosed prior to approval. Late payments may incur penalties. \n" +
+                "This agreement is governed by Philippine laws."
+        );
+        text.setEditable(false);
+        text.setLineWrap(true);
+        text.setWrapStyleWord(true);
+        text.setFont(new Font("Arial", Font.PLAIN, 15));
+
+
+        JScrollPane sp = new JScrollPane(text);
+        sp.setBounds(20, 20, 925, 290);
+        sp.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+        p.add(sp);
+
+        JCheckBox dp = new JCheckBox("I agree to the Data Privacy Act");
+        JCheckBox tc = new JCheckBox("I agree to the Terms and Conditions");
+
+        dp.setBounds(20, 320, 300, 25);
+        tc.setBounds(20, 345, 350, 25);
+        dp.setBackground(NORMAL);
+        tc.setBackground(NORMAL);
+
+        JButton next = new JButton("Next");
+        next.setBounds(840, 350, 100, 35);
+        next.setBackground(NORMAL);
+        next.setEnabled(false);
+
+        ItemListener chk = e -> next.setEnabled(dp.isSelected() && tc.isSelected());
+        dp.addItemListener(chk);
+        tc.addItemListener(chk);
+
+        p.add(dp); p.add(tc); p.add(next);
+
+        next.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent y) {
+                verifyArea.setText(getSummary());
+                card.show(container, "step3");
+            }
+        });
+        
+        next.addMouseListener(new MouseAdapter() {
+
+            public void mouseEntered(MouseEvent e) {
+                next.setBackground(ACTIVE);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                next.setBackground(NORMAL);
+            }
+
+            public void mousePressed(MouseEvent e) {
+                next.setBackground(ACTIVE);
+            }
+        });
+        
+        return p;
+    }
+    
+    /* ===== STEP 3 ===== */
+    JPanel step3() {
+        JPanel p = new JPanel(null);
+        p.setBackground(NORMAL);
+
+        verifyArea = new JTextArea();
+        verifyArea.setEditable(false);
+        verifyArea.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+        JScrollPane sp = new JScrollPane(verifyArea);
+        sp.setBounds(20, 20, 925, 290);
+        sp.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+        p.add(sp);
+
+        JButton edit = new JButton("Edit Information");
+        JButton create = new JButton("Create");
+
+        edit.setBounds(670, 350, 150, 35);
+        edit.setBackground(NORMAL);
+        create.setBounds(840, 350, 100, 35);
+        create.setBackground(NORMAL);
+
+        edit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent x){
+                card.show(container, "step1");
+            } 
+        });
+        
+        edit.addMouseListener(new MouseAdapter() {
+
+            public void mouseEntered(MouseEvent e) {
+                edit.setBackground(ACTIVE);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                edit.setBackground(NORMAL);
+            }
+
+            public void mousePressed(MouseEvent e) {
+                edit.setBackground(ACTIVE);
+            }
+        });
+        
+        create.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(
+                    LoanForm.this,
+                    "Created Successfully",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
             }
         });
         
         create.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent c) {
-                if (selected != create) {
-                    create.setBackground(ACTIVE);
-                }
-            }
-            public void mouseExited(MouseEvent e) {
-                if (selected != create) {
-                    create.setBackground(NORMAL);
-                }
-            }
-            public void mousePressed(MouseEvent cl) {
-                selected = create;
 
-                cancel.setBackground(NORMAL);
+            public void mouseEntered(MouseEvent e) {
+                create.setBackground(ACTIVE);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                create.setBackground(NORMAL);
+            }
+
+            public void mousePressed(MouseEvent e) {
                 create.setBackground(ACTIVE);
             }
         });
-        
+
+        p.add(edit); p.add(create);
+        return p;
+    }
+
+    /* =====================================================
+       HELPERS
+    ====================================================== */
+    JLabel label(String t, int x, int y){
+        JLabel l = new JLabel(t);
+        l.setBounds(x,y,300,25);
+        return l;
+    }
+
+    JTextField field(JPanel p, String lbl, int x, int y){
+        JLabel l = new JLabel(lbl);
+        JTextField f = new JTextField();
+        l.setBounds(x,y,150,25);
+        f.setBounds(180,y,350,25);
+        p.add(l); p.add(f);
+        return f;
+    }
+
+    String getSummary(){
+        return
+            "Name: " + fn.getText()+" "+mn.getText()+" "+ln.getText()+"\n"+
+            "Sex: " + (male.isSelected() ? "Male":"Female") + "\n"+
+            "DOB: " + dob.getText()+"\n"+
+            "Email: " + email.getText()+"\n"+
+            "Contact: " + contact.getText()+"\n"+
+            "Address: " + street.getText()+", "+brgy.getText()+", "+city.getText()+", "+province.getText()+"\n"+
+            "Civil Status: " + civil.getSelectedItem().toString()+"\n"+
+            "Employment Status: " + empStatus.getSelectedItem().toString()+"\n"+
+            "Employer: " + employer.getText()+"\n"+
+            "Monthly Income: " + income.getSelectedItem().toString()+"\n"+
+            "Valid ID: " + validId.getSelectedItem().toString()+"\n"+
+            "Valid ID No.: " + validIdNo.getText();
     }
 }

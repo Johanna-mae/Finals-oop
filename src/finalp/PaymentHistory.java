@@ -41,6 +41,9 @@ class PaymentHistory extends JPanel{
             {"3489", "56", "₱ 10000", "2025-02-05"}
         };
         tpay = new JTable(data2, col2);
+        tpay.setRowHeight(30);
+        tpay.setEnabled(true);
+        tpay.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
 
         tcon.add(new JScrollPane(tpay), "payments");
 

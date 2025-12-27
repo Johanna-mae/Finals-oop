@@ -73,6 +73,9 @@ class Home extends JPanel{
             {"Maria Santos", "₱3,500", "Pending", "2025-02-03"}
         };
         tloans = new JTable(data1, col);
+        tloans.setRowHeight(30);
+        tloans.setEnabled(true);
+        tloans.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
 
         // pay table
         String[] col2 = {"Client's Name", "Amount Paid", "Status", "Date"};
@@ -81,6 +84,9 @@ class Home extends JPanel{
             {"Ana Reyes", "₱800", "Completed", "2025-02-05"}
         };
         tpay = new JTable(data2, col2);
+        tpay.setRowHeight(30);
+        tpay.setEnabled(true);
+        tpay.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
 
         tcon.add(new JScrollPane(tloans), "loans");
         tcon.add(new JScrollPane(tpay), "payments");
