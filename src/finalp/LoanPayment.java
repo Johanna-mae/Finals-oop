@@ -87,7 +87,7 @@ class LoanPayment extends JPanel{
         lbl6.setFont(new Font("Arial", Font.BOLD, 15));
         box.add(lbl6);
 
-        String[] loans = {"pagpalain", "charot", "eme", "sino ka?"};
+        String[] loans = {"Jane Doe", "Juan Doe dela Cruz"};
         JComboBox<String> loanterm = new JComboBox<>(loans);
         loanterm.setBounds(180, 180, 550, 30);
         box.add(loanterm);
