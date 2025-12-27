@@ -146,7 +146,7 @@ class Sidebar extends JPanel {
         ImageIcon reportsIcon = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
         report = new JButton("Reports");
         report.setBounds(20, y, 235, 40);
-        report.setIcon(rep);
+        report.setIcon(reportsIcon);
         report.setBackground(NORMAL);
         report.setHorizontalTextPosition(SwingConstants.RIGHT);
         report.setIconTextGap(5);
