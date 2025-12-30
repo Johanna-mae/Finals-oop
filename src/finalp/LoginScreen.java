@@ -3,11 +3,19 @@ package finalp;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Connection;
 
 
 
 class LoginScreen extends JFrame{
     private Frame mainFrame;
+
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    
     
     public void setMainFrame(Frame frame) {
         this.mainFrame = frame;
@@ -46,14 +54,14 @@ class LoginScreen extends JFrame{
         usernameLabel.setBounds(190, 200, 165, 40);
         usernameLabel.setFont(new Font("Sans Serif", Font.PLAIN, 24));       
         
-        JTextField usernameField = new JTextField();
+        usernameField = new JTextField();
         usernameField.setBounds(360, 205, 150, 30);
         
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setBounds(190, 250, 165, 40);
         passwordLabel.setFont(new Font("Sans Serif", Font.PLAIN, 24));
         
-        JPasswordField passwordField = new JPasswordField();
+        passwordField = new JPasswordField();
         passwordField.setBounds(360, 255, 150, 30);
         
         JButton loginButton = new JButton("LOGIN");
@@ -62,9 +70,12 @@ class LoginScreen extends JFrame{
         loginButton.setBackground(new Color(0xAAC3DD));
         loginButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                mainFrame.setVisible(true);
-                
-                dispose();
+                if(checkCredentials()){
+                    mainFrame.setVisible(true);
+                    dispose();
+                } else {
+                    System.out.println("Invalid credentials.");
+                }
             }
         });
         
@@ -91,5 +102,54 @@ class LoginScreen extends JFrame{
         panel.add(backgroundImageJLabel);
 
         return panel;
+    }
+
+    public boolean checkCredentials(){    
+        String usernameToCheck = usernameField.getText().trim();
+        String passwordToCheck = new String(passwordField.getPassword()).trim();
+        
+        String query = "SELECT username, password, role FROM Employee WHERE username = ? AND password = ? AND role = 'Admin'";
+        
+        System.out.println(usernameToCheck);
+        System.out.println(passwordToCheck);
+
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            System.out.println(conn);
+
+        // Check which database we're connected to
+        PreparedStatement dbCheck = conn.prepareStatement("SELECT DATABASE()");
+        ResultSet dbRs = dbCheck.executeQuery();
+        dbRs.next();
+        System.out.println("Connected to database: " + dbRs.getString(1));
+        dbRs.close();
+        dbCheck.close();
+        
+        // List all tables in current database
+        PreparedStatement tablePs = conn.prepareStatement("SHOW TABLES");
+        ResultSet tableRs = tablePs.executeQuery();
+        System.out.println("Tables in database:");
+        while(tableRs.next()) {
+            System.out.println("  - " + tableRs.getString(1));
+        }
+        tableRs.close();
+        tablePs.close();
+
+            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(query);
+            System.out.println(ps.toString());
+            ps.setString(1, usernameToCheck);
+            System.out.println(ps);
+            ps.setString(2, passwordToCheck);
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+            boolean isAuthorized = rs.next();
+            rs.close();
+            ps.close();
+            System.out.println(isAuthorized);
+            return isAuthorized;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }       
     }
 }
