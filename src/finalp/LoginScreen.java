@@ -108,7 +108,7 @@ class LoginScreen extends JFrame{
         String usernameToCheck = usernameField.getText().trim();
         String passwordToCheck = new String(passwordField.getPassword()).trim();
         
-        String query = "SELECT username, password, role FROM Employee WHERE username = ? AND password = ? AND role = 'Admin'";
+        String query = "SELECT username, password, role FROM Employee WHERE username = ? AND password = ? AND is_Active = 1";
         
         System.out.println(usernameToCheck);
         System.out.println(passwordToCheck);
@@ -116,24 +116,6 @@ class LoginScreen extends JFrame{
         try {
             Connection conn = DatabaseConnection.getConnection();
             System.out.println(conn);
-
-        // Check which database we're connected to
-        PreparedStatement dbCheck = conn.prepareStatement("SELECT DATABASE()");
-        ResultSet dbRs = dbCheck.executeQuery();
-        dbRs.next();
-        System.out.println("Connected to database: " + dbRs.getString(1));
-        dbRs.close();
-        dbCheck.close();
-        
-        // List all tables in current database
-        PreparedStatement tablePs = conn.prepareStatement("SHOW TABLES");
-        ResultSet tableRs = tablePs.executeQuery();
-        System.out.println("Tables in database:");
-        while(tableRs.next()) {
-            System.out.println("  - " + tableRs.getString(1));
-        }
-        tableRs.close();
-        tablePs.close();
 
             PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(query);
             System.out.println(ps.toString());
