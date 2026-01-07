@@ -3,6 +3,9 @@ import java.awt.event.*;
 
 public class Finalp {
     public static void main(String[] args) {
+
+        TestJBcrypt.testJBcrypt();
+
         Frame frame = new Frame();
         frame.setBounds(50, 50, 1920,1080);
         frame.setVisible(false);
