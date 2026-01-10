@@ -16,8 +16,11 @@ public class Finalp {
         dashboard.setVisible(false);
         frame.add(dashboard);
         
-        LoanForm form = new LoanForm();
+        LoanApplication loanapplication = new LoanApplication();
+        LoanForm form = new LoanForm(loanapplication);
         form.setVisible(false);
+        loanapplication.setVisible(false);
+        frame.add(loanapplication);
         frame.add(form);
         
         ViewLoans viewloan = new ViewLoans();
@@ -50,6 +53,7 @@ public class Finalp {
                 dashboard.setVisible(false);
                 form.setVisible(true);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
                 createclient.setVisible(false);
                 clientslist.setVisible(false);
                 loanpayment.setVisible(false);
@@ -63,6 +67,21 @@ public class Finalp {
                 dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(true);
+                loanapplication.setVisible(false);
+                createclient.setVisible(false);
+                clientslist.setVisible(false);
+                loanpayment.setVisible(false);
+                paymenthis.setVisible(false);
+                repo.setVisible(false);
+            } 
+        });
+        
+        sidebar.loanApplications.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent b){
+                dashboard.setVisible(false);
+                form.setVisible(false);
+                viewloan.setVisible(false);
+                loanapplication.setVisible(true);
                 createclient.setVisible(false);
                 clientslist.setVisible(false);
                 loanpayment.setVisible(false);
@@ -76,6 +95,7 @@ public class Finalp {
                 dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
                 clientslist.setVisible(true);
                 createclient.setVisible(false);
                 loanpayment.setVisible(false);
@@ -89,6 +109,7 @@ public class Finalp {
                 dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
                 createclient.setVisible(true);
                 clientslist.setVisible(false);
                 loanpayment.setVisible(false);
@@ -102,6 +123,7 @@ public class Finalp {
                 dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
                 createclient.setVisible(false);
                 clientslist.setVisible(false);
                 loanpayment.setVisible(true);
@@ -115,6 +137,7 @@ public class Finalp {
                 dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
                 createclient.setVisible(false);
                 clientslist.setVisible(false);
                 loanpayment.setVisible(false);
@@ -128,6 +151,7 @@ public class Finalp {
                 dashboard.setVisible(true);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
                 createclient.setVisible(false);
                 clientslist.setVisible(false);
                 loanpayment.setVisible(false);
@@ -141,6 +165,7 @@ public class Finalp {
                 dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
                 createclient.setVisible(false);
                 clientslist.setVisible(false);
                 loanpayment.setVisible(false);
