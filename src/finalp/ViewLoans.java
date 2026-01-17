@@ -2,60 +2,125 @@ package finalp;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
-import java.util.ArrayList;
 
-class ViewLoans extends JPanel{
+class ViewLoans extends JPanel {
+
     Color NORMAL = new Color(0xAAC3DD);
-    Color ACTIVE = new Color(0x8AA1B9);
-    
-    JTable viewLoan;
 
-    CardLayout card;
-    JPanel container;
-    
+    JTable loanTable;
+    JTable breakdownTable;
+
+    DefaultTableModel breakdownModel;
+
     public ViewLoans() {
         setLayout(null);
         setBounds(280, 0, 1090, 800);
         setBackground(Color.WHITE);
 
+        // ===== CONTENT PANEL 
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(null);
+        contentPanel.setBackground(Color.WHITE);
+        contentPanel.setPreferredSize(new Dimension(1090, 990));
+
+        // ===== SCROLL PANE =====
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setBounds(0, 0, 1090, 800);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16); 
+        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+        add(scrollPane);
+        
+        
+        // ===== HEADER =====
         JLabel header = new JLabel("View Loans");
         header.setFont(new Font("Arial", Font.BOLD, 25));
         header.setBounds(20, 25, 400, 40);
-        add(header);
+        contentPanel.add(header);
 
-        JLabel sub = new JLabel("View active loans");
+        JLabel sub = new JLabel("View active loans and breakdown");
         sub.setBounds(23, 55, 400, 20);
-        add(sub);
+        contentPanel.add(sub);
 
         JSeparator sep = new JSeparator();
         sep.setBounds(23, 80, 1040, 2);
-        add(sep);
-
-        // table
-        card = new CardLayout();
-        container = new JPanel(card);
-        container.setBounds(40, 100, 1010, 300);
-        container.setBackground(new Color(210,210,210));
-        container.setLayout(card);
+        contentPanel.add(sep);
         
-        // view loan table
-        String[] col2 = {"Client Name", "Loan Amount", "Loan Date", "Status", "Balance"};
-        Object[][] data2 = {
-            {"John Doe dela Cruz", "₱25,000", "2024-05-01", "Active", "₱18,000"},
-            {"Jane Doe", "₱40,000", "2024-03-15", "Active", "₱30,500"},
-            {"Mark Reyes", "₱15,000", "2024-01-10", "Overdue", "₱12,000"},
-            {"Ana Cruz", "₱50,000", "2023-12-20", "Completed", "₱0"},
-            {"Luis Santos", "₱30,000", "2024-02-05", "Active", "₱22,000"}
+
+        // ================= LOAN TABLE =================
+        String[] loanCols = {
+            "Loan ID", "Client Name", "Loan Amount", "Term", "Status"
         };
-        viewLoan = new JTable(data2, col2);
-        viewLoan.setRowHeight(30);
-        viewLoan.setEnabled(true);
-        viewLoan.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
 
+        Object[][] loanData = {
+            {"L001", "John Doe", 25000.00, 12, "Active"},
+            {"L002", "Jane Doe", 40000.00, 12, "Active"},
+            {"L003", "Mark Reyes", 15000.00, 6, "Overdue"}
+        };
 
-        container.add(new JScrollPane(viewLoan), "payments");
+        loanTable = new JTable(loanData, loanCols);
+        loanTable.setRowHeight(30);
+        loanTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
-        add(container);
+        JScrollPane loanScroll = new JScrollPane(loanTable);
+        loanScroll.setBounds(45, 100, 1000, 220);
+        contentPanel.add(loanScroll);
+
+        // ================= BREAKDOWN PANEL =================
+        JPanel breakdownPanel = new JPanel(null);
+        breakdownPanel.setBounds(45, 340, 1000, 390);
+        breakdownPanel.setBackground(NORMAL);
+        contentPanel.add(breakdownPanel);
+
+        JLabel breakdownLbl = new JLabel("Loan Breakdown");
+        breakdownLbl.setFont(new Font("Arial", Font.BOLD, 16));
+        breakdownLbl.setBounds(20, 10, 400, 30);
+        breakdownPanel.add(breakdownLbl);
+
+        String[] breakdownCols = {
+            "Payment #", "Principal Paid", "Interest Paid", "Total Paid", "Remaining Balance"
+        };
+
+        breakdownModel = new DefaultTableModel(breakdownCols, 0);
+        breakdownTable = new JTable(breakdownModel);
+        breakdownTable.setRowHeight(26);
+
+        JScrollPane breakdownScroll = new JScrollPane(breakdownTable);
+        breakdownScroll.setBounds(20, 45, 960, 320);
+        breakdownScroll.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+        breakdownPanel.add(breakdownScroll);
+
+        
+        loanTable.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                int row = loanTable.getSelectedRow();
+                if (row == -1) return;
+
+                breakdownModel.setRowCount(0); // clear table
+
+                double loanAmount = (double) loanTable.getValueAt(row, 2);
+                int term = (int) loanTable.getValueAt(row, 3);
+
+                double principalPerPayment = loanAmount / term;
+                double remaining = loanAmount;
+
+                for (int i = 1; i <= term; i++) {
+                    double interest = remaining * 0.02; // sample interest
+                    remaining -= principalPerPayment;
+
+                    breakdownModel.addRow(new Object[]{
+                        i,
+                        String.format("₱%.2f", principalPerPayment),
+                        String.format("₱%.2f", interest),
+                        String.format("₱%.2f", principalPerPayment + interest),
+                        String.format("₱%.2f", Math.max(remaining, 0))
+                    });
+                }
+            }
+        });
     }
 }
+
+
