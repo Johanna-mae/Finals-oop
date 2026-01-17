@@ -3,502 +3,279 @@ package finalp;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.File;
+import java.time.LocalDate;
 
 class LoanForm extends JPanel {
-    CardLayout card;
-    JPanel container;
-
-    // STEP 1 FIELDS
-    JTextField fn, mn, ln, dob, email, contact;
-    JTextField street, brgy, city, province;
-    JTextField employer, validIdNo;
-    JRadioButton male, female;
-    JComboBox<String> civil, empStatus, income, validId;
-
-    JTextArea verifyArea;
     
     Color NORMAL = new Color(0xAAC3DD);
     Color ACTIVE = new Color(0x8AA1B9);
-    
-    JButton selected = null;
-    
-    public LoanForm() {
-        setLayout(null); //outside the form
-        setBounds(280, 0, 1090, 800);
-        setBackground(new Color(0xFFFFFF));
 
-        JLabel header = new JLabel("Create New Loan");
+    JButton selected = null;
+    int applicationCounter = 1000; // start ng numbering sa id
+    
+    LoanApplication loanapplication;
+
+    public LoanForm(LoanApplication loanapplication) {
+        this.loanapplication = loanapplication;
+        
+        setLayout(null);
+        setBounds(280, 0, 1090, 800);
+        setBackground(Color.WHITE);
+
+        JLabel header = new JLabel("Create Loan Application");
         header.setFont(new Font("Arial", Font.BOLD, 25));
         header.setBounds(20, 25, 400, 40);
         add(header);
 
-        JLabel subtitle = new JLabel("Enter details to avail loan");
-        subtitle.setBounds(23, 55, 400, 20);
-        add(subtitle);
-
-        JSeparator separator = new JSeparator();
-        separator.setBounds(23, 80, 1040, 2);
-        add(separator);
-
+        JLabel sub = new JLabel("Enter details to avail loan");
+        sub.setBounds(23, 55, 400, 20);
+        add(sub);
         
-        card = new CardLayout();
-        container = new JPanel(card);
-        container.setBounds(60, 110, 965, 400);
-        container.setBackground(NORMAL);
-        add(container);
+        JSeparator sep = new JSeparator();
+        sep.setBounds(23, 80, 1040, 2);
+        add(sep);
 
-        container.add(step1(), "step1");
-        container.add(step2(), "step2");
-        container.add(step3(), "step3");
+        JPanel box = new JPanel();
+        box.setLayout(null);
+        box.setBackground(NORMAL);
+        box.setBounds(170, 110, 750, 430);
+        add(box);
 
-        card.show(container, "step1");
- 
-        setVisible(true);
-    }
-    
-    /* ===== STEP 1 ===== */
-    JPanel step1() {
-        JPanel p = new JPanel(null);
-        p.setBackground(NORMAL);
-        
-        
-        // ===== FIRST NAME =====
-        JLabel firstName = new JLabel("First Name");
-        firstName.setBounds(60, 28, 100, 30);
-        firstName.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(firstName);
+        // CLIENT
+        JLabel clientName = new JLabel("Client Name");
+        clientName.setBounds(20, 20, 150, 30);
+        clientName.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(clientName);
 
-        fn = new JTextField();
-        fn.setBounds(160, 28, 150, 30);
-        p.add(fn);
-
-        // ===== MIDDLE NAME =====
-        JLabel lblMn = new JLabel("Middle Name");
-        lblMn.setBounds(340, 28, 100, 30);
-        lblMn.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblMn);
-
-        mn = new JTextField();
-        mn.setBounds(460, 28, 150, 30);
-        p.add(mn);
-
-        // ===== LAST NAME =====
-        JLabel lblLn = new JLabel("Last Name");
-        lblLn.setBounds(640, 28, 100, 30);
-        lblLn.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblLn);
-
-        ln = new JTextField();
-        ln.setBounds(740, 28, 150, 30);
-        p.add(ln);
-
-        
-        
-        // ===== SEX =====
-        JLabel lblSex = new JLabel("Sex");
-        lblSex.setBounds(60, 75, 150, 30);
-        lblSex.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblSex);
-
-        male = new JRadioButton("Male");
-        female = new JRadioButton("Female");
-
-        male.setBounds(160, 75, 80, 30);
-        male.setBackground(NORMAL);
-        female.setBounds(260, 75, 80, 30);
-        female.setBackground(NORMAL);
-
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(male);
-        bg.add(female);
-
-        p.add(male);
-        p.add(female);
-
-        // ===== DATE OF BIRTH =====
-        JLabel lblDob = new JLabel("Date of Birth");
-        lblDob.setBounds(340, 75, 150, 30);
-        lblDob.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblDob);
-
-        dob = new JTextField(); 
-        dob.setBounds(460, 75, 150, 30);
-        p.add(dob);
-
-        // ===== EMAIL =====
-        JLabel lblEmail = new JLabel("Email");
-        lblEmail.setBounds(640, 75, 100, 30);
-        lblEmail.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblEmail);
-
-        email = new JTextField();
-        email.setBounds(740, 75, 150, 30);
-        p.add(email);
-
-        
-        
-        // ===== CONTACT =====
-        JLabel lblContact = new JLabel("Contact No.");
-        lblContact.setBounds(60, 122, 150, 30);
-        lblContact.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblContact);
-
-        contact = new JTextField();
-        contact.setBounds(160, 122, 150, 30);
-        p.add(contact);
-
-        // ===== STREET =====
-        JLabel lblStreet = new JLabel("Street");
-        lblStreet.setBounds(340, 122, 150, 30);
-        lblStreet.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblStreet);
-
-        street = new JTextField();
-        street.setBounds(460, 122, 150, 30);
-        p.add(street);
-
-        // ===== BARANGAY =====
-        JLabel lblBrgy = new JLabel("Barangay");
-        lblBrgy.setBounds(640, 122, 150, 30);
-        lblBrgy.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblBrgy);
-
-        brgy = new JTextField();
-        brgy.setBounds(740, 122, 150, 30);
-        p.add(brgy);
-
-        
-        
-        // ===== CITY =====
-        JLabel lblCity = new JLabel("City");
-        lblCity.setBounds(60, 174, 100, 30);
-        lblCity.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblCity);
-
-        city = new JTextField();
-        city.setBounds(160, 169, 150, 30);
-        p.add(city);
-
-        // ===== PROVINCE =====
-        JLabel lblProvince = new JLabel("Province");
-        lblProvince.setBounds(340, 169, 100, 30);
-        lblProvince.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblProvince);
-
-        province = new JTextField();
-        province.setBounds(460, 169, 150, 30);
-        p.add(province);
-
-        // ===== CIVIL STATUS =====
-        JLabel lblCivil = new JLabel("Civil Status");
-        lblCivil.setBounds(640, 169, 100, 30);
-        lblCivil.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblCivil);
-
-        String[] civilStatuses = {
-            "Single",
-            "Married",
-            "Separated",
-            "Widowed"
-        };
-
-        civil = new JComboBox<>(civilStatuses);
-        civil.setBounds(740, 169, 150, 30);
-        civil.setBackground(NORMAL);
-        p.add(civil);
-
-        
-        
-        // ===== EMPLOYMENT STATUS =====
-        JLabel lblEmpStatus = new JLabel("Employment Status");
-        lblEmpStatus.setBounds(60, 216, 160, 30);
-        lblEmpStatus.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblEmpStatus);
-        
-        String[] empStatuses = {
-            "Employed",
-            "Self-Employed",
-            "Unemployed",
-            "Student",
-            "Retired"
-        };
-
-        empStatus = new JComboBox<>(empStatuses);
-        empStatus.setBounds(220, 216, 150, 30);
-        empStatus.setBackground(NORMAL);
-        p.add(empStatus);
-
-        // ===== EMPLOYER NAME =====
-        JLabel lblEmployer = new JLabel("Employer Name");
-        lblEmployer.setBounds(400, 216, 160, 30);
-        lblEmployer.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblEmployer);
-
-        employer = new JTextField();
-        employer.setBounds(530, 216, 150, 30);
-        p.add(employer);
-
-        
-        
-        // ===== MONTHLY INCOME =====
-        JLabel lblIncome = new JLabel("Monthly Income");
-        lblIncome.setBounds(60, 263, 160, 30);
-        lblIncome.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblIncome);
-
-        String[] incomeRanges = {
-            "Below ₱10,000",
-            "₱10,000 – ₱20,000",
-            "₱20,001 – ₱30,000",
-            "₱30,001 – ₱50,000",
-            "₱50,001 – ₱100,000",
-            "Above ₱100,000"
-        };
-
-        income = new JComboBox<>(incomeRanges);
-        income.setBounds(200, 263, 150, 30);
-        income.setBackground(NORMAL);
-        p.add(income);
-
-        // ===== VALID ID =====
-        JLabel lblValidId = new JLabel("Valid ID");
-        lblValidId.setBounds(380, 263, 150, 30);
-        lblValidId.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblValidId);
-
-        String[] validIds = {
-            "Passport",
-            "Driver’s License",
-            "UMID",
-            "PhilSys National ID",
-            "SSS ID",
-            "GSIS ID",
-            "Voter’s ID",
-            "Postal ID",
-            "PRC ID"
-        };
-
-        validId = new JComboBox<>(validIds);
-        validId.setBounds(460, 263, 150, 30);
-        validId.setBackground(NORMAL);
-        p.add(validId);
-        
-        // ===== VALID ID NUMBER =====
-        JLabel lblValidIdNo = new JLabel("Valid ID No.");
-        lblValidIdNo.setBounds(640, 263, 150, 30);
-        lblValidIdNo.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblValidIdNo);
-
-        validIdNo = new JTextField();
-        validIdNo.setBounds(740, 263, 150, 30);
-        p.add(validIdNo);
-        
-        
-
-        // ===== NEXT BUTTON =====
-        JButton next = new JButton("Next");
-        next.setBounds(840, 350, 100, 35);
-        next.setBackground(NORMAL);
-        p.add(next);
-
-        next.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent z) {
-                card.show(container, "step2");
-            }
-        });
-        
-        next.addMouseListener(new MouseAdapter() {
-
-            public void mouseEntered(MouseEvent e) {
-                next.setBackground(ACTIVE);
-            }
-
-            public void mouseExited(MouseEvent e) {
-                next.setBackground(NORMAL);
-            }
-
-            public void mousePressed(MouseEvent e) {
-                next.setBackground(ACTIVE);
-            }
-        });
-        
-        return p;
-    }
-    
-    /* ===== STEP 2 ===== */
-    JPanel step2() {
-        JPanel p = new JPanel(null);
-        p.setBackground(NORMAL);
-
-        JTextArea text = new JTextArea(
-                "DATA PRIVACY ACT\n\n" +
-                "We collect and process your personal information in accordance with the Data Privacy Act of 2012. \n" +
-                "The information you provide will be used solely for loan processing, credit evaluation, identity verification, \n" +
-                "and legal compliance. Reasonable security measures are implemented to protect your data.\n\n" +
-                "TERMS AND CONDITIONS\n\n" +
-                "By proceeding, you confirm that all information provided is true and correct. \n" +
-                "Loan approval is subject to evaluation. Interest rates, fees, and repayment terms \n" +
-                "will be disclosed prior to approval. Late payments may incur penalties. \n" +
-                "This agreement is governed by Philippine laws."
+        JComboBox<String> cbClient = new JComboBox<>(
+            new String[]{"Juan Dela Cruz", "Maria Santos", "Pedro Reyes"}
         );
-        text.setEditable(false);
-        text.setLineWrap(true);
-        text.setWrapStyleWord(true);
-        text.setFont(new Font("Arial", Font.PLAIN, 15));
+        cbClient.setBounds(180, 20, 550, 30);
+        box.add(cbClient);
 
+        // LOAN TYPE
+        JLabel loanType = new JLabel("Loan Type");
+        loanType.setBounds(20, 70, 150, 30);
+        loanType.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(loanType);
 
-        JScrollPane sp = new JScrollPane(text);
-        sp.setBounds(20, 20, 925, 290);
-        sp.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-        p.add(sp);
+        JComboBox<String> cbLoanType = new JComboBox<>(
+            new String[]{"Personal Loan", "Business Loan", "Emergency Loan"}
+        );
+        cbLoanType.setBounds(180, 70, 550, 30);
+        box.add(cbLoanType);
 
-        JCheckBox dp = new JCheckBox("I agree to the Data Privacy Act");
-        JCheckBox tc = new JCheckBox("I agree to the Terms and Conditions");
+        // REQUESTED AMOUNT
+        JLabel requestedAmount = new JLabel("Requested Amount");
+        requestedAmount.setBounds(20, 120, 150, 30);
+        requestedAmount.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(requestedAmount);
 
-        dp.setBounds(20, 320, 300, 25);
-        tc.setBounds(20, 345, 350, 25);
-        dp.setBackground(NORMAL);
-        tc.setBackground(NORMAL);
+        JTextField tfAmount = new JTextField();
+        tfAmount.setBounds(180, 120, 350, 30);
+        box.add(tfAmount);
 
-        JButton next = new JButton("Next");
-        next.setBounds(840, 350, 100, 35);
-        next.setBackground(NORMAL);
-        next.setEnabled(false);
+        // ESTIMATED PER TERM (SIDE)
+        JLabel estimatedPerTerm = new JLabel("Est. / Month");
+        estimatedPerTerm.setBounds(540, 120, 100, 30);
+        estimatedPerTerm.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(estimatedPerTerm);
 
-        ItemListener chk = e -> next.setEnabled(dp.isSelected() && tc.isSelected());
-        dp.addItemListener(chk);
-        tc.addItemListener(chk);
+        JTextField tfEstimate = new JTextField();
+        tfEstimate.setBounds(630, 120, 100, 30);
+        tfEstimate.setEditable(false);
+        box.add(tfEstimate);
 
-        p.add(dp); p.add(tc); p.add(next);
+        // TERM
+        JLabel Term = new JLabel("Term (Months)");
+        Term.setBounds(20, 170, 150, 30);
+        Term.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(Term);
 
-        next.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent y) {
-                verifyArea.setText(getSummary());
-                card.show(container, "step3");
+        JComboBox<String> cbTerm = new JComboBox<>(
+            new String[]{"3", "6", "12", "18", "24"}
+        );
+        cbTerm.setBounds(180, 170, 550, 30);
+        box.add(cbTerm);
+
+        // PURPOSE
+        JLabel Purpose = new JLabel("Purpose");
+        Purpose.setBounds(20, 220, 150, 30);
+        Purpose.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(Purpose);
+
+        JTextArea taPurpose = new JTextArea();
+        taPurpose.setLineWrap(true);
+        JScrollPane spPurpose = new JScrollPane(taPurpose);
+        spPurpose.setBounds(180, 220, 550, 60);
+        box.add(spPurpose);
+
+        // STATUS
+        JLabel Status = new JLabel("Status");
+        Status.setBounds(20, 300, 150, 30);
+        Status.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(Status);
+
+        JComboBox<String> cbStatus = new JComboBox<>(new String[]{"Pending"});
+        cbStatus.setBounds(180, 300, 550, 30);
+        box.add(cbStatus);
+
+        // DOCUMENTS
+        JLabel documents = new JLabel("Documents (Max 2)");
+        documents.setBounds(20, 350, 150, 30);
+        documents.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(documents);
+
+        DefaultListModel<File> fileModel = new DefaultListModel<>();
+        JList<File> fileList = new JList<>(fileModel);
+        JScrollPane fileScroll = new JScrollPane(fileList);
+        fileScroll.setBounds(180, 350, 350, 60);
+        box.add(fileScroll);
+
+        JButton upload = new JButton("Upload Files");
+        upload.setBounds(540, 350, 190, 30);
+        upload.setBackground(NORMAL);
+        box.add(upload);
+
+        JButton removeFile = new JButton("Remove Selected");
+        removeFile.setBounds(540, 380, 190, 30);
+        removeFile.setBackground(NORMAL);
+        box.add(removeFile);
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setMultiSelectionEnabled(true);
+
+        // UPLOAD LOGIC
+        upload.addActionListener(e -> {
+            int result = chooser.showOpenDialog(this);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File[] files = chooser.getSelectedFiles();
+
+                for (File f : files) {
+                    if (fileModel.size() >= 2) {
+                        JOptionPane.showMessageDialog(
+                            this,
+                            "Maximum of 2 files only.",
+                            "Upload Limit",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                        break;
+                    }
+
+                    if (!fileModel.contains(f)) {
+                        fileModel.addElement(f);
+                    }
+                }
             }
         });
-        
-        next.addMouseListener(new MouseAdapter() {
 
-            public void mouseEntered(MouseEvent e) {
-                next.setBackground(ACTIVE);
-            }
+        // REMOVE FILE
+        removeFile.addActionListener(e -> {
+            int index = fileList.getSelectedIndex();
 
-            public void mouseExited(MouseEvent e) {
-                next.setBackground(NORMAL);
-            }
-
-            public void mousePressed(MouseEvent e) {
-                next.setBackground(ACTIVE);
-            }
-        });
-        
-        return p;
-    }
-    
-    /* ===== STEP 3 ===== */
-    JPanel step3() {
-        JPanel p = new JPanel(null);
-        p.setBackground(NORMAL);
-
-        verifyArea = new JTextArea();
-        verifyArea.setEditable(false);
-        verifyArea.setFont(new Font("Segoe UI", Font.PLAIN, 17));
-        JScrollPane sp = new JScrollPane(verifyArea);
-        sp.setBounds(20, 20, 925, 290);
-        sp.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-        p.add(sp);
-
-        JButton edit = new JButton("Edit Information");
-        JButton create = new JButton("Create");
-
-        edit.setBounds(670, 350, 150, 35);
-        edit.setBackground(NORMAL);
-        create.setBounds(840, 350, 100, 35);
-        create.setBackground(NORMAL);
-
-        edit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent x){
-                card.show(container, "step1");
-            } 
-        });
-        
-        edit.addMouseListener(new MouseAdapter() {
-
-            public void mouseEntered(MouseEvent e) {
-                edit.setBackground(ACTIVE);
-            }
-
-            public void mouseExited(MouseEvent e) {
-                edit.setBackground(NORMAL);
-            }
-
-            public void mousePressed(MouseEvent e) {
-                edit.setBackground(ACTIVE);
-            }
-        });
-        
-        create.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            if (index != -1) {
+                fileModel.remove(index);
+            } else {
                 JOptionPane.showMessageDialog(
-                    LoanForm.this,
-                    "Created Successfully",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE
+                    this,
+                    "Please select a file to remove.",
+                    "No File Selected",
+                    JOptionPane.WARNING_MESSAGE
                 );
             }
         });
-        
-        create.addMouseListener(new MouseAdapter() {
 
-            public void mouseEntered(MouseEvent e) {
-                create.setBackground(ACTIVE);
+        // COMPUTE ESTIMATED PER MONTH
+        ActionListener computeEstimate = e -> {
+            try {
+                double amount = Double.parseDouble(tfAmount.getText());
+                int months = Integer.parseInt(cbTerm.getSelectedItem().toString());
+                double perMonth = amount / months;
+                tfEstimate.setText("₱" + String.format("%.2f", perMonth));
+            } catch (Exception ex) {
+                tfEstimate.setText("");
             }
+        };
 
-            public void mouseExited(MouseEvent e) {
-                create.setBackground(NORMAL);
-            }
-
-            public void mousePressed(MouseEvent e) {
-                create.setBackground(ACTIVE);
+        tfAmount.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                computeEstimate.actionPerformed(null);
             }
         });
+        cbTerm.addActionListener(computeEstimate);
 
-        p.add(edit); p.add(create);
-        return p;
-    }
+        // BUTTONS
+        JButton cancel = new JButton("Cancel");
+        cancel.setBounds(555, 550, 120, 40);
+        cancel.setBackground(NORMAL);
+        add(cancel);
 
-    /* =====================================================
-       HELPERS
-    ====================================================== */
-    JLabel label(String t, int x, int y){
-        JLabel l = new JLabel(t);
-        l.setBounds(x,y,300,25);
-        return l;
-    }
+        JButton createLoanApplication = new JButton("Create Loan Application");
+        createLoanApplication.setBounds(690, 550, 230, 40);
+        createLoanApplication.setBackground(NORMAL);
+        add(createLoanApplication);
 
-    JTextField field(JPanel p, String lbl, int x, int y){
-        JLabel l = new JLabel(lbl);
-        JTextField f = new JTextField();
-        l.setBounds(x,y,150,25);
-        f.setBounds(180,y,350,25);
-        p.add(l); p.add(f);
-        return f;
-    }
+        createLoanApplication.addActionListener(e -> {
+            applicationCounter++;
+            
+            loanapplication.setApplicationData(
+                cbClient.getSelectedItem().toString(),
+                cbLoanType.getSelectedItem().toString(),
+                tfAmount.getText(),
+                tfEstimate.getText(),
+                cbTerm.getSelectedItem().toString(),
+                taPurpose.getText(),
+                "APP-" + applicationCounter,
+                LocalDate.now().toString()
+            );
 
-    String getSummary(){
-        return
-            "Name: " + fn.getText()+" "+mn.getText()+" "+ln.getText()+"\n"+
-            "Sex: " + (male.isSelected() ? "Male":"Female") + "\n"+
-            "DOB: " + dob.getText()+"\n"+
-            "Email: " + email.getText()+"\n"+
-            "Contact: " + contact.getText()+"\n"+
-            "Address: " + street.getText()+", "+brgy.getText()+", "+city.getText()+", "+province.getText()+"\n"+
-            "Civil Status: " + civil.getSelectedItem().toString()+"\n"+
-            "Employment Status: " + empStatus.getSelectedItem().toString()+"\n"+
-            "Employer: " + employer.getText()+"\n"+
-            "Monthly Income: " + income.getSelectedItem().toString()+"\n"+
-            "Valid ID: " + validId.getSelectedItem().toString()+"\n"+
-            "Valid ID No.: " + validIdNo.getText();
+            setVisible(false);
+            loanapplication.setVisible(true);
+        });
+        
+        //functions ng button mouselistener
+        cancel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                if (selected != cancel) {
+                    cancel.setBackground(ACTIVE);
+                }
+            }
+            public void mouseExited(MouseEvent e) {
+                if (selected != cancel) {
+                    cancel.setBackground(NORMAL);
+                }
+            }
+            public void mousePressed(MouseEvent cl) {
+                selected = cancel;
+
+                cancel.setBackground(ACTIVE);
+                createLoanApplication.setBackground(NORMAL);
+            }
+        });
+        
+        createLoanApplication.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                if (selected != createLoanApplication) {
+                    createLoanApplication.setBackground(ACTIVE);
+                }
+            }
+            public void mouseExited(MouseEvent e) {
+                if (selected != createLoanApplication) {
+                    createLoanApplication.setBackground(NORMAL);
+                }
+            }
+            public void mousePressed(MouseEvent cl) {
+                selected = createLoanApplication;
+
+                cancel.setBackground(NORMAL);
+                createLoanApplication.setBackground(ACTIVE);
+            }
+        });
+    
     }
+    
 }
+        
+        
