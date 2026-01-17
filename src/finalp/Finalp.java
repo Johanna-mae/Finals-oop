@@ -48,6 +48,9 @@ public class Finalp {
         repo.setVisible(false);
         frame.add(repo);
 
+        Register reg = new Register();
+        reg.setVisible(false);
+        frame.add(reg);
         
         sidebar.createloan.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent a){
@@ -59,6 +62,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
 
@@ -72,6 +76,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 repo.setVisible(false);
+                reg.setVisible(false);
             } 
         });
         
@@ -85,6 +90,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
         
@@ -98,6 +104,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
         
@@ -111,6 +118,7 @@ public class Finalp {
                 loanpayment.setVisible(true);
                 paymenthis.setVisible(false);
                 repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
         
@@ -124,6 +132,8 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(true);
                 repo.setVisible(false);
+                reg.setVisible(false);
+
             }
         });
         
@@ -137,6 +147,7 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
         
@@ -150,6 +161,21 @@ public class Finalp {
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
                 repo.setVisible(true);
+                reg.setVisible(false);
+            }
+        });
+
+        sidebar.register.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent c){
+                dashboard.setVisible(false);
+                form.setVisible(false);
+                viewloan.setVisible(false);
+                createclient.setVisible(false);
+                clientslist.setVisible(false);
+                loanpayment.setVisible(false);
+                paymenthis.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(true);
             }
         });
         

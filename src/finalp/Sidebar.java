@@ -14,6 +14,7 @@ class Sidebar extends JPanel {
     public JButton payhistory;
     public JButton report;
     public JButton logout;
+    public JButton register;
     
     Color NORMAL = new Color(0xAAC3DD);
     Color ACTIVE = new Color(0x8AA1B9);
@@ -160,6 +161,16 @@ class Sidebar extends JPanel {
         content.add(others);
         y += 30;
 
+        ImageIcon registerIcon = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
+        register = new JButton("Register");
+        register.setBounds(20, y, 235, 40);
+        register.setIcon(registerIcon);
+        register.setBackground(NORMAL);
+        register.setHorizontalTextPosition(SwingConstants.RIGHT);
+        register.setIconTextGap(5);
+        content.add(register);
+        y += 50;
+
         ImageIcon out = new ImageIcon(Finalp.class.getResource("/finalp/images/logout.png"));
         logout = new JButton("Logout");
         logout.setBounds(20, y, 235, 40);
@@ -168,7 +179,7 @@ class Sidebar extends JPanel {
         logout.setHorizontalTextPosition(SwingConstants.RIGHT);
         logout.setIconTextGap(5);
         content.add(logout);
-
+        y += 70;
         setVisible(true);
         
         //functions of the buttons mouselistener
@@ -194,7 +205,9 @@ class Sidebar extends JPanel {
                 loanpay.setBackground(NORMAL);
                 payhistory.setBackground(NORMAL);
                 report.setBackground(NORMAL);
+                register.setBackground(NORMAL);
                 logout.setBackground(NORMAL);
+                
             }
         });
         
@@ -220,6 +233,7 @@ class Sidebar extends JPanel {
                 loanpay.setBackground(NORMAL);
                 payhistory.setBackground(NORMAL);
                 report.setBackground(NORMAL);
+                register.setBackground(NORMAL);
                 logout.setBackground(NORMAL);
             }
         });
@@ -246,6 +260,7 @@ class Sidebar extends JPanel {
                 loanpay.setBackground(NORMAL);
                 payhistory.setBackground(NORMAL);
                 report.setBackground(NORMAL);
+                register.setBackground(NORMAL);
                 logout.setBackground(NORMAL);
             }
         });
@@ -272,6 +287,7 @@ class Sidebar extends JPanel {
                 loanpay.setBackground(NORMAL);
                 payhistory.setBackground(NORMAL);
                 report.setBackground(NORMAL);
+                register.setBackground(NORMAL);
                 logout.setBackground(NORMAL);
             }
         });
@@ -299,6 +315,7 @@ class Sidebar extends JPanel {
                 payhistory.setBackground(NORMAL);
                 home.setBackground(NORMAL);
                 report.setBackground(NORMAL);
+                register.setBackground(NORMAL);
                 logout.setBackground(NORMAL);
             }
         });
@@ -325,6 +342,7 @@ class Sidebar extends JPanel {
                 loanpay.setBackground(ACTIVE);
                 payhistory.setBackground(NORMAL);
                 report.setBackground(NORMAL);
+                register.setBackground(NORMAL);
                 logout.setBackground(NORMAL);
             }
         });
@@ -351,6 +369,7 @@ class Sidebar extends JPanel {
                 loanpay.setBackground(NORMAL);
                 payhistory.setBackground(ACTIVE);
                 report.setBackground(NORMAL);
+                register.setBackground(NORMAL);
                 logout.setBackground(NORMAL);
             }
         });
@@ -377,10 +396,38 @@ class Sidebar extends JPanel {
                 loanpay.setBackground(NORMAL);
                 payhistory.setBackground(NORMAL);
                 report.setBackground(ACTIVE);
+                register.setBackground(NORMAL);
                 logout.setBackground(NORMAL);
             }
         });
-        
+        register.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                if (selected != register) {
+                    register.setBackground(ACTIVE);
+                }
+            }
+            
+            public void mouseExited(MouseEvent e) {
+                if (selected != register) {
+                    register.setBackground(NORMAL);
+                }
+            }
+            
+            public void mousePressed(MouseEvent cl) {
+                selected = register;
+
+                home.setBackground(NORMAL);
+                createloan.setBackground(NORMAL);
+                viewloans.setBackground(NORMAL);
+                createClient.setBackground(NORMAL);
+                clientList.setBackground(NORMAL);
+                loanpay.setBackground(NORMAL);
+                payhistory.setBackground(NORMAL);
+                report.setBackground(NORMAL);
+                register.setBackground(ACTIVE);
+                logout.setBackground(NORMAL);
+            }
+        });
         logout.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent c) {
                 if (selected != logout) {
@@ -403,6 +450,7 @@ class Sidebar extends JPanel {
                 loanpay.setBackground(NORMAL);
                 payhistory.setBackground(NORMAL);
                 report.setBackground(NORMAL);
+                register.setBackground(NORMAL);
                 logout.setBackground(ACTIVE);
             }
         });
