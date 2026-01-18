@@ -110,17 +110,13 @@ class LoginScreen extends JFrame{
         
         String query = "SELECT username, password, role FROM Employee WHERE username = ? AND password = ? AND is_Active = 1";
         
-        System.out.println(usernameToCheck);
-        System.out.println(passwordToCheck);
+        //System.out.println(usernameToCheck);
+        //System.out.println(passwordToCheck);
 
         try {
             Connection conn = DatabaseConnection.getConnection();
-            System.out.println(conn);
-
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(query);
-            System.out.println(ps.toString());
+            PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, usernameToCheck);
-            System.out.println(ps);
             ps.setString(2, passwordToCheck);
             System.out.println(ps);
             ResultSet rs = ps.executeQuery();

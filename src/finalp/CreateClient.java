@@ -3,6 +3,14 @@ package finalp;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.stream.Stream;
+import java.sql.Connection;
 
 class CreateClient extends JPanel{
     CardLayout card;
@@ -27,7 +35,7 @@ class CreateClient extends JPanel{
         setBounds(280, 0, 1090, 800);
         setBackground(new Color(0xFFFFFF));
 
-        JLabel header = new JLabel("Create New Loan");
+        JLabel header = new JLabel("Create Client Record");
         header.setFont(new Font("Arial", Font.BOLD, 25));
         header.setBounds(20, 25, 400, 40);
         add(header);
@@ -167,8 +175,6 @@ class CreateClient extends JPanel{
         brgy.setBounds(740, 122, 150, 30);
         p.add(brgy);
 
-        
-        
         // ===== CITY =====
         JLabel lblCity = new JLabel("City");
         lblCity.setBounds(60, 174, 100, 30);
@@ -295,7 +301,7 @@ class CreateClient extends JPanel{
         
         
 
-        // ===== NEXT BUTTON =====
+        // ===== 1ST NEXT BUTTON =====
         JButton next = new JButton("Next");
         next.setBounds(840, 350, 100, 35);
         next.setBackground(NORMAL);
@@ -303,7 +309,27 @@ class CreateClient extends JPanel{
 
         next.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent z) {
-                card.show(container, "step2");
+                boolean isFNNull = CheckIfNull.isTextFieldNull(fn);
+                boolean isMNNull = CheckIfNull.isTextFieldNull(mn);
+                boolean isLNNull = CheckIfNull.isTextFieldNull(ln);
+                boolean isDOBNull = CheckIfNull.isTextFieldNull(dob);
+                boolean isEmailNull = CheckIfNull.isTextFieldNull(email);
+                boolean isContactNull = CheckIfNull.isTextFieldNull(contact);
+                boolean isStreetNull = CheckIfNull.isTextFieldNull(street);
+                boolean isBrgyNull = CheckIfNull.isTextFieldNull(brgy);
+                boolean isProvinceNull = CheckIfNull.isTextFieldNull(province);
+                boolean isValidIDNumberNull = CheckIfNull.isTextFieldNull(validIdNo);
+
+                if (Stream.of(isFNNull, isMNNull, isLNNull, isDOBNull, isEmailNull, isContactNull, isStreetNull, isBrgyNull, isProvinceNull, isValidIDNumberNull).allMatch(b -> b == true) && (male.isSelected() || female.isSelected())) {
+                    card.show(container, "step2");
+                } else {
+                    JOptionPane.showMessageDialog(
+                    CreateClient.this,
+                    "There is an empty field. Make sure there are no empty fields",
+                    "Error",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+                }
             }
         });
         
@@ -440,12 +466,7 @@ class CreateClient extends JPanel{
         
         create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(
-                    CreateClient.this,
-                    "Created Successfully",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE
-                );
+                saveClientRecord();
             }
         });
         
@@ -500,5 +521,113 @@ class CreateClient extends JPanel{
             "Monthly Income: " + income.getSelectedItem().toString()+"\n"+
             "Valid ID: " + validId.getSelectedItem().toString()+"\n"+
             "Valid ID No.: " + validIdNo.getText();
+    }
+
+    public void saveClientRecord() {
+        String firstNameLine = fn.getText();
+        String middleNameLine = mn.getText();
+        String lastNameLine = ln.getText();
+        //sex part
+        
+        String emailLine = email.getText();
+        String contactNoLine = contact.getText();
+        String streetLine = street.getText();
+        String brgyLine = brgy.getText();
+        String cityLine = city.getText();
+        String provinceLine = province.getText();
+        String civilStatusLine = civil.getSelectedItem().toString();
+        String employmentStatusLine = empStatus.getSelectedItem().toString();
+        String employerNameLine = employer.getText();
+        String incomeLine = income.getSelectedItem().toString();
+        String validIDLine = validId.getSelectedItem().toString();
+        String validIDNumberLine = validIdNo.getText();
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        String query = """
+            INSERT INTO Client (first_name, middle_name, last_name, date_of_birth, email, phone_number, address_line, barangay, city, province, 
+                civil_status, employment_status, employer_name, monthly_income, valid_id_type, valid_ID_number, date_registered) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+
+        try {
+            String dateofBirthLine = dob.getText();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.parse(dateofBirthLine, formatter);
+
+            Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, firstNameLine);
+            ps.setString(2, middleNameLine);
+            ps.setString(3, lastNameLine);
+            ps.setObject(4, localDate);
+            ps.setString(5, emailLine);
+            ps.setString(6, contactNoLine);
+            ps.setString(7, streetLine);
+            ps.setString(8, brgyLine);
+            ps.setString(9, cityLine);
+            ps.setString(10, provinceLine);
+            ps.setString(11, civilStatusLine);
+            ps.setString(12, employmentStatusLine);
+            ps.setString(13, employerNameLine);
+            ps.setString(14, incomeLine);
+            ps.setString(15, validIDLine);
+            ps.setString(16, validIDNumberLine);
+            ps.setObject(17, timestamp);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(
+                    CreateClient.this,
+                    "Created Successfully",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+            ps.close();
+            conn.close();
+            card.show(container, "step1");
+            fn.setText("");
+            mn.setText("");
+            ln.setText("");
+            //sex part
+            dob.setText("");
+            email.setText("");
+            contact.setText("");
+            street.setText("");
+            brgy.setText("");
+            city.setText("");
+            province.setText("");
+            civil.setSelectedIndex(0);
+            empStatus.setSelectedIndex(0);
+            employer.setText("");
+            income.setSelectedIndex(0);
+            validId.setSelectedIndex(0);
+            validIdNo.setText("");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, 
+            "Database Error: Could not save client.\n" + e.getMessage(), 
+            "Database Error", 
+        JOptionPane.ERROR_MESSAGE);
+        } catch (DateTimeParseException d) {
+            JOptionPane.showMessageDialog(null, 
+            "The date you entered is invalid. Please use the format: YYYY-MM-DD", 
+            "Input Error", 
+            JOptionPane.WARNING_MESSAGE);
+        }
+
+    }
+}
+
+class CheckIfNull {
+    public static boolean isTextFieldNull(JTextField component) {
+        boolean isTextFieldNull;
+
+        String sample = component.getText();
+        
+        if (sample.trim().isEmpty()) {
+            return isTextFieldNull = false;
+        } else {
+            return isTextFieldNull = true;
+        }
     }
 }
