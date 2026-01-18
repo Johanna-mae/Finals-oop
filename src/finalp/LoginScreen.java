@@ -2,6 +2,7 @@ package finalp;
 
 import java.awt.*;
 import javax.swing.*;
+import org.mindrot.jbcrypt.BCrypt;
 import java.awt.event.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -104,30 +105,70 @@ class LoginScreen extends JFrame{
         return panel;
     }
 
-    public boolean checkCredentials(){    
-        String usernameToCheck = usernameField.getText().trim();
-        String passwordToCheck = new String(passwordField.getPassword()).trim();
-        
-        String query = "SELECT username, password, role FROM Employee WHERE username = ? AND password = ? AND is_Active = 1";
-        
-        //System.out.println(usernameToCheck);
-        //System.out.println(passwordToCheck);
+public boolean checkCredentials(){    
+    String usernameToCheck = usernameField.getText().trim();
+    String passwordToCheck = new String(passwordField.getPassword()).trim();
+    
+    String query = "SELECT username, password_hash, role FROM Employee WHERE username = ? AND is_Active = 1";
+    
+    System.out.println(usernameToCheck);
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(query);
-            ps.setString(1, usernameToCheck);
-            ps.setString(2, passwordToCheck);
-            System.out.println(ps);
-            ResultSet rs = ps.executeQuery();
-            boolean isAuthorized = rs.next();
+    try {
+        Connection conn = DatabaseConnection.getConnection();
+        System.out.println(conn);
+
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setString(1, usernameToCheck);
+        
+        ResultSet rs = ps.executeQuery();
+        
+        if (rs.next()) {
+            String storedPassword = rs.getString("password_hash");
+            boolean passwordMatch = false;
+            
+            // Check if password is BCrypt hashed (starts with $2a$, $2b$, or $2y$)
+            if (storedPassword != null && storedPassword.startsWith("$2")) {
+                // New BCrypt hashed password - verify with BCrypt
+                passwordMatch = BCrypt.checkpw(passwordToCheck, storedPassword);
+          
+                // If password matches, upgrade it to BCrypt hash
+                if (passwordMatch) {
+                    String hashedPassword = BCrypt.hashpw(passwordToCheck, BCrypt.gensalt(10));
+                    updatePasswordInDatabase(usernameToCheck, hashedPassword);
+                    System.out.println("Password upgraded to BCrypt hash for user: " + usernameToCheck);
+                }
+            }
+            
             rs.close();
             ps.close();
-            System.out.println(isAuthorized);
-            return isAuthorized;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }       
-    }
+            
+            System.out.println("Password match: " + passwordMatch);
+            return passwordMatch;
+        }
+        
+        rs.close();
+        ps.close();
+        return false;
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }   
 }
+
+// Add this method to update passwords in the database
+private void updatePasswordInDatabase(String username, String hashedPassword) {
+    String updateQuery = "UPDATE Employee SET password_hash = ? WHERE username = ?";
+    
+    try {
+        Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(updateQuery);
+        ps.setString(1, hashedPassword);
+        ps.setString(2, username);
+        ps.executeUpdate();
+        ps.close();
+    } catch (SQLException e) {
+        System.err.println("Failed to update password for user: " + username);
+        e.printStackTrace();
+    }
+}}
