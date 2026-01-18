@@ -13,4 +13,5 @@ class Frame extends JFrame {
         setIconImage(image.getImage());
         getContentPane().setBackground(new Color(0xFFFFFF));
     }
+
 }

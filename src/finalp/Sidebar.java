@@ -8,6 +8,7 @@ class Sidebar extends JPanel {
     public JButton home;
     public JButton createloan;
     public JButton viewloans;
+    public jButton loanApplications;
     public JButton createClient;
     public JButton clientList;
     public JButton loanpay;
@@ -30,7 +31,7 @@ class Sidebar extends JPanel {
         // ===== CONTENT PANEL =====
         JPanel content = new JPanel(null);
         content.setBackground(NORMAL);
-        content.setPreferredSize(new Dimension(260, 980)); // important for scroll
+        content.setPreferredSize(new Dimension(260, 1030)); // important for scroll
         
         // ===== SCROLL PANE =====
         JScrollPane scroll = new JScrollPane(content);
@@ -85,6 +86,16 @@ class Sidebar extends JPanel {
         viewloans.setHorizontalTextPosition(SwingConstants.RIGHT);
         viewloans.setIconTextGap(5);
         content.add(viewloans);
+        y += 50;
+        
+        ImageIcon loanapply = new ImageIcon(Finalp.class.getResource("/finalp/images/loanapply.png"));
+        loanApplications = new JButton("Loan Application");
+        loanApplications.setBounds(20, y, 235, 40);
+        loanApplications.setIcon(loanapply);
+        loanApplications.setBackground(NORMAL);
+        loanApplications.setHorizontalTextPosition(SwingConstants.RIGHT);
+        loanApplications.setIconTextGap(5);
+        content.add(loanApplications);
         y += 70;
 
         // ===== CLIENTS =====
@@ -94,9 +105,13 @@ class Sidebar extends JPanel {
         content.add(clients);
         y += 30;
 
+        ImageIcon createclient = new ImageIcon(Finalp.class.getResource("/finalp/images/createclient.png"));
         createClient = new JButton("Create Client");
         createClient.setBounds(20, y, 235, 40);
+        createClient.setIcon(createclient);
         createClient.setBackground(NORMAL);
+        createClient.setHorizontalTextPosition(SwingConstants.RIGHT);
+        createClient.setIconTextGap(5);
         content.add(createClient);
         y += 50;
         
@@ -144,10 +159,10 @@ class Sidebar extends JPanel {
         content.add(reports);
         y += 30;
 
-        ImageIcon reportsIcon = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
+        ImageIcon rep = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
         report = new JButton("Reports");
         report.setBounds(20, y, 235, 40);
-        report.setIcon(reportsIcon);
+        report.setIcon(rep);
         report.setBackground(NORMAL);
         report.setHorizontalTextPosition(SwingConstants.RIGHT);
         report.setIconTextGap(5);
@@ -200,6 +215,7 @@ class Sidebar extends JPanel {
                 home.setBackground(ACTIVE);
                 createloan.setBackground(NORMAL);
                 viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(NORMAL);
                 createClient.setBackground(NORMAL);
                 clientList.setBackground(NORMAL);
                 loanpay.setBackground(NORMAL);
@@ -228,6 +244,7 @@ class Sidebar extends JPanel {
                 home.setBackground(NORMAL);
                 createloan.setBackground(ACTIVE);
                 viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(NORMAL);
                 createClient.setBackground(NORMAL);
                 clientList.setBackground(NORMAL);
                 loanpay.setBackground(NORMAL);
@@ -255,6 +272,34 @@ class Sidebar extends JPanel {
                 home.setBackground(NORMAL);
                 createloan.setBackground(NORMAL);
                 viewloans.setBackground(ACTIVE);
+                loanApplications.setBackground(NORMAL);
+                createClient.setBackground(NORMAL);
+                clientList.setBackground(NORMAL);
+                loanpay.setBackground(NORMAL);
+                payhistory.setBackground(NORMAL);
+                report.setBackground(NORMAL);
+                logout.setBackground(NORMAL);
+            }
+        });
+        
+        loanApplications.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent c) {
+                if (selected != loanApplications) {
+                    loanApplications.setBackground(ACTIVE);
+                }
+            }
+            public void mouseExited(MouseEvent e) {
+                if (selected != loanApplications) {
+                    loanApplications.setBackground(NORMAL);
+                }
+            }
+            public void mousePressed(MouseEvent cl) {
+                selected = loanApplications;
+
+                home.setBackground(NORMAL);
+                createloan.setBackground(NORMAL);
+                viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(ACTIVE);
                 createClient.setBackground(NORMAL);
                 clientList.setBackground(NORMAL);
                 loanpay.setBackground(NORMAL);
@@ -282,6 +327,7 @@ class Sidebar extends JPanel {
                 home.setBackground(NORMAL);
                 createloan.setBackground(NORMAL);
                 viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(NORMAL);
                 createClient.setBackground(ACTIVE);
                 clientList.setBackground(NORMAL);
                 loanpay.setBackground(NORMAL);
@@ -309,6 +355,7 @@ class Sidebar extends JPanel {
                 home.setBackground(NORMAL);
                 createloan.setBackground(NORMAL);
                 viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(NORMAL);
                 createClient.setBackground(NORMAL);
                 clientList.setBackground(ACTIVE);
                 loanpay.setBackground(NORMAL);
@@ -337,6 +384,7 @@ class Sidebar extends JPanel {
                 home.setBackground(NORMAL);
                 createloan.setBackground(NORMAL);
                 viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(NORMAL);
                 createClient.setBackground(NORMAL);
                 clientList.setBackground(NORMAL);
                 loanpay.setBackground(ACTIVE);
@@ -364,6 +412,7 @@ class Sidebar extends JPanel {
                 home.setBackground(NORMAL);
                 createloan.setBackground(NORMAL);
                 viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(NORMAL);
                 createClient.setBackground(NORMAL);
                 clientList.setBackground(NORMAL);
                 loanpay.setBackground(NORMAL);
@@ -391,6 +440,7 @@ class Sidebar extends JPanel {
                 home.setBackground(NORMAL);
                 createloan.setBackground(NORMAL);
                 viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(NORMAL);
                 createClient.setBackground(NORMAL);
                 clientList.setBackground(NORMAL);
                 loanpay.setBackground(NORMAL);
@@ -445,6 +495,7 @@ class Sidebar extends JPanel {
                 home.setBackground(NORMAL);
                 createloan.setBackground(NORMAL);
                 viewloans.setBackground(NORMAL);
+                loanApplications.setBackground(NORMAL);
                 createClient.setBackground(NORMAL);
                 clientList.setBackground(NORMAL);
                 loanpay.setBackground(NORMAL);
@@ -454,6 +505,6 @@ class Sidebar extends JPanel {
                 logout.setBackground(ACTIVE);
             }
         });
-
     }
+    
 }

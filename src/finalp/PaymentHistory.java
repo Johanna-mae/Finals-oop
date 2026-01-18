@@ -19,13 +19,13 @@ class PaymentHistory extends JPanel{
         header.setBounds(20, 25, 400, 40);
         add(header);
         
-        JLabel subtitle = new JLabel("View all recorded payments");
-        subtitle.setBounds(23, 55, 400, 20);
-        add(subtitle);
+        JLabel sub = new JLabel("View all recorded payments");
+        sub.setBounds(23, 55, 400, 20);
+        add(sub);
 
-        JSeparator separator = new JSeparator();
-        separator.setBounds(23, 80, 1040, 2);
-        add(separator);
+        JSeparator sep = new JSeparator();
+        sep.setBounds(23, 80, 1040, 2);
+        add(sep);
 
         // table
         card = new CardLayout();
