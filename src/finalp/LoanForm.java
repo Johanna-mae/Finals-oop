@@ -7,6 +7,7 @@ import java.io.File;
 import java.sql.*;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 class LoanForm extends JPanel {
@@ -17,9 +18,17 @@ class LoanForm extends JPanel {
     JButton selected = null;
     int applicationCounter = 1000; // start ng numbering sa id
     
-    LoanApplication loanapplication;
+    PendingLoanApplication loanapplication;
 
-    public LoanForm(LoanApplication loanapplication) {
+    JTextArea taPurpose;
+    JComboBox<String> cbStatus;
+    JFormattedTextField tfAmount;
+    JTextField tfEstimate;
+    JComboBox<LoanTypeItem> cbLoanType;
+    JComboBox<String> cbDocType1, cbDocType2;
+    DefaultListModel<File> fileModel;
+
+    public LoanForm(PendingLoanApplication loanapplication) {
         this.loanapplication = loanapplication;
         
         setLayout(null);
@@ -42,7 +51,7 @@ class LoanForm extends JPanel {
         JPanel box = new JPanel();
         box.setLayout(null);
         box.setBackground(NORMAL);
-        box.setBounds(170, 110, 750, 430);
+        box.setBounds(20, 110, 750, 600);
         add(box);
 
         // CLIENT
@@ -51,10 +60,9 @@ class LoanForm extends JPanel {
         clientName.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(clientName);
 
-        JComboBox<String> cbClient = new JComboBox<>(
-            new String[100]
-        );
+        JComboBox<ClientItem> cbClient = new JComboBox<>();
         retrieveClientList(cbClient);
+        cbClient.setSelectedIndex(-1);
         cbClient.setBounds(180, 20, 550, 30);
         box.add(cbClient);
 
@@ -64,10 +72,9 @@ class LoanForm extends JPanel {
         loanType.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(loanType);
 
-        JComboBox<String> cbLoanType = new JComboBox<>(
-            new String[10]
-        );
+        cbLoanType = new JComboBox<>();
         retrieveLoanTypesList(cbLoanType);
+        cbLoanType.setSelectedIndex(-1);
         cbLoanType.setBounds(180, 70, 550, 30);
         box.add(cbLoanType);
 
@@ -78,7 +85,7 @@ class LoanForm extends JPanel {
         box.add(requestedAmount);
 
         NumberFormat format = NumberFormat.getIntegerInstance();
-        JFormattedTextField tfAmount = new JFormattedTextField(format);
+        tfAmount = new JFormattedTextField(format);
         tfAmount.setColumns(10);
         tfAmount.setBounds(180, 120, 350, 30);
         box.add(tfAmount);
@@ -89,7 +96,7 @@ class LoanForm extends JPanel {
         estimatedPerTerm.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(estimatedPerTerm);
 
-        JTextField tfEstimate = new JTextField();
+        tfEstimate = new JTextField();
         tfEstimate.setBounds(630, 120, 100, 30);
         tfEstimate.setEditable(false);
         box.add(tfEstimate);
@@ -105,6 +112,7 @@ class LoanForm extends JPanel {
         );
         //retrieveMinMaxTerms(retrieveLoanTypesList(cbLoanType), cbTerm);
         cbTerm.setBounds(180, 170, 550, 30);
+        cbTerm.setSelectedIndex(-1);
         box.add(cbTerm);
 
         if (cbLoanType.getSelectedItem() != null) {
@@ -117,7 +125,7 @@ class LoanForm extends JPanel {
         Purpose.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(Purpose);
 
-        JTextArea taPurpose = new JTextArea();
+        taPurpose = new JTextArea();
         taPurpose.setLineWrap(true);
         JScrollPane spPurpose = new JScrollPane(taPurpose);
         spPurpose.setBounds(180, 220, 550, 60);
@@ -129,9 +137,32 @@ class LoanForm extends JPanel {
         Status.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(Status);
 
-        JComboBox<String> cbStatus = new JComboBox<>(new String[]{"Pending"});
+        cbStatus = new JComboBox<>(new String[]{"For Approval"});
         cbStatus.setBounds(180, 300, 550, 30);
+        cbStatus.setSelectedIndex(-1);
         box.add(cbStatus);
+        
+        // DOCUMENT TYPES 1 & 2
+        JLabel docType1 = new JLabel("1st Document Type");
+        docType1.setBounds(20, 420, 150, 30);
+        docType1.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(docType1);
+
+        cbDocType1 = new JComboBox<>(new String[]{"Valid ID","Proof of Income","ITR","Proof of Billing","Employment Certificate","Business Permit","Collateral Documents"});
+        cbDocType1.setBounds(180, 420, 550, 30);
+        cbDocType1.setSelectedIndex(-1);
+        box.add(cbDocType1);
+
+        JLabel docType2 = new JLabel("2nd Document Type");
+        docType2.setBounds(20, 470, 150, 30);
+        docType2.setFont(new Font("Arial", Font.BOLD, 14));
+        box.add(docType2);
+
+        cbDocType2 = new JComboBox<>(new String[]{"Valid ID","Proof of Income","ITR","Proof of Billing","Employment Certificate","Business Permit","Collateral Documents"});
+        cbDocType2.setBounds(180, 470, 550, 30);
+        cbDocType2.setSelectedIndex(-1);
+        cbDocType2.setEnabled(false);
+        box.add(cbDocType2);
 
         // DOCUMENTS
         JLabel documents = new JLabel("Documents (Max 2)");
@@ -139,7 +170,7 @@ class LoanForm extends JPanel {
         documents.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(documents);
 
-        DefaultListModel<File> fileModel = new DefaultListModel<>();
+        fileModel = new DefaultListModel<>();
         JList<File> fileList = new JList<>(fileModel);
         JScrollPane fileScroll = new JScrollPane(fileList);
         fileScroll.setBounds(180, 350, 350, 60);
@@ -180,6 +211,10 @@ class LoanForm extends JPanel {
                         fileModel.addElement(f);
                     }
                 }
+
+                if (fileModel.size() > 1) {
+                    cbDocType2.setEnabled(true);
+                 }
             }
         });
 
@@ -189,6 +224,9 @@ class LoanForm extends JPanel {
 
             if (index != -1) {
                 fileModel.remove(index);
+                    if (fileModel.size() < 2) {
+                    cbDocType2.setEnabled(false);
+                }
             } else {
                 JOptionPane.showMessageDialog(
                     this,
@@ -263,31 +301,17 @@ class LoanForm extends JPanel {
 
         // BUTTONS
         JButton cancel = new JButton("Cancel");
-        cancel.setBounds(555, 550, 120, 40);
+        cancel.setBounds(400, 730, 120, 40);
         cancel.setBackground(NORMAL);
         add(cancel);
 
         JButton createLoanApplication = new JButton("Create Loan Application");
-        createLoanApplication.setBounds(690, 550, 230, 40);
+        createLoanApplication.setBounds(540, 730, 230, 40);
         createLoanApplication.setBackground(NORMAL);
         add(createLoanApplication);
 
         createLoanApplication.addActionListener(e -> {
-            applicationCounter++;
-            
-            loanapplication.setApplicationData(
-                cbClient.getSelectedItem().toString(),
-                cbLoanType.getSelectedItem().toString(),
-                tfAmount.getText(),
-                tfEstimate.getText(),
-                cbTerm.getSelectedItem().toString(),
-                taPurpose.getText(),
-                "APP-" + applicationCounter,
-                LocalDate.now().toString()
-            );
-
-            //setVisible(false);
-            
+            createLoanApplication(cbClient, cbTerm);
         });
         
         //functions ng button mouselistener
@@ -333,9 +357,12 @@ class LoanForm extends JPanel {
             @Override
             public void itemStateChanged(ItemEvent i) {
                 if (i.getStateChange() == ItemEvent.SELECTED) {
-                    String selectedLoanType = (String) cbLoanType.getSelectedItem();
-                    if (selectedLoanType != null && !selectedLoanType.isEmpty()) {
-                        retrieveMinMaxTerms(selectedLoanType, cbTerm);
+                    LoanTypeItem selectedLoanType = (LoanTypeItem) cbLoanType.getSelectedItem();
+                    if (selectedLoanType != null) {
+                        String typeName = selectedLoanType.getLoanTypeName();
+                        retrieveMinMaxTerms(typeName, cbTerm);
+
+                        computeEstimate.actionPerformed(null);
                     }
                 }
             }
@@ -343,7 +370,7 @@ class LoanForm extends JPanel {
     
     }
 
-    public void retrieveClientList(JComboBox<String> cbClient) {
+    public void retrieveClientList(JComboBox<ClientItem> cbClient) {
         String query = """
             SELECT client_id, 
             CONCAT(last_name, ', ', first_name, ' ', LEFT(middle_name, 1), '.') AS full_name
@@ -358,8 +385,9 @@ class LoanForm extends JPanel {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
+                int clientID = rs.getInt("client_id");
                 String full_name = rs.getString("full_name");
-                cbClient.addItem(full_name);
+                cbClient.addItem(new ClientItem(clientID, full_name));
             }
 
             rs.close();
@@ -370,7 +398,8 @@ class LoanForm extends JPanel {
         }
     }
 
-    public void retrieveLoanTypesList(JComboBox<String> cbLoanTypes) {
+    public void retrieveLoanTypesList(JComboBox<LoanTypeItem> cbLoanTypes) {
+        int loan_type_id;
         String loan_type = "";
         String query = """
             SELECT loan_type_id, type_name FROM Loan_Type
@@ -383,8 +412,9 @@ class LoanForm extends JPanel {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
+                loan_type_id = rs.getInt("loan_type_id");
                 loan_type = rs.getString("type_name");
-                cbLoanTypes.addItem(loan_type);
+                cbLoanTypes.addItem(new LoanTypeItem(loan_type_id, loan_type));
             }
             rs.close();
             ps.close();
@@ -463,6 +493,130 @@ class LoanForm extends JPanel {
         }
         
         return interestRate;
+    }
+
+    public void createLoanApplication(JComboBox<ClientItem> cbClient, JComboBox<String> cbTerm) {
+        boolean isRequestedAmountNotNull = CheckIfNull.isFormattedTextFieldNotNull(tfAmount);
+        ClientItem selected = (ClientItem) cbClient.getSelectedItem();
+        LoanTypeItem selectedLoanType = (LoanTypeItem) cbLoanType.getSelectedItem();
+        int requestedAmount = 0;
+        int selectedClient = 0;
+        int loanTypeID = 0;
+
+
+        if (selected == null) {
+            JOptionPane.showMessageDialog(this, "Please select a client.");
+            return;
+        }
+        
+        if (selectedLoanType == null) {
+            JOptionPane.showMessageDialog(this, "Please select a loan type.");
+            return;
+        }
+
+        if (!isRequestedAmountNotNull) {
+            JOptionPane.showMessageDialog(this, "Please enter requested amount.");
+            return;
+        }
+
+        if (isRequestedAmountNotNull) {
+            Object value = tfAmount.getValue();
+            requestedAmount = ((Number) value).intValue();            
+            selectedClient = selected.getClientID();
+        } else {
+            JOptionPane.showMessageDialog(
+                LoanForm.this, 
+                "Error: Value is null", 
+                "Error", 
+                JOptionPane.INFORMATION_MESSAGE );
+            return;
+        }
+
+        if (cbDocType1.getSelectedItem() == null){
+            JOptionPane.showMessageDialog(
+                LoanForm.this, 
+                "Error: Document type is null", 
+                "Error", 
+                JOptionPane.INFORMATION_MESSAGE );
+            return;
+        }
+
+        if (cbDocType2.getSelectedItem() == null && fileModel.size() == 2){
+            JOptionPane.showMessageDialog(
+                LoanForm.this, 
+                "Error: Document type is null", 
+                "Error", 
+                JOptionPane.INFORMATION_MESSAGE );
+            return;
+        }
+
+        String termString = cbTerm.getSelectedItem().toString();
+        int requestedTermMonths = Integer.parseInt(termString.split(" ")[0]);
+        String purpose = taPurpose.getText();
+        LocalDateTime timestamp = LocalDateTime.now();
+        String status = cbStatus.getSelectedItem().toString();
+        LoanTypeItem selectedLoanTypeItem = (LoanTypeItem) cbLoanType.getSelectedItem();
+        loanTypeID = selectedLoanTypeItem.getloanTypeID();
+
+        String loanAppRefNo = ReferenceNumberGenerator.generateLoanApplicationRefNo(5, loanTypeID);
+
+        String query = """
+            INSERT INTO Loan_Application (requested_amount, requested_term_months, purpose, application_date, status, client_id, loan_type_id, loan_application_reference_number) VALUES 
+                (?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+        int generatedID = -1;
+
+        try{
+            Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, requestedAmount);
+            ps.setInt(2, requestedTermMonths);
+            ps.setString(3, purpose); System.out.println("purpose is " + purpose);
+            ps.setObject(4, timestamp);
+            ps.setObject(5, status); System.out.println("the status is " + status);
+            ps.setObject(6, selectedClient); System.out.println("the selected client is" + selectedClient);
+            ps.setInt(7, loanTypeID); System.out.println("the loan type id is " + loanTypeID);
+            ps.setString(8, loanAppRefNo);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(
+                LoanForm.this,
+                "Loan Application Created Successfully",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                generatedID = rs.getInt(1);
+            }
+
+            System.out.println("generatedID" + generatedID);
+
+            if (generatedID !=-1 && !fileModel.isEmpty()){
+                FileUpload upload = new FileUpload();
+                upload.uploadDocument(generatedID, fileModel, cbDocType1, cbDocType2);
+                JOptionPane.showMessageDialog(this, "Application and Documents Saved!");
+            }
+
+            cbClient.setSelectedIndex(-1);
+            cbLoanType.setSelectedIndex(-1);
+            tfAmount.setText("");
+            tfAmount.setText("");
+            tfEstimate.setText("");
+            cbTerm.setSelectedIndex(-1);
+            taPurpose.setText("");
+            cbStatus.setSelectedIndex(-1);
+            fileModel.clear();
+            cbDocType1.setSelectedIndex(-1);
+            cbDocType2.setSelectedIndex(-1);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
     }
     
 }

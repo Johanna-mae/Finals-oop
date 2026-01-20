@@ -309,16 +309,16 @@ class CreateClient extends JPanel{
 
         next.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent z) {
-                boolean isFNNull = CheckIfNull.isTextFieldNull(fn);
-                boolean isMNNull = CheckIfNull.isTextFieldNull(mn);
-                boolean isLNNull = CheckIfNull.isTextFieldNull(ln);
-                boolean isDOBNull = CheckIfNull.isTextFieldNull(dob);
-                boolean isEmailNull = CheckIfNull.isTextFieldNull(email);
-                boolean isContactNull = CheckIfNull.isTextFieldNull(contact);
-                boolean isStreetNull = CheckIfNull.isTextFieldNull(street);
-                boolean isBrgyNull = CheckIfNull.isTextFieldNull(brgy);
-                boolean isProvinceNull = CheckIfNull.isTextFieldNull(province);
-                boolean isValidIDNumberNull = CheckIfNull.isTextFieldNull(validIdNo);
+                boolean isFNNull = CheckIfNull.isTextFieldNotNull(fn);
+                boolean isMNNull = CheckIfNull.isTextFieldNotNull(mn);
+                boolean isLNNull = CheckIfNull.isTextFieldNotNull(ln);
+                boolean isDOBNull = CheckIfNull.isTextFieldNotNull(dob);
+                boolean isEmailNull = CheckIfNull.isTextFieldNotNull(email);
+                boolean isContactNull = CheckIfNull.isTextFieldNotNull(contact);
+                boolean isStreetNull = CheckIfNull.isTextFieldNotNull(street);
+                boolean isBrgyNull = CheckIfNull.isTextFieldNotNull(brgy);
+                boolean isProvinceNull = CheckIfNull.isTextFieldNotNull(province);
+                boolean isValidIDNumberNull = CheckIfNull.isTextFieldNotNull(validIdNo);
 
                 if (Stream.of(isFNNull, isMNNull, isLNNull, isDOBNull, isEmailNull, isContactNull, isStreetNull, isBrgyNull, isProvinceNull, isValidIDNumberNull).allMatch(b -> b == true) && (male.isSelected() || female.isSelected())) {
                     card.show(container, "step2");
@@ -543,10 +543,12 @@ class CreateClient extends JPanel{
         String validIDNumberLine = validIdNo.getText();
         LocalDateTime timestamp = LocalDateTime.now();
 
+        String clientRefNo = ReferenceNumberGenerator.generateClientRefNo(5);
+
         String query = """
             INSERT INTO Client (first_name, middle_name, last_name, date_of_birth, email, phone_number, address_line, barangay, city, province, 
-                civil_status, employment_status, employer_name, monthly_income, valid_id_type, valid_ID_number, date_registered) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                civil_status, employment_status, employer_name, monthly_income, valid_id_type, valid_ID_number, date_registered, client_reference_number) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try {
@@ -573,6 +575,7 @@ class CreateClient extends JPanel{
             ps.setString(15, validIDLine);
             ps.setString(16, validIDNumberLine);
             ps.setObject(17, timestamp);
+            ps.setString(18, clientRefNo);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                     JOptionPane.showMessageDialog(
@@ -619,7 +622,7 @@ class CreateClient extends JPanel{
 }
 
 class CheckIfNull {
-    public static boolean isTextFieldNull(JTextField component) {
+    public static boolean isTextFieldNotNull(JTextField component) {
         boolean isTextFieldNull;
 
         String sample = component.getText();
@@ -628,6 +631,18 @@ class CheckIfNull {
             return isTextFieldNull = false;
         } else {
             return isTextFieldNull = true;
+        }
+    }
+
+    public static boolean isFormattedTextFieldNotNull(JFormattedTextField component) {
+        boolean isFormattedTextFieldNull;
+
+        String sample = component.getText().toString();
+
+        if (sample.trim().isEmpty()) {
+            return isFormattedTextFieldNull = false;
+        } else {
+            return isFormattedTextFieldNull = true;
         }
     }
 }

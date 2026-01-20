@@ -8,7 +8,7 @@ class Sidebar extends JPanel {
     public JButton home;
     public JButton createloan;
     public JButton viewloans;
-    public jButton loanApplications;
+    public JButton loanApplications;
     public JButton createClient;
     public JButton clientList;
     public JButton loanpay;
@@ -16,11 +16,14 @@ class Sidebar extends JPanel {
     public JButton report;
     public JButton logout;
     public JButton register;
+
+    //String employeeRole = "";
     
     Color NORMAL = new Color(0xAAC3DD);
     Color ACTIVE = new Color(0x8AA1B9);
 
     JButton selected = null;
+    
 
     public Sidebar() {
         setLayout(null);
@@ -69,7 +72,7 @@ class Sidebar extends JPanel {
         y += 30;
 
         ImageIcon create = new ImageIcon(Finalp.class.getResource("/finalp/images/create.png"));
-        createloan = new JButton("Create New Loan");
+        createloan = new JButton("Create Loan Application");
         createloan.setBounds(20, y, 235, 40);
         createloan.setIcon(create);
         createloan.setBackground(NORMAL);
@@ -79,7 +82,7 @@ class Sidebar extends JPanel {
         y += 50;
 
         ImageIcon view = new ImageIcon(Finalp.class.getResource("/finalp/images/view.png"));
-        viewloans = new JButton("View Loans");
+        viewloans = new JButton("View All Loans");
         viewloans.setBounds(20, y, 235, 40);
         viewloans.setIcon(view);
         viewloans.setBackground(NORMAL);
@@ -89,7 +92,7 @@ class Sidebar extends JPanel {
         y += 50;
         
         ImageIcon loanapply = new ImageIcon(Finalp.class.getResource("/finalp/images/loanapply.png"));
-        loanApplications = new JButton("Loan Application");
+        loanApplications = new JButton("Approve Loan Applications");
         loanApplications.setBounds(20, y, 235, 40);
         loanApplications.setIcon(loanapply);
         loanApplications.setBackground(NORMAL);
@@ -176,16 +179,6 @@ class Sidebar extends JPanel {
         content.add(others);
         y += 30;
 
-        ImageIcon registerIcon = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
-        register = new JButton("Register");
-        register.setBounds(20, y, 235, 40);
-        register.setIcon(registerIcon);
-        register.setBackground(NORMAL);
-        register.setHorizontalTextPosition(SwingConstants.RIGHT);
-        register.setIconTextGap(5);
-        content.add(register);
-        y += 50;
-
         ImageIcon out = new ImageIcon(Finalp.class.getResource("/finalp/images/logout.png"));
         logout = new JButton("Logout");
         logout.setBounds(20, y, 235, 40);
@@ -194,8 +187,18 @@ class Sidebar extends JPanel {
         logout.setHorizontalTextPosition(SwingConstants.RIGHT);
         logout.setIconTextGap(5);
         content.add(logout);
-        y += 70;
+        y += 50;
         setVisible(true);
+
+        ImageIcon registerIcon = new ImageIcon(Finalp.class.getResource("/finalp/images/reports.png"));
+        register = new JButton("Register Employee");
+        register.setBounds(20, y, 235, 40);
+        register.setIcon(registerIcon);
+        register.setBackground(NORMAL);
+        register.setHorizontalTextPosition(SwingConstants.RIGHT);
+        register.setIconTextGap(5);
+        content.add(register);
+        y += 50;
         
         //functions of the buttons mouselistener
         home.addMouseListener(new MouseAdapter() {
@@ -476,7 +479,14 @@ class Sidebar extends JPanel {
                 report.setBackground(NORMAL);
                 register.setBackground(ACTIVE);
                 logout.setBackground(NORMAL);
+
+                /*if (employeeRole == "Admin") {
+                    register.setVisible(true);
+                } else {
+                    register.setVisible(false);
+                }*/
             }
+            
         });
         logout.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent c) {

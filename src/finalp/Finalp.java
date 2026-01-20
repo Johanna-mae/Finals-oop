@@ -11,12 +11,14 @@ public class Finalp {
         Sidebar sidebar = new Sidebar();
         sidebar.setBounds(0, 0, 280, 1000);
         frame.add(sidebar);
+
+        
         
         Home dashboard = new Home();
         dashboard.setVisible(false);
         frame.add(dashboard);
         
-        LoanApplication loanapplication = new LoanApplication();
+        PendingLoanApplication loanapplication = new PendingLoanApplication();
         LoanForm form = new LoanForm(loanapplication);
         form.setVisible(false);
         loanapplication.setVisible(false);
@@ -202,6 +204,9 @@ public class Finalp {
         
         sidebar.logout.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent c){
+                LogoutConfirmation logOutConfirm = new LogoutConfirmation();
+                logOutConfirm.showLogoutConfirmation(frame);
+                /*
                 frame.setVisible(false);
                 
                 LoginScreen loginFrame = new LoginScreen();
@@ -209,7 +214,7 @@ public class Finalp {
                 loginFrame.setMainFrame(frame);
                 loginFrame.setVisible(true);
                 loginFrame.setEnabled(true);
-                loginFrame.setTitle("Employee Login");
+                loginFrame.setTitle("Employee Login");*/
             }
         });
         
