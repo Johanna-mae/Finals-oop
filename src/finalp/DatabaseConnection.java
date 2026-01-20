@@ -9,6 +9,10 @@ import java.util.Properties;
 
 public class DatabaseConnection {
     private static Connection connection = null;
+
+    public static Connection returnConnection(){
+        return connection;
+    }
     
     public static Connection getConnection() {
         if (connection == null) {

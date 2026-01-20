@@ -29,13 +29,13 @@ class Report extends JPanel{
         header.setBounds(20, 25, 400, 40);
         add(header);
         
-        JLabel subtitle = new JLabel("Comprehensive loan and statistics");
-        subtitle.setBounds(23, 55, 400, 20);
-        add(subtitle);
+        JLabel sub = new JLabel("Comprehensive loan and statistics");
+        sub.setBounds(23, 55, 400, 20);
+        add(sub);
 
-        JSeparator separator = new JSeparator();
-        separator.setBounds(23, 80, 1040, 2);
-        add(separator);
+        JSeparator sep = new JSeparator();
+        sep.setBounds(23, 80, 1040, 2);
+        add(sep);
 
         
         JPanel content = new JPanel();
@@ -89,6 +89,9 @@ class Report extends JPanel{
             {"Maria Santos", "₱3,500", "Completed", "2025-02-03"}
         };
         tact = new JTable(data1, col);
+        tact.setRowHeight(30);
+        tact.setEnabled(true);
+        tact.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
 
         // penloan table
         String[] col2 = {"Client's Name", "Amount", "Status", "Date"};
@@ -97,6 +100,9 @@ class Report extends JPanel{
             {"Ana Reyes", "₱800", "Pending", "2025-02-05"}
         };
         tpen = new JTable(data2, col2);
+        tpen.setRowHeight(30);
+        tpen.setEnabled(true);
+        tpen.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
         
         // overdue table
         String[] col3 = {"Client's Name", "Amount", "Status", "Date"};
@@ -105,6 +111,9 @@ class Report extends JPanel{
             {"Ana Katigbak", "₱800", "Overdue", "2025-12-05"}
         };
         tover = new JTable(data3, col3);
+        tover.setRowHeight(30);
+        tover.setEnabled(true);
+        tover.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
 
         tcon.add(new JScrollPane(tact), "active");
         tcon.add(new JScrollPane(tpen), "pending");

@@ -47,6 +47,16 @@
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
+
+    <!-- Test jbcrypt -->
+    <target name="test-bcrypt" depends="compile">
+        <java classname="finalp.TestJBcrypt" fork="true">
+            <classpath>
+                <path refid="classpath"/>
+                <pathelement path="${build.dir}"/>
+            </classpath>
+        </java>
+    </target>
     
     <target name="test" depends="compile">
         <java classname="finalp.TestConnection" fork="true">

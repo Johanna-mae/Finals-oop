@@ -5,8 +5,8 @@ import javax.swing.*;
 import java.awt.event.*;
 
 class Home extends JPanel{
-    JButton recentLoans;
-    JButton recentPayments;
+    JButton recloan;
+    JButton recpay;
 
     JTable tloans;
     JTable tpay;
@@ -49,15 +49,15 @@ class Home extends JPanel{
         add(settledLoans);
 
         // mga button sa taas ng table (tabs)
-        recentLoans = new JButton("Recent loans");
-        recentLoans.setBounds(40, 245, 130, 35);
-        recentLoans.setBackground(ACTIVE);
-        add(recentLoans);
+        recloan = new JButton("Recent loans");
+        recloan.setBounds(40, 245, 130, 35);
+        recloan.setBackground(ACTIVE);
+        add(recloan);
 
-        recentPayments = new JButton("Recent payments");
-        recentPayments.setBounds(170, 245, 150, 35);
-        recentPayments.setBackground(NORMAL);
-        add(recentPayments);
+        recpay = new JButton("Recent payments");
+        recpay.setBounds(170, 245, 150, 35);
+        recpay.setBackground(NORMAL);
+        add(recpay);
 
         // table
         card = new CardLayout();
@@ -73,6 +73,9 @@ class Home extends JPanel{
             {"Maria Santos", "₱3,500", "Pending", "2025-02-03"}
         };
         tloans = new JTable(data1, col);
+        tloans.setRowHeight(30);
+        tloans.setEnabled(true);
+        tloans.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
 
         // pay table
         String[] col2 = {"Client's Name", "Amount Paid", "Status", "Date"};
@@ -81,27 +84,30 @@ class Home extends JPanel{
             {"Ana Reyes", "₱800", "Completed", "2025-02-05"}
         };
         tpay = new JTable(data2, col2);
+        tpay.setRowHeight(30);
+        tpay.setEnabled(true);
+        tpay.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
 
         tcon.add(new JScrollPane(tloans), "loans");
         tcon.add(new JScrollPane(tpay), "payments");
 
         add(tcon);
 
-        // events ng recentLoans at recentPayments
-        recentLoans.addActionListener(new ActionListener(){
+        // events ng recloan at recpay
+        recloan.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent a){
                 card.show(tcon, "loans");
-                recentLoans.setBackground(ACTIVE);
-                recentPayments.setBackground(NORMAL);
+                recloan.setBackground(ACTIVE);
+                recpay.setBackground(NORMAL);
             }
         });
             
 
-        recentPayments.addActionListener(new ActionListener(){
+        recpay.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent b){
                 card.show(tcon, "payments");
-                recentLoans.setBackground(NORMAL);
-                recentPayments.setBackground(ACTIVE);
+                recloan.setBackground(NORMAL);
+                recpay.setBackground(ACTIVE);
             }
         });
 

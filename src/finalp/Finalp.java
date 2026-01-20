@@ -11,22 +11,31 @@ public class Finalp {
         Sidebar sidebar = new Sidebar();
         sidebar.setBounds(0, 0, 280, 1000);
         frame.add(sidebar);
+
         
-        LoanForm form = new LoanForm();
+        
+        Home dashboard = new Home();
+        dashboard.setVisible(false);
+        frame.add(dashboard);
+        
+        PendingLoanApplication loanapplication = new PendingLoanApplication();
+        LoanForm form = new LoanForm(loanapplication);
         form.setVisible(false);
+        loanapplication.setVisible(false);
+        frame.add(loanapplication);
         frame.add(form);
         
         ViewLoans viewloan = new ViewLoans();
         viewloan.setVisible(false);
         frame.add(viewloan);
 
+        CreateClient createclient = new CreateClient();
+        createclient.setVisible(false);
+        frame.add(createclient);
+        
         ClientsList clientslist = new ClientsList();
         clientslist.setVisible(false);
         frame.add(clientslist);
-        
-        ClientHistory clienthis = new ClientHistory();
-        clienthis.setVisible(false);
-        frame.add(clienthis);
         
         LoanPayment loanpayment = new LoanPayment();
         loanpayment.setVisible(false);
@@ -36,121 +45,168 @@ public class Finalp {
         paymenthis.setVisible(false);
         frame.add(paymenthis);
         
-        Home dashboard = new Home();
-        dashboard.setVisible(false);
-        frame.add(dashboard);
-        
-        Report report = new Report();
-        report.setVisible(false);
-        frame.add(report);
+        Report repo = new Report();
+        repo.setVisible(false);
+        frame.add(repo);
 
+        Register reg = new Register();
+        reg.setVisible(false);
+        frame.add(reg);
         
         sidebar.createloan.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent a){
+                dashboard.setVisible(false);
                 form.setVisible(true);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
+                createclient.setVisible(false);
                 clientslist.setVisible(false);
-                clienthis.setVisible(false);
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
-                dashboard.setVisible(false);
-                report.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
 
         sidebar.viewloans.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent b){
+                dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(true);
+                loanapplication.setVisible(false);
+                createclient.setVisible(false);
                 clientslist.setVisible(false);
-                clienthis.setVisible(false);
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
+                repo.setVisible(false);
+            } 
+        });
+        
+        sidebar.loanApplications.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent b){
                 dashboard.setVisible(false);
-                report.setVisible(false);
+                form.setVisible(false);
+                viewloan.setVisible(false);
+                loanapplication.setVisible(true);
+                createclient.setVisible(false);
+                clientslist.setVisible(false);
+                loanpayment.setVisible(false);
+                paymenthis.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(false);
             } 
         });
         
         sidebar.clientList.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent c){
+                dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
                 clientslist.setVisible(true);
-                clienthis.setVisible(false);
+                createclient.setVisible(false);
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
-                dashboard.setVisible(false);
-                report.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
         
-        sidebar.history1.addActionListener(new ActionListener(){
+        sidebar.createClient.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent d){
+                dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
+                createclient.setVisible(true);
                 clientslist.setVisible(false);
-                clienthis.setVisible(true);
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
-                dashboard.setVisible(false);
-                report.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
         
         sidebar.loanpay.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent c){
+                dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
+                createclient.setVisible(false);
                 clientslist.setVisible(false);
-                clienthis.setVisible(false);
                 loanpayment.setVisible(true);
                 paymenthis.setVisible(false);
-                dashboard.setVisible(false);
-                report.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
         
         sidebar.payhistory.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent c){
+                dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
+                createclient.setVisible(false);
                 clientslist.setVisible(false);
-                clienthis.setVisible(false);
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(true);
-                dashboard.setVisible(false);
-                report.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(false);
+
             }
         });
         
         sidebar.home.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent c){
+                dashboard.setVisible(true);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
+                createclient.setVisible(false);
                 clientslist.setVisible(false);
-                clienthis.setVisible(false);
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
-                dashboard.setVisible(true);
-                report.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(false);
             }
         });
         
         sidebar.report.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent c){
+                dashboard.setVisible(false);
                 form.setVisible(false);
                 viewloan.setVisible(false);
+                loanapplication.setVisible(false);
+                createclient.setVisible(false);
                 clientslist.setVisible(false);
-                clienthis.setVisible(false);
                 loanpayment.setVisible(false);
                 paymenthis.setVisible(false);
+                repo.setVisible(true);
+                reg.setVisible(false);
+            }
+        });
+
+        sidebar.register.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent c){
                 dashboard.setVisible(false);
-                report.setVisible(true);
+                form.setVisible(false);
+                viewloan.setVisible(false);
+                createclient.setVisible(false);
+                clientslist.setVisible(false);
+                loanpayment.setVisible(false);
+                paymenthis.setVisible(false);
+                repo.setVisible(false);
+                reg.setVisible(true);
             }
         });
         
         sidebar.logout.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent c){
+                LogoutConfirmation logOutConfirm = new LogoutConfirmation();
+                logOutConfirm.showLogoutConfirmation(frame);
+                /*
                 frame.setVisible(false);
                 
                 LoginScreen loginFrame = new LoginScreen();
@@ -158,7 +214,7 @@ public class Finalp {
                 loginFrame.setMainFrame(frame);
                 loginFrame.setVisible(true);
                 loginFrame.setEnabled(true);
-                loginFrame.setTitle("Employee Login");
+                loginFrame.setTitle("Employee Login");*/
             }
         });
         
