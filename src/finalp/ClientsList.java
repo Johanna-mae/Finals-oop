@@ -64,11 +64,11 @@ class ClientsList extends JPanel{
                                 CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
                                 Client.employment_status AS "Employment Status",
                                 Client.monthly_income AS "Monthly Income",
-                                Loan_Application.status AS "Application Status"
-                        FROM Loan_Application
-                        JOIN Client ON Loan_Application.client_id = Client.client_id
+                                Client.account_status AS "Client Status"
+                        FROM Client
+                        
                                 """;
-
+//JOIN Client ON Loan_Application.client_id = Client.client_id
 
         String clientID, clientName, employmentStatus, monthlyIncome, status;
 

@@ -590,8 +590,6 @@ class LoanForm extends JPanel {
                 generatedID = rs.getInt(1);
             }
 
-            System.out.println("generatedID" + generatedID);
-
             if (generatedID !=-1 && !fileModel.isEmpty()){
                 FileUpload upload = new FileUpload();
                 upload.uploadDocument(generatedID, fileModel, cbDocType1, cbDocType2);
@@ -613,10 +611,7 @@ class LoanForm extends JPanel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
     }
-    
 }
         
         

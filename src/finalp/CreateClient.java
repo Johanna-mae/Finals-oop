@@ -24,6 +24,8 @@ class CreateClient extends JPanel{
     JComboBox<String> civil, empStatus, income, validId;
 
     JTextArea verifyArea;
+
+    ButtonGroup bgSex;
     
     Color NORMAL = new Color(0xAAC3DD);
     Color ACTIVE = new Color(0x8AA1B9);
@@ -71,7 +73,7 @@ class CreateClient extends JPanel{
         
         
         // ===== FIRST NAME =====
-        JLabel firstName = new JLabel("First Name");
+        JLabel firstName = new JLabel("First Name*");
         firstName.setBounds(60, 28, 100, 30);
         firstName.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(firstName);
@@ -91,7 +93,7 @@ class CreateClient extends JPanel{
         p.add(mn);
 
         // ===== LAST NAME =====
-        JLabel lblLn = new JLabel("Last Name");
+        JLabel lblLn = new JLabel("Last Name*");
         lblLn.setBounds(640, 28, 100, 30);
         lblLn.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblLn);
@@ -103,7 +105,7 @@ class CreateClient extends JPanel{
         
         
         // ===== SEX =====
-        JLabel lblSex = new JLabel("Sex");
+        JLabel lblSex = new JLabel("Sex*");
         lblSex.setBounds(60, 75, 150, 30);
         lblSex.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblSex);
@@ -113,21 +115,26 @@ class CreateClient extends JPanel{
 
         male.setBounds(160, 75, 80, 30);
         male.setBackground(NORMAL);
-        female.setBounds(260, 75, 80, 30);
+        female.setBounds(240, 75, 80, 30);
         female.setBackground(NORMAL);
 
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(male);
-        bg.add(female);
+        bgSex = new ButtonGroup();
+        bgSex.add(male);
+        bgSex.add(female);
 
         p.add(male);
         p.add(female);
 
         // ===== DATE OF BIRTH =====
-        JLabel lblDob = new JLabel("Date of Birth");
+        JLabel lblDob = new JLabel("Date of Birth*");
         lblDob.setBounds(340, 75, 150, 30);
         lblDob.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblDob);
+
+        JLabel lblDOBFormat = new JLabel("(yyyy-MM-dd)");
+        lblDOBFormat.setBounds(342, 65, 160, 20);
+        lblDOBFormat.setFont(new Font("Arial", Font.ITALIC, 11));
+        p.add(lblDOBFormat);
 
         dob = new JTextField(); 
         dob.setBounds(460, 75, 150, 30);
@@ -156,7 +163,7 @@ class CreateClient extends JPanel{
         p.add(contact);
 
         // ===== STREET =====
-        JLabel lblStreet = new JLabel("Street");
+        JLabel lblStreet = new JLabel("Street*");
         lblStreet.setBounds(340, 122, 150, 30);
         lblStreet.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblStreet);
@@ -166,7 +173,7 @@ class CreateClient extends JPanel{
         p.add(street);
 
         // ===== BARANGAY =====
-        JLabel lblBrgy = new JLabel("Barangay");
+        JLabel lblBrgy = new JLabel("Barangay*");
         lblBrgy.setBounds(640, 122, 150, 30);
         lblBrgy.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblBrgy);
@@ -176,7 +183,7 @@ class CreateClient extends JPanel{
         p.add(brgy);
 
         // ===== CITY =====
-        JLabel lblCity = new JLabel("City");
+        JLabel lblCity = new JLabel("City*");
         lblCity.setBounds(60, 174, 100, 30);
         lblCity.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblCity);
@@ -186,7 +193,7 @@ class CreateClient extends JPanel{
         p.add(city);
 
         // ===== PROVINCE =====
-        JLabel lblProvince = new JLabel("Province");
+        JLabel lblProvince = new JLabel("Province*");
         lblProvince.setBounds(340, 169, 100, 30);
         lblProvince.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblProvince);
@@ -196,7 +203,7 @@ class CreateClient extends JPanel{
         p.add(province);
 
         // ===== CIVIL STATUS =====
-        JLabel lblCivil = new JLabel("Civil Status");
+        JLabel lblCivil = new JLabel("Civil Status*");
         lblCivil.setBounds(640, 169, 100, 30);
         lblCivil.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblCivil);
@@ -216,7 +223,7 @@ class CreateClient extends JPanel{
         
         
         // ===== EMPLOYMENT STATUS =====
-        JLabel lblEmpStatus = new JLabel("Employment Status");
+        JLabel lblEmpStatus = new JLabel("Employment Status*");
         lblEmpStatus.setBounds(60, 216, 160, 30);
         lblEmpStatus.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblEmpStatus);
@@ -247,7 +254,7 @@ class CreateClient extends JPanel{
         
         
         // ===== MONTHLY INCOME =====
-        JLabel lblIncome = new JLabel("Monthly Income");
+        JLabel lblIncome = new JLabel("Monthly Income*");
         lblIncome.setBounds(60, 263, 160, 30);
         lblIncome.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblIncome);
@@ -267,7 +274,7 @@ class CreateClient extends JPanel{
         p.add(income);
 
         // ===== VALID ID =====
-        JLabel lblValidId = new JLabel("Valid ID");
+        JLabel lblValidId = new JLabel("Valid ID*");
         lblValidId.setBounds(380, 263, 150, 30);
         lblValidId.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblValidId);
@@ -290,7 +297,7 @@ class CreateClient extends JPanel{
         p.add(validId);
         
         // ===== VALID ID NUMBER =====
-        JLabel lblValidIdNo = new JLabel("Valid ID No.");
+        JLabel lblValidIdNo = new JLabel("Valid ID No.*");
         lblValidIdNo.setBounds(640, 263, 150, 30);
         lblValidIdNo.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblValidIdNo);
@@ -310,17 +317,17 @@ class CreateClient extends JPanel{
         next.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent z) {
                 boolean isFNNull = CheckIfNull.isTextFieldNotNull(fn);
-                boolean isMNNull = CheckIfNull.isTextFieldNotNull(mn);
+                //boolean isMNNull = CheckIfNull.isTextFieldNotNull(mn);
                 boolean isLNNull = CheckIfNull.isTextFieldNotNull(ln);
                 boolean isDOBNull = CheckIfNull.isTextFieldNotNull(dob);
-                boolean isEmailNull = CheckIfNull.isTextFieldNotNull(email);
-                boolean isContactNull = CheckIfNull.isTextFieldNotNull(contact);
+                //boolean isEmailNull = CheckIfNull.isTextFieldNotNull(email);
+                //boolean isContactNull = CheckIfNull.isTextFieldNotNull(contact);
                 boolean isStreetNull = CheckIfNull.isTextFieldNotNull(street);
                 boolean isBrgyNull = CheckIfNull.isTextFieldNotNull(brgy);
                 boolean isProvinceNull = CheckIfNull.isTextFieldNotNull(province);
                 boolean isValidIDNumberNull = CheckIfNull.isTextFieldNotNull(validIdNo);
 
-                if (Stream.of(isFNNull, isMNNull, isLNNull, isDOBNull, isEmailNull, isContactNull, isStreetNull, isBrgyNull, isProvinceNull, isValidIDNumberNull).allMatch(b -> b == true) && (male.isSelected() || female.isSelected())) {
+                if (Stream.of(isFNNull, isLNNull, isDOBNull, isStreetNull, isBrgyNull, isProvinceNull, isValidIDNumberNull).allMatch(b -> b == true) && (male.isSelected() || female.isSelected())) {
                     card.show(container, "step2");
                 } else {
                     JOptionPane.showMessageDialog(
@@ -544,11 +551,12 @@ class CreateClient extends JPanel{
         LocalDateTime timestamp = LocalDateTime.now();
 
         String clientRefNo = ReferenceNumberGenerator.generateClientRefNo(5);
+        String sex = (male.isSelected() ? "Male":"Female");
 
         String query = """
             INSERT INTO Client (first_name, middle_name, last_name, date_of_birth, email, phone_number, address_line, barangay, city, province, 
-                civil_status, employment_status, employer_name, monthly_income, valid_id_type, valid_ID_number, date_registered, client_reference_number) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                civil_status, employment_status, employer_name, monthly_income, valid_id_type, valid_ID_number, date_registered, client_reference_number, sex) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try {
@@ -576,6 +584,7 @@ class CreateClient extends JPanel{
             ps.setString(16, validIDNumberLine);
             ps.setObject(17, timestamp);
             ps.setString(18, clientRefNo);
+            ps.setString(19, sex);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                     JOptionPane.showMessageDialog(

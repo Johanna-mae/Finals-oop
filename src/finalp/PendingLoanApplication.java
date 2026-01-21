@@ -78,11 +78,16 @@ class PendingLoanApplication extends JPanel {
                 cbStatus.setBounds(660, 20, 250, 30);
                 box.add(cbStatus);
 
+                JLabel lblDOBFormat = new JLabel("(yyyy-MM-dd)");
+                lblDOBFormat.setBounds(503, 50, 160, 20);
+                lblDOBFormat.setFont(new Font("Arial", Font.ITALIC, 11));
+                box.add(lblDOBFormat);
+
                 JLabel lblDate = new JLabel("Date Reviewed");
                 lblDate.setBounds(500, 60, 150, 30);
                 box.add(lblDate);
 
-                JTextField tfDateReviewed = new JTextField("yyyy-MM-dd");
+                JTextField tfDateReviewed = new JTextField();
                 tfDateReviewed.setBounds(660, 60, 250, 25);
                 box.add(tfDateReviewed);
 
@@ -145,7 +150,6 @@ class PendingLoanApplication extends JPanel {
                                 JOIN Loan_Type ON Loan_Application.loan_type_id = Loan_Type.loan_type_id
                                 WHERE status = "For Approval"
                                         """;
-
 
                 String no, name, loanType, requestedAmount, requestedTerm, applicationDate, status, purpose, annualInterestRate, clientID;
 
@@ -422,17 +426,33 @@ class PendingLoanApplication extends JPanel {
                                                 "Success",
                                                 JOptionPane.INFORMATION_MESSAGE);
                                 }
+
+                                tfAppRefNo.setText("");
+                                tfClient.setText("");
+                                tfType.setText("");
+                                tfAmount.setText("");
+                                tfTerm.setText("");
+                                tfEstimate.setText("");
+                                tfDate.setText("");
+                                taPurpose.setText("");
+                                cbStatus.setSelectedIndex(-1);
+                                tfDateReviewed.setText("");
+                                taApproveReason.setText("");
+                                taRejectReason.setText("");
+                                cbEmployeeName.setSelectedIndex(-1);
+
+                                loadTableData();
                         }
                 });
-
-
+        }
+/*
         JButton btnRefresh = new JButton("Refresh Table");
         btnRefresh.setBounds(850, 730, 150, 30);
         btnRefresh.setVisible(true);
         btnRefresh.setEnabled(true);
         add(btnRefresh);
         btnRefresh.addActionListener(e -> loadTableData());
-        }
+        }*/
 
         private JTextField addField(JPanel box, String label, int x, int y) {
                 JLabel lbl = new JLabel(label);
