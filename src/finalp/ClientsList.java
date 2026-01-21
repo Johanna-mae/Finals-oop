@@ -1,21 +1,27 @@
+
 package finalp;
 
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.table.DefaultTableModel;
 
-class ClientsList extends JPanel{
+class ClientsList extends JPanel {
     Color NORMAL = new Color(0xAAC3DD);
-    Color ACTIVE = new Color(0x8AA1B9);
 
-    JButton selected = null;
-    
+    JTable ClientTable;
+
     public ClientsList() {
         setLayout(null);
         setBounds(280, 0, 1090, 800);
         setBackground(Color.WHITE);
 
-        // ===== CONTENT PANEL 
+        // ===== CONTENT PANEL
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(null);
         contentPanel.setBackground(Color.WHITE);
@@ -25,10 +31,10 @@ class ClientsList extends JPanel{
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setBounds(0, 0, 1090, 800);
         scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16); 
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
         add(scrollPane);
-        
+
         // ===== HEADER =====
         JLabel header = new JLabel("Clients List");
         header.setFont(new Font("Arial", Font.BOLD, 25));
@@ -43,80 +49,55 @@ class ClientsList extends JPanel{
         sep.setBounds(23, 80, 1040, 2);
         contentPanel.add(sep);
 
-        // ===== ACTIVE CLIENTS =====
-        JLabel activeLbl = new JLabel("Active / Ongoing");
-        activeLbl.setFont(new Font("Arial", Font.BOLD, 16));
-        activeLbl.setBounds(37, 100, 300, 30);
-        contentPanel.add(activeLbl);
+        ClientTable = new JTable();
+        ClientTable.setRowHeight(30);
+        ClientTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
-        int y = 150;
+        JScrollPane loanScroll = new JScrollPane(ClientTable);
+        loanScroll.setBounds(45, 100, 1000, 700);
+        contentPanel.add(loanScroll);
 
-        for (int i = 0; i < 4; i++) { 
+        String query = """
+                SELECT
+                        Client.client_reference_number AS "Client Reference No.",
+                        CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
+                        Client.employment_status AS "Employment Status",
+                        Client.monthly_income AS "Monthly Income",
+                        Loan_Application.status AS "Application Status"
+                FROM Loan_Application
+                JOIN Client ON Loan_Application.client_id = Client.client_id
+                        """;
 
-            JPanel pic = new JPanel(null);
-            pic.setBounds(47, y, 50, 50);
-            pic.setBackground(NORMAL);
-            contentPanel.add(pic);
+        String clientID, clientName, employmentStatus, monthlyIncome, status;
 
-            JLabel name = new JLabel("John Doe dela Cruz");
-            name.setFont(new Font("Arial", Font.BOLD, 18));
-            name.setBounds(115, y + 10, 300, 30);
-            contentPanel.add(name);
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            DefaultTableModel tblModel = (DefaultTableModel) ClientTable.getModel();
 
-            JButton status = new JButton("Status");
-            status.setBounds(900, y + 10, 100, 30);
-            status.setBackground(NORMAL);
-            status.setBorderPainted(false);
-            contentPanel.add(status);
+            int cols = rsmd.getColumnCount();
+            String[] colName = new String[cols];
 
-            status.addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e) {
-                    status.setBackground(ACTIVE);
-                }
-                public void mouseExited(MouseEvent e) {
-                    status.setBackground(NORMAL);
-                }
-            });
+            for (int i = 0; i < cols; i++) {
+                colName[i] = rsmd.getColumnLabel(i + 1);
+                tblModel.setColumnIdentifiers(colName);
+            }
+            while (rs.next()) {
+                clientID = rs.getString(1);
+                clientName = rs.getString(2);
+                employmentStatus = rs.getString(3);
+                monthlyIncome = rs.getString(4);
+                status = rs.getString(5);
+                String[] row = { clientID, clientName, employmentStatus, monthlyIncome, status };
+                tblModel.addRow(row);
+            }
 
-            y += 80;
-        }
+            st.close();
 
-        // ===== COMPLETED / PAID =====
-        JLabel historyLbl = new JLabel("Completed / Paid");
-        historyLbl.setFont(new Font("Arial", Font.BOLD, 16));
-        historyLbl.setBounds(37, y + 10, 300, 30);
-        contentPanel.add(historyLbl);
-
-        y += 70;
-
-        for (int i = 0; i < 4; i++) {
-
-            JPanel pic = new JPanel(null);
-            pic.setBounds(47, y, 50, 50);
-            pic.setBackground(NORMAL);
-            contentPanel.add(pic);
-
-            JLabel name = new JLabel("Jane Doe");
-            name.setFont(new Font("Arial", Font.BOLD, 18));
-            name.setBounds(115, y + 10, 300, 30);
-            contentPanel.add(name);
-
-            JButton status = new JButton("Status");
-            status.setBounds(900, y + 10, 100, 30);
-            status.setBackground(NORMAL);
-            status.setBorderPainted(false);
-            contentPanel.add(status);
-            
-            status.addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e) {
-                    status.setBackground(ACTIVE);
-                }
-                public void mouseExited(MouseEvent e) {
-                    status.setBackground(NORMAL);
-                }
-            });
-
-            y += 80;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
