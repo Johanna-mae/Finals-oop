@@ -1,12 +1,8 @@
-
 package finalp;
 
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.awt.event.*;
+import java.sql.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,13 +11,14 @@ class ClientsList extends JPanel {
     Color NORMAL = new Color(0xAAC3DD);
 
     JTable ClientTable;
+    DefaultTableModel tblModel;
 
     public ClientsList() {
         setLayout(null);
         setBounds(280, 0, 1090, 800);
         setBackground(Color.WHITE);
 
-        // ===== CONTENT PANEL
+        // ===== CONTENT PANEL =====
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(null);
         contentPanel.setBackground(Color.WHITE);
@@ -49,7 +46,15 @@ class ClientsList extends JPanel {
         sep.setBounds(23, 80, 1040, 2);
         contentPanel.add(sep);
 
-        ClientTable = new JTable();
+        // ===== REFRESH BUTTON =====
+        JButton refreshBtn = new JButton("Refresh");
+        refreshBtn.setBounds(880, 50, 120, 30);
+        refreshBtn.setBackground(NORMAL);
+        contentPanel.add(refreshBtn);
+
+        // ===== CLIENT TABLE =====
+        tblModel = new DefaultTableModel();
+        ClientTable = new JTable(tblModel);
         ClientTable.setRowHeight(30);
         ClientTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
@@ -57,6 +62,14 @@ class ClientsList extends JPanel {
         loanScroll.setBounds(45, 100, 1000, 700);
         contentPanel.add(loanScroll);
 
+        // ===== LOAD INITIAL DATA =====
+        loadClientData();
+
+        // ===== REFRESH ACTION =====
+        refreshBtn.addActionListener(e -> loadClientData());
+    }
+
+    private void loadClientData() {
         String query = """
                 SELECT
                         Client.client_reference_number AS "Client Reference No.",
@@ -66,38 +79,36 @@ class ClientsList extends JPanel {
                         Loan_Application.status AS "Application Status"
                 FROM Loan_Application
                 JOIN Client ON Loan_Application.client_id = Client.client_id
-                        """;
+                """;
 
-        String clientID, clientName, employmentStatus, monthlyIncome, status;
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(query)) {
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            // Clear table before loading
+            tblModel.setRowCount(0);
+
+            // Set column names
             ResultSetMetaData rsmd = rs.getMetaData();
-            DefaultTableModel tblModel = (DefaultTableModel) ClientTable.getModel();
-
             int cols = rsmd.getColumnCount();
             String[] colName = new String[cols];
-
             for (int i = 0; i < cols; i++) {
                 colName[i] = rsmd.getColumnLabel(i + 1);
-                tblModel.setColumnIdentifiers(colName);
             }
+            tblModel.setColumnIdentifiers(colName);
+
+            // Add rows
             while (rs.next()) {
-                clientID = rs.getString(1);
-                clientName = rs.getString(2);
-                employmentStatus = rs.getString(3);
-                monthlyIncome = rs.getString(4);
-                status = rs.getString(5);
-                String[] row = { clientID, clientName, employmentStatus, monthlyIncome, status };
+                String[] row = new String[cols];
+                for (int i = 0; i < cols; i++) {
+                    row[i] = rs.getString(i + 1);
+                }
                 tblModel.addRow(row);
             }
 
-            st.close();
-
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading client data: " + e.getMessage());
         }
     }
 }
