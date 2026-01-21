@@ -84,8 +84,6 @@ public class ReferenceNumberGenerator {
                     .toString();
             documentRefNo = "DOC-" + documentTypeID + numberString;
 
-
-
             String query = "SELECT 1 FROM Document WHERE document_reference_number = ?";
 
             try {
@@ -93,7 +91,7 @@ public class ReferenceNumberGenerator {
                 PreparedStatement ps = conn.prepareStatement(query);
                 ps.setString(1, documentRefNo);
 
-                try {      
+                try {
                     ResultSet rs = ps.executeQuery();
 
                     if (!rs.next()) {
@@ -183,8 +181,6 @@ public class ReferenceNumberGenerator {
                     .toString();
             loanRefNo = "LON-" + loanTypeString + "-" + numberString;
 
-
-
             String query = "SELECT 1 FROM Loan WHERE loan_reference_number = ?";
 
             try {
@@ -192,7 +188,7 @@ public class ReferenceNumberGenerator {
                 PreparedStatement ps = conn.prepareStatement(query);
                 ps.setString(1, loanRefNo);
 
-                try {      
+                try {
                     ResultSet rs = ps.executeQuery();
 
                     if (!rs.next()) {
@@ -244,8 +240,6 @@ public class ReferenceNumberGenerator {
                     .toString();
             loanApplicationRefNo = "LNA-" + loanTypeString + "-" + numberString;
 
-
-
             String query = "SELECT 1 FROM Loan_Application WHERE loan_application_reference_number = ?";
 
             try {
@@ -253,7 +247,7 @@ public class ReferenceNumberGenerator {
                 PreparedStatement ps = conn.prepareStatement(query);
                 ps.setString(1, loanApplicationRefNo);
 
-                try {      
+                try {
                     ResultSet rs = ps.executeQuery();
 
                     if (!rs.next()) {
@@ -271,7 +265,41 @@ public class ReferenceNumberGenerator {
         return loanApplicationRefNo;
     }
 
-    public static void generatePaymentRefNo() {
+    public static String generatePaymentRefNo(int length) {
+        boolean isUnique = false;
+        String paymentRefNo = "";
 
+        SecureRandom random = new SecureRandom();
+
+        while (isUnique == false) {
+            String numberString = random.ints(length, '0', '9' + 1) // Generate a stream of ASCII values for '0' to '9'
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
+            paymentRefNo = "PYM-" + paymentRefNo + numberString;
+
+            String query = "SELECT 1 FROM Payment WHERE payment_reference_number = ?";
+
+            try {
+                Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);
+                ps.setString(1, paymentRefNo);
+
+                try {
+                    ResultSet rs = ps.executeQuery();
+
+                    if (!rs.next()) {
+                        isUnique = true;
+                    }
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return paymentRefNo;
     }
 }
