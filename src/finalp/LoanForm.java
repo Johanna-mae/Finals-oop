@@ -6,9 +6,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.sql.*;
 import java.text.NumberFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 class LoanForm extends JPanel {
     

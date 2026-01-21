@@ -517,7 +517,7 @@ class PendingLoanApplication extends JPanel {
                                         Loan_Type.type_name AS "Loan Type",
                                         Loan_Application.requested_amount AS "Requested Amount",
                                         Loan_Application.requested_term_months AS "Requested Term",
-                                        Loan_Application.application_date AS "Application Date",
+                                        DATE_FORMAT(Loan_Application.application_date, '%Y-%m-%d %H:%i:%s') AS "Application Date",
                                         Loan_Application.status AS "Application Status",
                                         Loan_Application.purpose,
                                         Loan_Type.annual_interest_rate,
@@ -531,7 +531,6 @@ class PendingLoanApplication extends JPanel {
                 try {
                         Connection conn = DatabaseConnection.getConnection();
                         if (conn == null || conn.isClosed()) {
-                        // Re-establish connection kung sakaling closed na
                         System.out.println("Connection was closed, re-opening...");
                         }
                         

@@ -4,6 +4,11 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 class ViewLoans extends JPanel {
 
@@ -50,7 +55,7 @@ class ViewLoans extends JPanel {
         
 
         // ================= LOAN TABLE =================
-        String[] loanCols = {
+        /*String[] loanCols = {
             "Loan ID", "Client Name", "Loan Amount", "Term", "Status"
         };
 
@@ -58,15 +63,61 @@ class ViewLoans extends JPanel {
             {"L001", "John Doe", 25000.00, 12, "Active"},
             {"L002", "Jane Doe", 40000.00, 12, "Active"},
             {"L003", "Mark Reyes", 15000.00, 6, "Overdue"}
-        };
+        };*/
 
-        loanTable = new JTable(loanData, loanCols);
+        loanTable = new JTable();
         loanTable.setRowHeight(30);
         loanTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
         JScrollPane loanScroll = new JScrollPane(loanTable);
         loanScroll.setBounds(45, 100, 1000, 220);
         contentPanel.add(loanScroll);
+
+        String query = """
+                        SELECT
+                                Loan.loan_id AS "Loan ID",
+                                CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
+                                Loan.principal_amount AS "Loan Amount",
+                                Loan_Application.requested_term_months AS "Term",
+                                Loan_Application.status AS "Status"
+                        FROM Loan_Application
+                        JOIN Client ON Loan_Application.client_id = Client.client_id
+                        JOIN Loan_Type ON Loan_Application.loan_type_id = Loan_Type.loan_type_id
+                            """;
+
+
+                String loanID, clientName, loanAmount, Term, status;
+
+                try {
+                        Connection conn = DatabaseConnection.getConnection();
+                        Statement st = conn.createStatement();
+                        ResultSet rs = st.executeQuery(query);
+                        ResultSetMetaData rsmd = rs.getMetaData();
+                        DefaultTableModel tblModel = (DefaultTableModel) loanTable.getModel();
+
+                        int cols = rsmd.getColumnCount();
+                        String[] colName = new String[cols];
+
+                        for (int i = 0; i < cols; i++) {
+                                colName[i] = rsmd.getColumnLabel(i + 1);
+                                tblModel.setColumnIdentifiers(colName);
+                        }
+                        while (rs.next()) {
+                                loanID = rs.getString(1);
+                                clientName = rs.getString(2);
+                                loanAmount = rs.getString(3);
+                                Term = rs.getString(4);
+                                status = rs.getString(5);
+                                String[] row = { loanID, clientName, loanAmount, Term, status};
+                                tblModel.addRow(row);
+                        }
+
+                        st.close();
+
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                }
+
 
         // ================= BREAKDOWN PANEL =================
         JPanel breakdownPanel = new JPanel(null);
