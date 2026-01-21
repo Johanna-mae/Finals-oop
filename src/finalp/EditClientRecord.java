@@ -2,10 +2,7 @@ package finalp;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -21,7 +18,6 @@ public class EditClientRecord extends JPanel {
 
     // ===== COLORS =====
     Color NORMAL = new Color(0xAAC3DD);
-    Color ACTIVE = new Color(0x8AA1B9);
 
     // ===== TABLE =====
     JTable clientListTable;
@@ -34,7 +30,7 @@ public class EditClientRecord extends JPanel {
 
         // ===== MAIN CONTENT PANEL (for scrolling) =====
         JPanel contentPanel = new JPanel(null);
-        contentPanel.setPreferredSize(new Dimension(1090, 1200)); // adjust height as needed
+        contentPanel.setPreferredSize(new Dimension(1090, 1200));
         contentPanel.setBackground(Color.WHITE);
 
         // ===== HEADER =====
@@ -53,193 +49,68 @@ public class EditClientRecord extends JPanel {
 
         // ===== FORM PANEL =====
         JPanel p = new JPanel(null);
-        p.setBounds(60, 110, 965, 400);
+        p.setBounds(20, 110, 965, 400);
         p.setBackground(NORMAL);
         contentPanel.add(p);
 
-        // ===== FIRST NAME =====
-        JLabel lblFirstName = new JLabel("First Name");
-        lblFirstName.setBounds(60, 28, 100, 30);
-        lblFirstName.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblFirstName);
-        firstName = new JTextField();
-        firstName.setBounds(160, 28, 150, 30);
-        p.add(firstName);
+        // ===== FORM FIELDS =====
+        firstName = addLabelAndTextField(p, "First Name", 60, 28, 160, 28);
+        middleName = addLabelAndTextField(p, "Middle Name", 340, 28, 460, 28);
+        lastName = addLabelAndTextField(p, "Last Name", 640, 28, 740, 28);
 
-        // ===== MIDDLE NAME =====
-        JLabel lblMn = new JLabel("Middle Name");
-        lblMn.setBounds(340, 28, 100, 30);
-        lblMn.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblMn);
-        middleName = new JTextField();
-        middleName.setBounds(460, 28, 150, 30);
-        p.add(middleName);
-
-        // ===== LAST NAME =====
-        JLabel lblLn = new JLabel("Last Name");
-        lblLn.setBounds(640, 28, 100, 30);
-        lblLn.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblLn);
-        lastName = new JTextField();
-        lastName.setBounds(740, 28, 150, 30);
-        p.add(lastName);
-
-        // ===== SEX =====
+        // Sex
         JLabel lblSex = new JLabel("Sex");
         lblSex.setBounds(60, 75, 150, 30);
         lblSex.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblSex);
-        male = new JRadioButton("Male");
-        female = new JRadioButton("Female");
-        male.setBounds(160, 75, 80, 30);
-        male.setBackground(NORMAL);
-        female.setBounds(260, 75, 80, 30);
-        female.setBackground(NORMAL);
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(male);
-        bg.add(female);
-        p.add(male);
-        p.add(female);
 
-        // ===== DATE OF BIRTH =====
-        JLabel lblDob = new JLabel("Date of Birth");
-        lblDob.setBounds(340, 75, 150, 30);
-        lblDob.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblDob);
-        dateOfBirth = new JTextField();
-        dateOfBirth.setBounds(460, 75, 150, 30);
-        p.add(dateOfBirth);
+        male = new JRadioButton("Male"); male.setBackground(NORMAL); male.setBounds(160, 75, 80, 30);
+        female = new JRadioButton("Female"); female.setBackground(NORMAL); female.setBounds(260, 75, 80, 30);
+        ButtonGroup bg = new ButtonGroup(); bg.add(male); bg.add(female);
+        p.add(male); p.add(female);
 
-        // ===== EMAIL =====
-        JLabel lblEmail = new JLabel("Email");
-        lblEmail.setBounds(640, 75, 100, 30);
-        lblEmail.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblEmail);
-        email = new JTextField();
-        email.setBounds(740, 75, 150, 30);
-        p.add(email);
+        dateOfBirth = addLabelAndTextField(p, "Date of Birth", 340, 75, 460, 75);
+        email = addLabelAndTextField(p, "Email", 640, 75, 740, 75);
+        contactNum = addLabelAndTextField(p, "Contact No.", 60, 122, 160, 122);
+        street = addLabelAndTextField(p, "Street", 340, 122, 460, 122);
+        brgy = addLabelAndTextField(p, "Barangay", 640, 122, 740, 122);
+        city = addLabelAndTextField(p, "City", 60, 174, 160, 169);
+        province = addLabelAndTextField(p, "Province", 340, 169, 460, 169);
 
-        // ===== CONTACT =====
-        JLabel lblContact = new JLabel("Contact No.");
-        lblContact.setBounds(60, 122, 150, 30);
-        lblContact.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblContact);
-        contactNum = new JTextField();
-        contactNum.setBounds(160, 122, 150, 30);
-        p.add(contactNum);
-
-        // ===== ADDRESS =====
-        JLabel lblStreet = new JLabel("Street");
-        lblStreet.setBounds(340, 122, 150, 30);
-        lblStreet.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblStreet);
-        street = new JTextField();
-        street.setBounds(460, 122, 150, 30);
-        p.add(street);
-
-        JLabel lblBrgy = new JLabel("Barangay");
-        lblBrgy.setBounds(640, 122, 150, 30);
-        lblBrgy.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblBrgy);
-        brgy = new JTextField();
-        brgy.setBounds(740, 122, 150, 30);
-        p.add(brgy);
-
-        JLabel lblCity = new JLabel("City");
-        lblCity.setBounds(60, 174, 100, 30);
-        lblCity.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblCity);
-        city = new JTextField();
-        city.setBounds(160, 169, 150, 30);
-        p.add(city);
-
-        JLabel lblProvince = new JLabel("Province");
-        lblProvince.setBounds(340, 169, 100, 30);
-        lblProvince.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblProvince);
-        province = new JTextField();
-        province.setBounds(460, 169, 150, 30);
-        p.add(province);
-
-        // ===== CIVIL STATUS =====
+        // Civil Status
         JLabel lblCivil = new JLabel("Civil Status");
-        lblCivil.setBounds(640, 169, 100, 30);
-        lblCivil.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblCivil);
+        lblCivil.setBounds(640, 169, 100, 30); lblCivil.setFont(new Font("Arial", Font.BOLD, 14)); p.add(lblCivil);
         String[] civilStatuses = {"Single","Married","Separated","Widowed"};
-        civilStatus = new JComboBox<>(civilStatuses);
-        civilStatus.setBounds(740, 169, 150, 30);
-        civilStatus.setBackground(NORMAL);
+        civilStatus = new JComboBox<>(civilStatuses); civilStatus.setBounds(740, 169, 150, 30); civilStatus.setBackground(NORMAL);
         p.add(civilStatus);
 
-        // ===== EMPLOYMENT STATUS =====
-        JLabel lblEmpStatus = new JLabel("Employment Status");
-        lblEmpStatus.setBounds(60, 216, 160, 30);
-        lblEmpStatus.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblEmpStatus);
+        // Employment Status & Employer Name
+        JLabel lblEmpStatus = new JLabel("Employment Status"); lblEmpStatus.setBounds(60, 216, 160, 30); lblEmpStatus.setFont(new Font("Arial", Font.BOLD, 14)); p.add(lblEmpStatus);
         String[] empStatuses = {"Employed","Self-Employed","Unemployed","Student","Retired"};
-        employmentStatus = new JComboBox<>(empStatuses);
-        employmentStatus.setBounds(220, 216, 150, 30);
-        employmentStatus.setBackground(NORMAL);
-        p.add(employmentStatus);
+        employmentStatus = new JComboBox<>(empStatuses); employmentStatus.setBounds(220, 216, 150, 30); employmentStatus.setBackground(NORMAL); p.add(employmentStatus);
 
-        // ===== EMPLOYER NAME =====
-        JLabel lblEmployer = new JLabel("Employer Name");
-        lblEmployer.setBounds(400, 216, 160, 30);
-        lblEmployer.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblEmployer);
-        employerName = new JTextField();
-        employerName.setBounds(530, 216, 150, 30);
-        p.add(employerName);
+        employerName = addLabelAndTextField(p, "Employer Name", 400, 216, 530, 216);
+        monthlyIncome = new JComboBox<>(new String[]{"Below ₱10,000","₱10,000 – ₱20,000","₱20,001 – ₱30,000","₱30,001 – ₱50,000","₱50,001 – ₱100,000","Above ₱100,000"}); 
+        monthlyIncome.setBounds(200, 263, 150, 30); monthlyIncome.setBackground(NORMAL); p.add(monthlyIncome);
 
-        // ===== MONTHLY INCOME =====
-        JLabel lblIncome = new JLabel("Monthly Income");
-        lblIncome.setBounds(60, 263, 160, 30);
-        lblIncome.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblIncome);
-        String[] incomeRanges = {"Below ₱10,000","₱10,000 – ₱20,000","₱20,001 – ₱30,000","₱30,001 – ₱50,000","₱50,001 – ₱100,000","Above ₱100,000"};
-        monthlyIncome = new JComboBox<>(incomeRanges);
-        monthlyIncome.setBounds(200, 263, 150, 30);
-        monthlyIncome.setBackground(NORMAL);
-        p.add(monthlyIncome);
+        JLabel lblValidId = new JLabel("Valid ID"); lblValidId.setBounds(380, 263, 150, 30); lblValidId.setFont(new Font("Arial", Font.BOLD, 14)); p.add(lblValidId);
+        validIDType = new JComboBox<>(new String[]{"Passport","Driver’s License","UMID","PhilSys National ID","SSS ID","GSIS ID","Voter’s ID","Postal ID","PRC ID"});
+        validIDType.setBounds(460, 263, 150, 30); validIDType.setBackground(NORMAL); p.add(validIDType);
 
-        // ===== VALID ID =====
-        JLabel lblValidId = new JLabel("Valid ID");
-        lblValidId.setBounds(380, 263, 150, 30);
-        lblValidId.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblValidId);
-        String[] validIds = {"Passport","Driver’s License","UMID","PhilSys National ID","SSS ID","GSIS ID","Voter’s ID","Postal ID","PRC ID"};
-        validIDType = new JComboBox<>(validIds);
-        validIDType.setBounds(460, 263, 150, 30);
-        validIDType.setBackground(NORMAL);
-        p.add(validIDType);
+        validIDNo = addLabelAndTextField(p, "Valid ID No.", 640, 263, 740, 263);
 
-        JLabel lblValidIdNo = new JLabel("Valid ID No.");
-        lblValidIdNo.setBounds(640, 263, 150, 30);
-        lblValidIdNo.setFont(new Font("Arial", Font.BOLD, 14));
-        p.add(lblValidIdNo);
-        validIDNo = new JTextField();
-        validIDNo.setBounds(740, 263, 150, 30);
-        p.add(validIDNo);
-
+        // ===== UPDATE BUTTON =====
         JButton updateRecord = new JButton("Update Record");
-        updateRecord.setBounds(780, 350, 170, 35);
-        updateRecord.setBackground(NORMAL);
-        p.add(updateRecord);
+        updateRecord.setBounds(780, 350, 170, 35); updateRecord.setBackground(NORMAL); p.add(updateRecord);
 
         // ===== CLIENT TABLE =====
         String[] columns = {"Client Ref No.","Client Name","Employment Status","Monthly Income","Application Status"};
         tableModel = new DefaultTableModel(columns,0){
-            @Override
-            public boolean isCellEditable(int row,int col){return false;}
+            @Override public boolean isCellEditable(int row,int col){return false;}
         };
         clientListTable = new JTable(tableModel);
-        clientListTable.setRowHeight(30);
-        clientListTable.getTableHeader().setFont(new Font("Arial",Font.BOLD,14));
-
-        JScrollPane sp = new JScrollPane(clientListTable);
-        sp.setBounds(60, 550, 965, 400);
-        contentPanel.add(sp);
+        clientListTable.setRowHeight(30); clientListTable.getTableHeader().setFont(new Font("Arial",Font.BOLD,14));
+        JScrollPane sp = new JScrollPane(clientListTable); sp.setBounds(20, 550, 995, 400); contentPanel.add(sp);
 
         // ===== ROW CLICK TO FILL FORM =====
         clientListTable.addMouseListener(new MouseAdapter(){
@@ -248,16 +119,16 @@ public class EditClientRecord extends JPanel {
                 int row = clientListTable.getSelectedRow();
                 if(row>=0){
                     String name = tableModel.getValueAt(row,1).toString();
-                    String emp = tableModel.getValueAt(row,2).toString();
-                    String income = tableModel.getValueAt(row,3).toString();
-
                     firstName.setText(name.split(" ")[0]);
                     lastName.setText(name.split(" ")[1]);
-                    employmentStatus.setSelectedItem(emp);
-                    monthlyIncome.setSelectedItem(income);
+                    employmentStatus.setSelectedItem(tableModel.getValueAt(row,2));
+                    monthlyIncome.setSelectedItem(tableModel.getValueAt(row,3));
                 }
             }
         });
+
+        // ===== UPDATE RECORD ACTION =====
+        updateRecord.addActionListener(e -> updateClientRecord());
 
         // ===== MAIN SCROLL PANE =====
         JScrollPane mainScroll = new JScrollPane(contentPanel);
@@ -267,6 +138,13 @@ public class EditClientRecord extends JPanel {
 
         // ===== LOAD DATA =====
         loadClientData();
+    }
+
+    // Helper for creating labels + text fields
+    private JTextField addLabelAndTextField(JPanel p, String label, int lx, int ly, int tx, int ty) {
+        JLabel l = new JLabel(label); l.setBounds(lx, ly, 100, 30); l.setFont(new Font("Arial", Font.BOLD, 14)); p.add(l);
+        JTextField t = new JTextField(); t.setBounds(tx, ty, 150, 30); p.add(t);
+        return t;
     }
 
     private void loadClientData() {
@@ -285,21 +163,64 @@ public class EditClientRecord extends JPanel {
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(query)) {
 
-            tableModel.setRowCount(0); // clear table before loading
+            tableModel.setRowCount(0);
 
             while(rs.next()){
-                String clientID = rs.getString("Client Ref No.");
-                String clientName = rs.getString("Client Name");
-                String empStatus = rs.getString("Employment Status");
-                String income = rs.getString("Monthly Income");
-                String status = rs.getString("Application Status");
-
-                tableModel.addRow(new Object[]{clientID, clientName, empStatus, income, status});
+                tableModel.addRow(new Object[]{
+                        rs.getString("Client Ref No."),
+                        rs.getString("Client Name"),
+                        rs.getString("Employment Status"),
+                        rs.getString("Monthly Income"),
+                        rs.getString("Application Status")
+                });
             }
 
         } catch(SQLException e){
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading client data: " + e.getMessage());
+        }
+    }
+
+    private void updateClientRecord() {
+        int row = clientListTable.getSelectedRow();
+        if(row < 0){
+            JOptionPane.showMessageDialog(this, "Please select a client to update.");
+            return;
+        }
+
+        String clientRef = tableModel.getValueAt(row, 0).toString();
+        String fName = firstName.getText();
+        String lName = lastName.getText();
+        String empStatus = employmentStatus.getSelectedItem().toString();
+        String income = monthlyIncome.getSelectedItem().toString();
+
+        String sql = """
+            UPDATE Client
+            SET first_name = ?, last_name = ?, employment_status = ?, monthly_income = ?
+            WHERE client_reference_number = ?
+        """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, fName);
+            ps.setString(2, lName);
+            ps.setString(3, empStatus);
+            ps.setString(4, income);
+            ps.setString(5, clientRef);
+
+            int updated = ps.executeUpdate();
+
+            if(updated > 0){
+                JOptionPane.showMessageDialog(this, "Client record updated successfully!");
+                loadClientData(); // refresh table
+            } else {
+                JOptionPane.showMessageDialog(this, "Update failed. Please try again.");
+            }
+
+        } catch(SQLException e){
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error updating client: " + e.getMessage());
         }
     }
 }
