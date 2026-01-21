@@ -1,14 +1,19 @@
 package finalp;
 
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.table.DefaultTableModel;
 
 class ClientsList extends JPanel{
     Color NORMAL = new Color(0xAAC3DD);
-    Color ACTIVE = new Color(0x8AA1B9);
 
-    JButton selected = null;
+    JTable ClientTable;
     
     public ClientsList() {
         setLayout(null);
@@ -43,80 +48,58 @@ class ClientsList extends JPanel{
         sep.setBounds(23, 80, 1040, 2);
         contentPanel.add(sep);
 
-        // ===== ACTIVE CLIENTS =====
-        JLabel activeLbl = new JLabel("Active / Ongoing");
-        activeLbl.setFont(new Font("Arial", Font.BOLD, 16));
-        activeLbl.setBounds(37, 100, 300, 30);
-        contentPanel.add(activeLbl);
 
-        int y = 150;
+        ClientTable = new JTable();
+        ClientTable.setRowHeight(30);
+        ClientTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
-        for (int i = 0; i < 4; i++) { 
+        JScrollPane loanScroll = new JScrollPane(ClientTable);
+        loanScroll.setBounds(45, 100, 1000, 700);
+        contentPanel.add(loanScroll);
 
-            JPanel pic = new JPanel(null);
-            pic.setBounds(47, y, 50, 50);
-            pic.setBackground(NORMAL);
-            contentPanel.add(pic);
 
-            JLabel name = new JLabel("John Doe dela Cruz");
-            name.setFont(new Font("Arial", Font.BOLD, 18));
-            name.setBounds(115, y + 10, 300, 30);
-            contentPanel.add(name);
+        String query = """
+                        SELECT
+                                Client.client_reference_number AS "Client Reference No.",       
+                                CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
+                                Client.employment_status AS "Employment Status",
+                                Client.monthly_income AS "Monthly Income",
+                                Loan_Application.status AS "Application Status"
+                        FROM Loan_Application
+                        JOIN Client ON Loan_Application.client_id = Client.client_id
+                                """;
 
-            JButton status = new JButton("Status");
-            status.setBounds(900, y + 10, 100, 30);
-            status.setBackground(NORMAL);
-            status.setBorderPainted(false);
-            contentPanel.add(status);
 
-            status.addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e) {
-                    status.setBackground(ACTIVE);
-                }
-                public void mouseExited(MouseEvent e) {
-                    status.setBackground(NORMAL);
-                }
-            });
+        String clientID, clientName, employmentStatus, monthlyIncome, status;
 
-            y += 80;
-        }
+        try {
+                        Connection conn = DatabaseConnection.getConnection();
+                        Statement st = conn.createStatement();
+                        ResultSet rs = st.executeQuery(query);
+                        ResultSetMetaData rsmd = rs.getMetaData();
+                        DefaultTableModel tblModel = (DefaultTableModel) ClientTable.getModel();
 
-        // ===== COMPLETED / PAID =====
-        JLabel historyLbl = new JLabel("Completed / Paid");
-        historyLbl.setFont(new Font("Arial", Font.BOLD, 16));
-        historyLbl.setBounds(37, y + 10, 300, 30);
-        contentPanel.add(historyLbl);
+                        int cols = rsmd.getColumnCount();
+                        String[] colName = new String[cols];
 
-        y += 70;
+                        for (int i = 0; i < cols; i++) {
+                                colName[i] = rsmd.getColumnLabel(i + 1);
+                                tblModel.setColumnIdentifiers(colName);
+                        }
+                        while (rs.next()) {
+                                clientID = rs.getString(1);
+                                clientName = rs.getString(2);
+                                employmentStatus = rs.getString(3);
+                                monthlyIncome = rs.getString(4);
+                                status = rs.getString(5);
+                                String[] row = { clientID, clientName, employmentStatus, monthlyIncome, status};
+                                tblModel.addRow(row);
+                        }
 
-        for (int i = 0; i < 4; i++) {
+                        st.close();
 
-            JPanel pic = new JPanel(null);
-            pic.setBounds(47, y, 50, 50);
-            pic.setBackground(NORMAL);
-            contentPanel.add(pic);
-
-            JLabel name = new JLabel("Jane Doe");
-            name.setFont(new Font("Arial", Font.BOLD, 18));
-            name.setBounds(115, y + 10, 300, 30);
-            contentPanel.add(name);
-
-            JButton status = new JButton("Status");
-            status.setBounds(900, y + 10, 100, 30);
-            status.setBackground(NORMAL);
-            status.setBorderPainted(false);
-            contentPanel.add(status);
-            
-            status.addMouseListener(new MouseAdapter() {
-                public void mouseEntered(MouseEvent e) {
-                    status.setBackground(ACTIVE);
-                }
-                public void mouseExited(MouseEvent e) {
-                    status.setBackground(NORMAL);
-                }
-            });
-
-            y += 80;
+        } catch (SQLException e) {
+                e.printStackTrace();
         }
     }
 }
