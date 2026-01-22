@@ -6,9 +6,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.sql.*;
 import java.text.NumberFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 class LoanForm extends JPanel {
     
@@ -592,8 +590,6 @@ class LoanForm extends JPanel {
                 generatedID = rs.getInt(1);
             }
 
-            System.out.println("generatedID" + generatedID);
-
             if (generatedID !=-1 && !fileModel.isEmpty()){
                 FileUpload upload = new FileUpload();
                 upload.uploadDocument(generatedID, fileModel, cbDocType1, cbDocType2);
@@ -615,10 +611,7 @@ class LoanForm extends JPanel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
     }
-    
 }
         
         

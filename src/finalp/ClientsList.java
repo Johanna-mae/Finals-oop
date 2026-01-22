@@ -3,6 +3,11 @@ package finalp;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -70,15 +75,14 @@ class ClientsList extends JPanel {
     }
 
     private void loadClientData() {
-        String query = """
-                SELECT
-                        Client.client_reference_number AS "Client Reference No.",
-                        CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
-                        Client.employment_status AS "Employment Status",
-                        Client.monthly_income AS "Monthly Income",
-                        Loan_Application.status AS "Application Status"
-                FROM Loan_Application
-                JOIN Client ON Loan_Application.client_id = Client.client_id
+      String query = """
+                      SELECT
+                              Client.client_reference_number AS "Client Reference No.",       
+                              CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
+                              Client.employment_status AS "Employment Status",
+                              Client.monthly_income AS "Monthly Income",
+                              Client.account_status AS "Client Status"
+                      FROM Client
                 """;
 
         try (Connection conn = DatabaseConnection.getConnection();

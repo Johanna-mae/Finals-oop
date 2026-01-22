@@ -78,11 +78,16 @@ class PendingLoanApplication extends JPanel {
                 cbStatus.setBounds(660, 20, 250, 30);
                 box.add(cbStatus);
 
+                JLabel lblDOBFormat = new JLabel("(yyyy-MM-dd)");
+                lblDOBFormat.setBounds(503, 50, 160, 20);
+                lblDOBFormat.setFont(new Font("Arial", Font.ITALIC, 11));
+                box.add(lblDOBFormat);
+
                 JLabel lblDate = new JLabel("Date Reviewed");
                 lblDate.setBounds(500, 60, 150, 30);
                 box.add(lblDate);
 
-                JTextField tfDateReviewed = new JTextField("yyyy-MM-dd");
+                JTextField tfDateReviewed = new JTextField();
                 tfDateReviewed.setBounds(660, 60, 250, 25);
                 box.add(tfDateReviewed);
 
@@ -146,8 +151,7 @@ class PendingLoanApplication extends JPanel {
                                 WHERE status = "For Approval"
                                         """;
 
-                String no, name, loanType, requestedAmount, requestedTerm, applicationDate, status, purpose,
-                                annualInterestRate, clientID;
+                String no, name, loanType, requestedAmount, requestedTerm, applicationDate, status, purpose, annualInterestRate, clientID;
 
                 try {
                         Connection conn = DatabaseConnection.getConnection();
@@ -447,10 +451,33 @@ class PendingLoanApplication extends JPanel {
                                                         "Success",
                                                         JOptionPane.INFORMATION_MESSAGE);
                                 }
+
+                                tfAppRefNo.setText("");
+                                tfClient.setText("");
+                                tfType.setText("");
+                                tfAmount.setText("");
+                                tfTerm.setText("");
+                                tfEstimate.setText("");
+                                tfDate.setText("");
+                                taPurpose.setText("");
+                                cbStatus.setSelectedIndex(-1);
+                                tfDateReviewed.setText("");
+                                taApproveReason.setText("");
+                                taRejectReason.setText("");
+                                cbEmployeeName.setSelectedIndex(-1);
+
+                                loadTableData();
                         }
                 });
-
         }
+/*
+        JButton btnRefresh = new JButton("Refresh Table");
+        btnRefresh.setBounds(850, 730, 150, 30);
+        btnRefresh.setVisible(true);
+        btnRefresh.setEnabled(true);
+        add(btnRefresh);
+        btnRefresh.addActionListener(e -> loadTableData());
+        }*/
 
         private JTextField addField(JPanel box, String label, int x, int y) {
                 JLabel lbl = new JLabel(label);
@@ -524,4 +551,52 @@ class PendingLoanApplication extends JPanel {
                         e.printStackTrace();
                 }
         }
+
+        public void loadTableData() {
+                DefaultTableModel tblModel = (DefaultTableModel) pendingLoanApplicationTable.getModel();
+                tblModel.setRowCount(0); 
+
+                String query = """
+                                SELECT
+                                        Loan_Application.loan_application_reference_number AS "Application Ref. No.",
+                                        CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
+                                        Loan_Type.type_name AS "Loan Type",
+                                        Loan_Application.requested_amount AS "Requested Amount",
+                                        Loan_Application.requested_term_months AS "Requested Term",
+                                        DATE_FORMAT(Loan_Application.application_date, '%Y-%m-%d %H:%i:%s') AS "Application Date",
+                                        Loan_Application.status AS "Application Status",
+                                        Loan_Application.purpose,
+                                        Loan_Type.annual_interest_rate,
+                                        Loan_Application.client_id
+                                FROM Loan_Application
+                                JOIN Client ON Loan_Application.client_id = Client.client_id
+                                JOIN Loan_Type ON Loan_Application.loan_type_id = Loan_Type.loan_type_id
+                                WHERE status = "For Approval"
+                                        """;
+
+                try {
+                        Connection conn = DatabaseConnection.getConnection();
+                        if (conn == null || conn.isClosed()) {
+                        System.out.println("Connection was closed, re-opening...");
+                        }
+                        
+                        Statement st = conn.createStatement();
+                        ResultSet rs = st.executeQuery(query);
+
+                        while (rs.next()) {
+                        Object[] row = new Object[10];
+                        for (int i = 0; i < 10; i++) {
+                                row[i] = rs.getObject(i + 1);
+                        }
+                        tblModel.addRow(row);
+                        }
+                        
+                        rs.close();
+                        st.close();
+
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
+                }
+}
 }
