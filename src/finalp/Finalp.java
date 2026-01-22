@@ -11,8 +11,6 @@ public class Finalp {
         Sidebar sidebar = new Sidebar();
         sidebar.setBounds(0, 0, 280, 1000);
         frame.add(sidebar);
-
-        
         
         Home dashboard = new Home();
         dashboard.setVisible(false);

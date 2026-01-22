@@ -3,211 +3,305 @@ package finalp;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
-class LoanPayment extends JPanel {
+public class LoanPayment extends JPanel {
 
-    Color NORMAL = new Color(0xAAC3DD);
-    Color ACTIVE = new Color(0x8AA1B9);
+    // ===== COMBO ITEM =====
+  class ComboItem {
+    int id;
+    String label;
 
-    JButton selected = null;
+    ComboItem(int id, String label) {
+      this.id = id;
+      this.label = label;
+    }
 
-    public LoanPayment() {
-        setLayout(null);
-        setBounds(280, 0, 1090, 800);
-        setBackground(Color.WHITE);
+    public String toString() {
+      return label;
+    }
+  }
 
-        JLabel header = new JLabel("Loan Payments");
-        header.setFont(new Font("Arial", Font.BOLD, 25));
-        header.setBounds(20, 25, 400, 40);
-        add(header);
+  // ===== LOAN META =====
+  class LoanMeta {
+    LocalDate loanEndDate;
+    double principalAmount;
+    double totalInterest;
+    double totalAmountPayable;
+    String loanReferenceNumber;
+    int clientID;
+  }
 
-        JLabel sub = new JLabel("Payment to an existing loan");
-        sub.setBounds(23, 55, 400, 20);
-        add(sub);
+  JComboBox<ComboItem> cbClient, cbLoan, cbEmployee;
+  JComboBox<String> cbMethod;
+  JTextField tfDue, tfPrincipal, tfInterest, tfAmount, tfPenalty;
+  JTextArea taRemarks;
 
-        JSeparator sep = new JSeparator();
-        sep.setBounds(23, 80, 1040, 2);
-        add(sep);
+  Map<Integer, LoanMeta> loanData = new HashMap<>();
 
-        // ================= FORM BOX =================
-        JPanel box = new JPanel(null);
-        box.setBackground(NORMAL);
-        box.setBounds(170, 110, 750, 465);
-        add(box);
+  public LoanPayment() {
+    setLayout(null);
+    setBounds(280, 0, 1090, 800);
+    setBackground(Color.WHITE);
 
-        // Client Name
-        JLabel lblClient = new JLabel("Client Name");
-        lblClient.setFont(new Font("Arial", Font.BOLD, 14));
-        lblClient.setBounds(20, 25, 160, 28);
-        box.add(lblClient);
+    JLabel header = new JLabel("Loan Payments");
+    header.setFont(new Font("Arial", Font.BOLD, 25));
+    header.setBounds(20, 25, 500, 40);
+    add(header);
 
-        JComboBox<String> cbClient = new JComboBox<>(
-                new String[]{"Juan Dela Cruz - C001", "Maria Santos - C002"}
-        );
-        cbClient.setBounds(178, 25, 550, 28);
-        box.add(cbClient);
+    JLabel sub = new JLabel("View payment details");
+    sub.setBounds(23, 55, 400, 20);
+    add(sub);
 
-        // Loan
-        JLabel lblLoan = new JLabel("Loan");
-        lblLoan.setFont(new Font("Arial", Font.BOLD, 14));
-        lblLoan.setBounds(20, 63, 160, 28);
-        box.add(lblLoan);
+    JSeparator sep = new JSeparator();
+    sep.setBounds(23, 80, 1040, 2);
+    add(sep);
 
-        JComboBox<String> cbLoan = new JComboBox<>(
-                new String[]{"Personal Loan - L001", "Business Loan - L002"}
-        );
-        cbLoan.setBounds(178, 63, 550, 28);
-        box.add(cbLoan);
+    JPanel box = new JPanel(null);
+    box.setBounds(150, 90, 780, 480);
+    box.setBackground(new Color(0xAAC3DD));
+    add(box);
 
-        // Due Date
-        JLabel lblDue = new JLabel("Due Date");
-        lblDue.setFont(new Font("Arial", Font.BOLD, 14));
-        lblDue.setBounds(20, 101, 160, 28);
-        box.add(lblDue);
+    int y = 20;
 
-        JTextField tfDue = new JTextField("2026-01-31");
-        tfDue.setEditable(false);
-        tfDue.setBounds(178, 101, 550, 28);
-        box.add(tfDue);
+    // ===== CLIENT NAME =====
+    box.add(label("Client Name", y));
+    cbClient = new JComboBox<>();
+    cbClient.setEnabled(false);
+    cbClient.setBounds(200, y, 540, 28);
+    box.add(cbClient);
+    y += 38;
 
-        // Principal Paid
-        JLabel lblPrincipal = new JLabel("Principal Paid");
-        lblPrincipal.setFont(new Font("Arial", Font.BOLD, 14));
-        lblPrincipal.setBounds(20, 139, 160, 28);
-        box.add(lblPrincipal);
+    // ===== LOAN REFERENCE NUMBER =====
+    box.add(label("Loan Reference No.", y));
+    cbLoan = new JComboBox<>();
+    cbLoan.setBounds(200, y, 540, 28);
+    box.add(cbLoan);
+    y += 38;
 
-        JTextField tfPrincipal = new JTextField();
-        tfPrincipal.setBounds(178, 139, 550, 28);
-        box.add(tfPrincipal);
+    // ===== DUE DATE =====
+    box.add(label("Due Date", y));
+    tfDue = new JTextField();
+    tfDue.setEditable(false);
+    tfDue.setBounds(200, y, 540, 28);
+    box.add(tfDue);
+    y += 38;
 
-        // Interest Paid
-        JLabel lblInterest = new JLabel("Interest Paid");
-        lblInterest.setFont(new Font("Arial", Font.BOLD, 14));
-        lblInterest.setBounds(20, 177, 160, 28);
-        box.add(lblInterest);
+    // ===== PRINCIPAL =====
+    box.add(label("Principal Paid", y));
+    tfPrincipal = new JTextField();
+    tfPrincipal.setEditable(false);
+    tfPrincipal.setBounds(200, y, 540, 28);
+    box.add(tfPrincipal);
+    y += 38;
 
-        JTextField tfInterest = new JTextField();
-        tfInterest.setBounds(178, 177, 550, 28);
-        box.add(tfInterest);
+    // ===== INTEREST =====
+    box.add(label("Interest Paid", y));
+    tfInterest = new JTextField();
+    tfInterest.setEditable(false);
+    tfInterest.setBounds(200, y, 540, 28);
+    box.add(tfInterest);
+    y += 38;
 
-        // Amount Paid
-        JLabel lblAmount = new JLabel("Amount Paid");
-        lblAmount.setFont(new Font("Arial", Font.BOLD, 14));
-        lblAmount.setBounds(20, 215, 160, 28);
-        box.add(lblAmount);
+    // ===== AMOUNT =====
+    box.add(label("Amount Paid", y));
+    tfAmount = new JTextField();
+    tfAmount.setEditable(false);
+    tfAmount.setBounds(200, y, 540, 28);
+    box.add(tfAmount);
+    y += 38;
 
-        JTextField tfAmount = new JTextField();
-        tfAmount.setEditable(false);
-        tfAmount.setBounds(178, 215, 550, 28);
-        box.add(tfAmount);
+    // ===== PENALTY =====
+    box.add(label("Penalty Fee", y));
+    tfPenalty = new JTextField("0.00");
+    tfPenalty.setEditable(true);
+    tfPenalty.setBounds(200, y, 540, 28);
+    box.add(tfPenalty);
+    y += 38;
 
-        // Penalty Fee
-        JLabel lblPenalty = new JLabel("Penalty Fee");
-        lblPenalty.setFont(new Font("Arial", Font.BOLD, 14));
-        lblPenalty.setBounds(20, 253, 160, 28);
-        box.add(lblPenalty);
+    // ===== PAYMENT METHOD =====
+    box.add(label("Payment Method", y));
+    cbMethod = new JComboBox<>(new String[] {
+        "Cash", "Bank Transfer", "GCash", "PayMaya", "Check"
+    });
+    cbMethod.setBounds(200, y, 540, 28);
+    box.add(cbMethod);
+    y += 38;
 
-        JTextField tfPenalty = new JTextField("0.00");
-        tfPenalty.setEditable(false);
-        tfPenalty.setBounds(178, 253, 550, 28);
-        box.add(tfPenalty);
+    // ===== EMPLOYEE =====
+    box.add(label("Processed By", y));
+    cbEmployee = new JComboBox<>();
+    cbEmployee.setBounds(200, y, 540, 28);
+    box.add(cbEmployee);
+    y += 38;
 
-        // Payment Method
-        JLabel lblMethod = new JLabel("Payment Method");
-        lblMethod.setFont(new Font("Arial", Font.BOLD, 14));
-        lblMethod.setBounds(20, 291, 160, 28);
-        box.add(lblMethod);
+    // ===== REMARKS =====
+    box.add(label("Remarks", y));
+    taRemarks = new JTextArea();
+    JScrollPane sp = new JScrollPane(taRemarks);
+    sp.setBounds(200, y, 540, 50);
+    box.add(sp);
 
-        JComboBox<String> cbMethod = new JComboBox<>(
-                new String[]{"Cash", "Bank Transfer", "Check", "GCash", "PayMaya"}
-        );
-        cbMethod.setBounds(178, 291, 550, 28);
-        box.add(cbMethod);
+    JButton pay = new JButton("Pay");
+    pay.setBounds(830, 590, 100, 40);
+    add(pay);
 
-        // Reference No
-        JLabel lblRef = new JLabel("Reference No.");
-        lblRef.setFont(new Font("Arial", Font.BOLD, 14));
-        lblRef.setBounds(20, 329, 160, 28);
-        box.add(lblRef);
+    cbLoan.addActionListener(e -> updateLoanDetails());
+    pay.addActionListener(e -> savePayment());
 
-        JTextField tfRef = new JTextField();
-        tfRef.setBounds(178, 329, 550, 28);
-        box.add(tfRef);
+    loadLoans();
+    loadEmployees();
 
-        // Processed By
-        JLabel lblEmp = new JLabel("Processed By");
-        lblEmp.setFont(new Font("Arial", Font.BOLD, 14));
-        lblEmp.setBounds(20, 367, 160, 28);
-        box.add(lblEmp);
+    cbClient.setSelectedIndex(-1);
+    cbLoan.setSelectedIndex(-1);
+    tfPenalty.setText("");
+    cbMethod.setSelectedIndex(-1);
+    cbEmployee.setSelectedIndex(-1);
+  }
 
-        JComboBox<String> cbEmp = new JComboBox<>(
-                new String[]{"Employee 1", "Employee 2"}
-        );
-        cbEmp.setBounds(178, 367, 550, 28);
-        box.add(cbEmp);
+  JLabel label(String text, int y) {
+    JLabel l = new JLabel(text);
+    l.setBounds(20, y, 180, 28);
+    l.setFont(new Font("Arial", Font.BOLD, 13));
+    return l;
+  }
 
-        // Remarks
-        JLabel lblRemarks = new JLabel("Remarks");
-        lblRemarks.setFont(new Font("Arial", Font.BOLD, 14));
-        lblRemarks.setBounds(20, 405, 160, 28);
-        box.add(lblRemarks);
+  // ===== LOAD LOANS =====
+  void loadLoans() {
+    try {
+      Connection con = DatabaseConnection.getConnection();
 
-        JScrollPane spRemarks = new JScrollPane(new JTextArea());
-        spRemarks.setBounds(178, 405, 550, 35);
-        box.add(spRemarks);
+      PreparedStatement ps = con.prepareStatement(
+          "SELECT l.loan_id, l.loan_reference_number, l.loan_end_date, " +
+              "l.principal_amount, l.total_interest, l.total_amount_payable, " +
+              "c.client_id, c.first_name, c.last_name " +
+              "FROM Loan l " +
+              "JOIN Client c ON l.client_id = c.client_id");
 
-        // ===== AUTO COMPUTE AMOUNT PAID =====
-        KeyAdapter compute = new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                try {
-                    double p = tfPrincipal.getText().isEmpty() ? 0 : Double.parseDouble(tfPrincipal.getText());
-                    double i = tfInterest.getText().isEmpty() ? 0 : Double.parseDouble(tfInterest.getText());
-                    tfAmount.setText(String.valueOf(p + i));
-                } catch (NumberFormatException ex) {
-                    tfAmount.setText("0.00");
-                }
-            }
-        };
-        tfPrincipal.addKeyListener(compute);
-        tfInterest.addKeyListener(compute);
+      ResultSet rs = ps.executeQuery();
 
-        // ================= BUTTONS =================
-        JButton cancel = new JButton("Cancel");
-        cancel.setBounds(705, 585, 100, 40);
-        cancel.setBackground(NORMAL);
-        add(cancel);
+      while (rs.next()) {
+        int loanId = rs.getInt("loan_id");
 
-        JButton pay = new JButton("Pay");
-        pay.setBounds(820, 585, 100, 40);
-        pay.setBackground(NORMAL);
-        add(pay);
+        cbLoan.addItem(new ComboItem(
+            loanId,
+            rs.getString("loan_reference_number")));
 
-        cancel.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                if (selected != cancel) cancel.setBackground(ACTIVE);
-            }
-            public void mouseExited(MouseEvent e) {
-                if (selected != cancel) cancel.setBackground(NORMAL);
-            }
-            public void mousePressed(MouseEvent e) {
-                selected = cancel;
-                cancel.setBackground(ACTIVE);
-                pay.setBackground(NORMAL);
-            }
-        });
+        cbClient.addItem(new ComboItem(
+            rs.getInt("client_id"),
+            rs.getString("first_name") + " " + rs.getString("last_name")));
 
-        pay.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                if (selected != pay) pay.setBackground(ACTIVE);
-            }
-            public void mouseExited(MouseEvent e) {
-                if (selected != pay) pay.setBackground(NORMAL);
-            }
-            public void mousePressed(MouseEvent e) {
-                selected = pay;
-                pay.setBackground(ACTIVE);
-                cancel.setBackground(NORMAL);
-            }
-        });
+        LoanMeta meta = new LoanMeta();
+        meta.loanEndDate = rs.getDate("loan_end_date").toLocalDate();
+        meta.principalAmount = rs.getDouble("principal_amount");
+        meta.totalInterest = rs.getDouble("total_interest");
+        meta.totalAmountPayable = rs.getDouble("total_amount_payable");
+        meta.loanReferenceNumber = rs.getString("loan_reference_number");
+        meta.clientID = rs.getInt("client_id");
+
+        loanData.put(loanId, meta);
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  // ===== LOAD EMPLOYEES (RETAINED) =====
+  void loadEmployees() {
+    try {
+      Connection con = DatabaseConnection.getConnection();
+      ResultSet rs = con.createStatement().executeQuery(
+          "SELECT employee_id, first_name, last_name FROM Employee");
+
+      while (rs.next()) {
+        cbEmployee.addItem(new ComboItem(
+            rs.getInt("employee_id"),
+            rs.getString("first_name") + " " + rs.getString("last_name")));
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  // ===== UPDATE UI FROM LOAN =====
+  void updateLoanDetails() {
+    ComboItem loanItem = (ComboItem) cbLoan.getSelectedItem();
+    if (loanItem == null)
+      return;
+
+    LoanMeta meta = loanData.get(loanItem.id);
+    if (meta == null)
+      return;
+
+    tfDue.setText(meta.loanEndDate.toString());
+    tfPrincipal.setText(String.format("%.2f", meta.principalAmount));
+    tfInterest.setText(String.format("%.2f", meta.totalInterest));
+    tfAmount.setText(String.format("%.2f", meta.totalAmountPayable));
+
+    for (int i = 0; i < cbClient.getItemCount(); i++) {
+      ComboItem client = cbClient.getItemAt(i);
+      if (client.id == meta.clientID) {
+      cbClient.setSelectedIndex(i);
+      break;
     }
 }
+
+  }
+
+  // ===== SAVE PAYMENT =====
+  void savePayment() {
+    try {
+      if (cbLoan.getSelectedItem() == null ||
+          cbEmployee.getSelectedItem() == null) {
+
+        JOptionPane.showMessageDialog(this, "Please complete all required fields.");
+        return;
+      }
+
+      Connection con = DatabaseConnection.getConnection();
+
+      ComboItem loan = (ComboItem) cbLoan.getSelectedItem();
+      ComboItem emp = (ComboItem) cbEmployee.getSelectedItem();
+      LoanMeta meta = loanData.get(loan.id);
+
+      PreparedStatement ps = con.prepareStatement(
+          "INSERT INTO Payment (" +
+              "payment_reference_number, payment_date, due_date, " +
+              "amount_paid, principal_paid, interest_paid, penalty_fee, " +
+              "payment_method, remarks, processed_by_employee_id, loan_id" +
+              ") VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+      // Auto-generated payment reference
+      String paymentRef = ReferenceNumberGenerator.generatePaymentRefNo(5);
+      //String.format("PAY-%04d", loan.id);
+
+      ps.setString(1, paymentRef);
+      ps.setDate(2, Date.valueOf(tfDue.getText()));
+      ps.setDouble(3, Double.parseDouble(tfAmount.getText()));
+      ps.setDouble(4, Double.parseDouble(tfPrincipal.getText()));
+      ps.setDouble(5, Double.parseDouble(tfInterest.getText()));
+      ps.setDouble(6, Double.parseDouble(tfPenalty.getText()));
+      ps.setString(7, cbMethod.getSelectedItem().toString());
+      ps.setString(8, taRemarks.getText());
+      ps.setInt(9, emp.id);
+      ps.setInt(10, loan.id);
+
+      ps.executeUpdate();
+
+      JOptionPane.showMessageDialog(this, "Payment saved successfully!");
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error saving payment:\n" + e.getMessage());
+    } catch (NumberFormatException nfe) {
+      nfe.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Please input the amount of the penalty fee.");
+    }
+  }
+
+}
+
