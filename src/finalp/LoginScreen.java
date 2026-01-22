@@ -116,43 +116,38 @@ class LoginScreen extends JFrame {
 
         String query = "SELECT username, password_hash, role FROM Employee WHERE username = ? AND is_Active = 1";
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            // System.out.println(conn);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, usernameToCheck);
 
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String storedPassword = rs.getString("password_hash");
+                        employeeRole = rs.getString("role");
+                        boolean passwordMatch = false;
 
-            if (rs.next()) {
-                String storedPassword = rs.getString("password_hash");
-                employeeRole = rs.getString("role");
-                boolean passwordMatch = false;
+                        // Check if password is BCrypt hashed (starts with $2a$, $2b$, or $2y$)
+                            if (storedPassword != null && storedPassword.startsWith("$2")) {
+                            // New BCrypt hashed password - verify with BCrypt
+                            passwordMatch = BCrypt.checkpw(passwordToCheck, storedPassword);
 
-                // Check if password is BCrypt hashed (starts with $2a$, $2b$, or $2y$)
-                if (storedPassword != null && storedPassword.startsWith("$2")) {
-                    // New BCrypt hashed password - verify with BCrypt
-                    passwordMatch = BCrypt.checkpw(passwordToCheck, storedPassword);
-
-                    // If password matches, upgrade it to BCrypt hash
-                    if (passwordMatch) {
-                        String hashedPassword = BCrypt.hashpw(passwordToCheck, BCrypt.gensalt(10));
-                        updatePasswordInDatabase(usernameToCheck, hashedPassword);
-                        System.out.println("Password upgraded to BCrypt hash for user: " + usernameToCheck);
+                            // If password matches, upgrade it to BCrypt hash
+                                if (passwordMatch) {
+                                String hashedPassword = BCrypt.hashpw(passwordToCheck, BCrypt.gensalt(10));
+                                updatePasswordInDatabase(usernameToCheck, hashedPassword);
+                                System.out.println("Password upgraded to BCrypt hash for user: " + usernameToCheck);
+                                }
+                            }
+                        System.out.println("Password match: " + passwordMatch);
+                        return passwordMatch;
                     }
-                }
 
-                rs.close();
-                ps.close();
-
-                System.out.println("Password match: " + passwordMatch);
-                return passwordMatch;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            rs.close();
-            ps.close();
-            // employeeRole = "Admin";
+
             return false;
 
         } catch (SQLException e) {
@@ -165,13 +160,12 @@ class LoginScreen extends JFrame {
     private void updatePasswordInDatabase(String username, String hashedPassword) {
         String updateQuery = "UPDATE Employee SET password_hash = ? WHERE username = ?";
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(updateQuery);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+            
             ps.setString(1, hashedPassword);
             ps.setString(2, username);
             ps.executeUpdate();
-            ps.close();
         } catch (SQLException e) {
             System.err.println("Failed to update password for user: " + username);
             e.printStackTrace();

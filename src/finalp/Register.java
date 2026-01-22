@@ -166,16 +166,14 @@ class Register extends JPanel{
                     return;
                 }
                 
-                try {
-                    // Hash the password using BCrypt (includes automatic salting)
+                String query = "INSERT INTO Employee (username, password_hash, first_name, last_name, email, date_hired, employee_reference_number, role, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                try (Connection conn = DatabaseConnection.getConnection();
+                    PreparedStatement ps = conn.prepareStatement(query)) {
+
                     String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12)); 
                     
                     // Save to database
-                    String query = "INSERT INTO Employee (username, password_hash, first_name, last_name, email, date_hired, employee_reference_number, role, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                     Connection conn = DatabaseConnection.getConnection();
-                    System.out.println(conn);
-
-                    PreparedStatement ps = conn.prepareStatement(query);
                     ps.setString(1, username);
                     ps.setString(2, hashedPassword);
                     ps.setString(3, firstName);

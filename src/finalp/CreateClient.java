@@ -261,10 +261,11 @@ class CreateClient extends JPanel{
 
         String[] incomeRanges = {
             "Below ₱10,000",
-            "₱10,000 – ₱20,000",
-            "₱20,001 – ₱30,000",
-            "₱30,001 – ₱50,000",
-            "₱50,001 – ₱100,000",
+            "₱10,001-₱20,000",
+            "₱20,001-₱30,000",
+            "₱30,001-₱40,000",
+            "₱40,001-₱50,000",
+            "₱50,001-₱100,000",
             "Above ₱100,000"
         };
 
@@ -559,13 +560,13 @@ class CreateClient extends JPanel{
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try {
-            String dateofBirthLine = dob.getText();
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query)) {
+            
+                String dateofBirthLine = dob.getText();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localDate = LocalDate.parse(dateofBirthLine, formatter);
 
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, firstNameLine);
             ps.setString(2, middleNameLine);
             ps.setString(3, lastNameLine);
@@ -580,11 +581,12 @@ class CreateClient extends JPanel{
             ps.setString(12, employmentStatusLine);
             ps.setString(13, employerNameLine);
             ps.setString(14, incomeLine);
-            ps.setString(15, validIDLine);
+            ps.setString(15, validIDLine.replace('’', '\'').replace('—', '‐').replace('–', '‐'));
             ps.setString(16, validIDNumberLine);
             ps.setObject(17, timestamp);
             ps.setString(18, clientRefNo);
             ps.setString(19, sex);
+
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                     JOptionPane.showMessageDialog(

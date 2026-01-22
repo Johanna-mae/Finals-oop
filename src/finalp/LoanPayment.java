@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class LoanPayment extends JPanel {
 
-    // ===== COMBO ITEM =====
+  // ===== COMBO ITEM =====
   class ComboItem {
     int id;
     String label;
@@ -171,17 +171,24 @@ public class LoanPayment extends JPanel {
 
   // ===== LOAD LOANS =====
   void loadLoans() {
-    try {
-      Connection con = DatabaseConnection.getConnection();
 
-      PreparedStatement ps = con.prepareStatement(
-          "SELECT l.loan_id, l.loan_reference_number, l.loan_end_date, " +
-              "l.principal_amount, l.total_interest, l.total_amount_payable, " +
-              "c.client_id, c.first_name, c.last_name " +
-              "FROM Loan l " +
-              "JOIN Client c ON l.client_id = c.client_id");
-
-      ResultSet rs = ps.executeQuery();
+    String query = """
+        SELECT 
+          l.loan_id, 
+          l.loan_reference_number, 
+          l.loan_end_date,
+          l.principal_amount, 
+          l.total_interest, 
+          l.total_amount_payable,
+          c.client_id,
+          c.first_name, 
+          c.last_name 
+          FROM Loan l
+          JOIN Client c ON l.client_id = c.client_id
+          """;
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query);
+         ResultSet rs = ps.executeQuery()) {
 
       while (rs.next()) {
         int loanId = rs.getInt("loan_id");
@@ -212,10 +219,11 @@ public class LoanPayment extends JPanel {
 
   // ===== LOAD EMPLOYEES (RETAINED) =====
   void loadEmployees() {
-    try {
-      Connection con = DatabaseConnection.getConnection();
-      ResultSet rs = con.createStatement().executeQuery(
-          "SELECT employee_id, first_name, last_name FROM Employee");
+    String query = "SELECT employee_id, first_name, last_name FROM Employee";
+
+
+    try (Connection conn = DatabaseConnection.getConnection();
+         ResultSet rs = conn.createStatement().executeQuery(query)) {
 
       while (rs.next()) {
         cbEmployee.addItem(new ComboItem(
@@ -245,16 +253,35 @@ public class LoanPayment extends JPanel {
     for (int i = 0; i < cbClient.getItemCount(); i++) {
       ComboItem client = cbClient.getItemAt(i);
       if (client.id == meta.clientID) {
-      cbClient.setSelectedIndex(i);
-      break;
+        cbClient.setSelectedIndex(i);
+        break;
+      }
     }
-}
 
   }
 
   // ===== SAVE PAYMENT =====
   void savePayment() {
-    try {
+
+    String query = """
+        INSERT INTO Payment (
+            payment_reference_number,
+            paymenr_date,
+            due_date,
+            amount_paid,
+            principal_paid,
+            interest_paid,
+            penalty_fee,
+            payment_method,
+            remarks,
+            processed_by_employee_id,
+            loan_id
+        ) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+
+    try (Connection con = DatabaseConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement(query)){
+
       if (cbLoan.getSelectedItem() == null ||
           cbEmployee.getSelectedItem() == null) {
 
@@ -262,22 +289,12 @@ public class LoanPayment extends JPanel {
         return;
       }
 
-      Connection con = DatabaseConnection.getConnection();
-
       ComboItem loan = (ComboItem) cbLoan.getSelectedItem();
       ComboItem emp = (ComboItem) cbEmployee.getSelectedItem();
       LoanMeta meta = loanData.get(loan.id);
 
-      PreparedStatement ps = con.prepareStatement(
-          "INSERT INTO Payment (" +
-              "payment_reference_number, payment_date, due_date, " +
-              "amount_paid, principal_paid, interest_paid, penalty_fee, " +
-              "payment_method, remarks, processed_by_employee_id, loan_id" +
-              ") VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
       // Auto-generated payment reference
       String paymentRef = ReferenceNumberGenerator.generatePaymentRefNo(5);
-      //String.format("PAY-%04d", loan.id);
 
       ps.setString(1, paymentRef);
       ps.setDate(2, Date.valueOf(tfDue.getText()));
@@ -295,13 +312,12 @@ public class LoanPayment extends JPanel {
       JOptionPane.showMessageDialog(this, "Payment saved successfully!");
 
     } catch (SQLException e) {
-      e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error saving payment:\n" + e.getMessage());
+        e.printStackTrace();
+      JOptionPane.showMessageDialog(this, "Error saving payment:\n" + e.getMessage());
     } catch (NumberFormatException nfe) {
-      nfe.printStackTrace();
+        nfe.printStackTrace();
         JOptionPane.showMessageDialog(this, "Please input the amount of the penalty fee.");
     }
   }
 
 }
-

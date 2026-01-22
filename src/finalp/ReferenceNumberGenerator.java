@@ -10,8 +10,9 @@ public class ReferenceNumberGenerator {
     public static String generateClientRefNo(int length) {
         boolean isUnique = false;
         String clientRefNo = "";
-
         SecureRandom random = new SecureRandom();
+        String query = "SELECT 1 FROM Client WHERE client_reference_number = ?";
+
 
         while (isUnique == false) {
             String numberString = random.ints(length, '0', '9' + 1) // Generate a stream of ASCII values for '0' to '9'
@@ -19,16 +20,13 @@ public class ReferenceNumberGenerator {
                     .toString();
             clientRefNo = "CLI-" + numberString;
 
-            String query = "SELECT 1 FROM Client WHERE client_reference_number = ?";
 
-            try {
+            try (
                 Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(query);
+                PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setString(1, clientRefNo);
 
-                try {
-                    ResultSet rs = ps.executeQuery();
-
+                try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         isUnique = true;
                     }
@@ -77,6 +75,7 @@ public class ReferenceNumberGenerator {
         }
 
         SecureRandom random = new SecureRandom();
+        String query = "SELECT 1 FROM Document WHERE document_reference_number = ?";
 
         while (isUnique == false) {
             String numberString = random.ints(length, '0', '9' + 1) // Generate a stream of ASCII values for '0' to '9'
@@ -84,15 +83,13 @@ public class ReferenceNumberGenerator {
                     .toString();
             documentRefNo = "DOC-" + documentTypeID + numberString;
 
-            String query = "SELECT 1 FROM Document WHERE document_reference_number = ?";
 
-            try {
-                Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(query);
+            try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
                 ps.setString(1, documentRefNo);
 
-                try {
-                    ResultSet rs = ps.executeQuery();
+                try (ResultSet rs = ps.executeQuery()){
 
                     if (!rs.next()) {
                         isUnique = true;
@@ -115,6 +112,8 @@ public class ReferenceNumberGenerator {
         String employeeRefNo = "";
 
         SecureRandom random = new SecureRandom();
+        String query = "SELECT 1 FROM Employee WHERE employee_reference_number = ?";
+
 
         while (isUnique == false) {
             String numberString = random.ints(length, '0', '9' + 1) // Generate a stream of ASCII values for '0' to '9'
@@ -122,15 +121,13 @@ public class ReferenceNumberGenerator {
                     .toString();
             employeeRefNo = "EMP-" + numberString;
 
-            String query = "SELECT 1 FROM Employee WHERE employee_reference_number = ?";
 
-            try {
-                Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(query);
-                ps.setString(1, employeeRefNo);
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(query)){
+                
+                    ps.setString(1, employeeRefNo);
 
-                try {
-                    ResultSet rs = ps.executeQuery();
+                try (ResultSet rs = ps.executeQuery()) {
 
                     if (!rs.next()) {
                         isUnique = true;
@@ -174,6 +171,7 @@ public class ReferenceNumberGenerator {
         }
 
         SecureRandom random = new SecureRandom();
+        String query = "SELECT 1 FROM Loan WHERE loan_reference_number = ?";
 
         while (isUnique == false) {
             String numberString = random.ints(length, '0', '9' + 1) // Generate a stream of ASCII values for '0' to '9'
@@ -181,15 +179,13 @@ public class ReferenceNumberGenerator {
                     .toString();
             loanRefNo = "LON-" + loanTypeString + "-" + numberString;
 
-            String query = "SELECT 1 FROM Loan WHERE loan_reference_number = ?";
 
-            try {
-                Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(query);
-                ps.setString(1, loanRefNo);
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(query)) {
+                
+                    ps.setString(1, loanRefNo);
 
-                try {
-                    ResultSet rs = ps.executeQuery();
+                try (ResultSet rs = ps.executeQuery()) {
 
                     if (!rs.next()) {
                         isUnique = true;
@@ -233,6 +229,7 @@ public class ReferenceNumberGenerator {
         }
 
         SecureRandom random = new SecureRandom();
+        String query = "SELECT 1 FROM Loan_Application WHERE loan_application_reference_number = ?";
 
         while (isUnique == false) {
             String numberString = random.ints(length, '0', '9' + 1) // Generate a stream of ASCII values for '0' to '9'
@@ -240,15 +237,13 @@ public class ReferenceNumberGenerator {
                     .toString();
             loanApplicationRefNo = "LNA-" + loanTypeString + "-" + numberString;
 
-            String query = "SELECT 1 FROM Loan_Application WHERE loan_application_reference_number = ?";
 
-            try {
-                Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(query);
-                ps.setString(1, loanApplicationRefNo);
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(query)) {
+                
+                 ps.setString(1, loanApplicationRefNo);
 
-                try {
-                    ResultSet rs = ps.executeQuery();
+                try (ResultSet rs = ps.executeQuery()) {
 
                     if (!rs.next()) {
                         isUnique = true;
@@ -270,6 +265,8 @@ public class ReferenceNumberGenerator {
         String paymentRefNo = "";
 
         SecureRandom random = new SecureRandom();
+        String query = "SELECT 1 FROM Payment WHERE payment_reference_number = ?";
+
 
         while (isUnique == false) {
             String numberString = random.ints(length, '0', '9' + 1) // Generate a stream of ASCII values for '0' to '9'
@@ -277,15 +274,12 @@ public class ReferenceNumberGenerator {
                     .toString();
             paymentRefNo = "PYM-" + paymentRefNo + numberString;
 
-            String query = "SELECT 1 FROM Payment WHERE payment_reference_number = ?";
 
-            try {
-                Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement ps = conn.prepareStatement(query);
+            try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setString(1, paymentRefNo);
 
-                try {
-                    ResultSet rs = ps.executeQuery();
+                try (ResultSet rs = ps.executeQuery()) {
 
                     if (!rs.next()) {
                         isUnique = true;

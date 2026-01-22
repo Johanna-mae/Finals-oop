@@ -172,6 +172,7 @@ public class EditClientRecord extends JPanel {
         civilStatus = new JComboBox<>(civilStatuses);
         civilStatus.setBounds(740, 169, 150, 30);
         civilStatus.setBackground(NORMAL);
+        civilStatus.setSelectedIndex(-1);
         p.add(civilStatus);
 
         // ===== EMPLOYMENT STATUS =====
@@ -183,6 +184,7 @@ public class EditClientRecord extends JPanel {
         employmentStatus = new JComboBox<>(empStatuses);
         employmentStatus.setBounds(220, 216, 150, 30);
         employmentStatus.setBackground(NORMAL);
+        employmentStatus.setSelectedIndex(-1);
         p.add(employmentStatus);
 
         // ===== EMPLOYER NAME =====
@@ -199,11 +201,12 @@ public class EditClientRecord extends JPanel {
         lblIncome.setBounds(60, 263, 160, 30);
         lblIncome.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblIncome);
-        String[] incomeRanges = { "Below ₱10,000", "₱10,000 – ₱20,000", "₱20,001 – ₱30,000", "₱40,001 – ₱50,000",
-                "₱50,001 – ₱100,000", "Above ₱100,000" };
+        String[] incomeRanges = { "Below ₱10,000", "₱10,000-₱20,000", "₱20,001-₱30,000", "₱30,001-₱40,000", "₱40,001-₱50,000",
+                "₱50,001-₱100,000", "Above ₱100,000" };
         monthlyIncome = new JComboBox<>(incomeRanges);
         monthlyIncome.setBounds(200, 263, 150, 30);
         monthlyIncome.setBackground(NORMAL);
+        monthlyIncome.setSelectedIndex(-1);
         p.add(monthlyIncome);
 
         // ===== VALID ID =====
@@ -211,8 +214,8 @@ public class EditClientRecord extends JPanel {
         lblValidId.setBounds(380, 263, 150, 30);
         lblValidId.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblValidId);
-        String[] validIds = { "Passport", "Driver’s License", "UMID", "PhilSys National ID", "SSS ID", "GSIS ID",
-                "Voter’s ID", "Postal ID", "PRC ID" };
+        String[] validIds = { "Passport", "Driver's License", "UMID", "PhilSys National ID", "SSS ID", "GSIS ID",
+                "Voter's ID", "Postal ID", "PRC ID" };
         validIDType = new JComboBox<>(validIds);
         validIDType.setBounds(460, 263, 150, 30);
         validIDType.setBackground(NORMAL);
@@ -232,6 +235,12 @@ public class EditClientRecord extends JPanel {
         updateRecord.addActionListener(e -> updateClientRecord());
         p.add(updateRecord);
 
+        JButton updateClientListTable = new JButton("Update List");
+        updateClientListTable.setBounds(595, 350, 170, 35);
+        updateClientListTable.setBackground(NORMAL);
+        updateClientListTable.addActionListener(y -> loadClientData());
+        p.add(updateClientListTable);
+
         // ===== CLIENT TABLE =====
         String[] columns = { "Client Ref No.", "Client Name", "Employment Status", "Monthly Income", "Client Status" };
         tableModel = new DefaultTableModel(columns, 0) {
@@ -244,7 +253,6 @@ public class EditClientRecord extends JPanel {
         clientListTable.setRowHeight(30);
         clientListTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
-        
         JScrollPane sp = new JScrollPane(clientListTable);
         sp.setBounds(60, 550, 965, 400);
         contentPanel.add(sp);
@@ -257,11 +265,11 @@ public class EditClientRecord extends JPanel {
                 if (row >= 0) {
                     String clientRef = tableModel.getValueAt(row, 0).toString(); // get Ref No.
 
+                    String sql = "SELECT * FROM Client WHERE client_reference_number = ?";
+
                     // Fetch full client data from DB
-                    try {
-                        Connection conn = DatabaseConnection.getConnection();
-                        String sql = "SELECT * FROM Client WHERE client_reference_number = ?";
-                        PreparedStatement ps = conn.prepareStatement(sql);
+                    try (Connection conn = DatabaseConnection.getConnection();
+                            PreparedStatement ps = conn.prepareStatement(sql);) {
                         ps.setString(1, clientRef);
                         ResultSet rs = ps.executeQuery();
 
@@ -297,17 +305,16 @@ public class EditClientRecord extends JPanel {
             }
         });
 
-        
         // ===== MAIN SCROLL PANE =====
         JScrollPane mainScroll = new JScrollPane(contentPanel);
         mainScroll.setBounds(0, 0, 1090, 800);
         mainScroll.getVerticalScrollBar().setUnitIncrement(16);
         add(mainScroll);
 
-/*
-        add(contentPanel);
-        contentPanel.setBounds(0, 0, 1090, 800);*/
-
+        /*
+         * add(contentPanel);
+         * contentPanel.setBounds(0, 0, 1090, 800);
+         */
 
         // ===== LOAD DATA =====
         loadClientData();
@@ -338,17 +345,16 @@ public class EditClientRecord extends JPanel {
                     FROM Client
                 """;
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(query);
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(query);) {
 
             tableModel.setRowCount(0);
 
             while (rs.next()) {
-            String fullName = rs.getString("First Name") + " " +
-                              rs.getString("Middle Name") + " " +
-                              rs.getString("Last Name");
+                String fullName = rs.getString("First Name") + " " +
+                        rs.getString("Middle Name") + " " +
+                        rs.getString("Last Name");
 
                 tableModel.addRow(new Object[] {
                         rs.getString("Client Ref. No."),
@@ -434,7 +440,7 @@ public class EditClientRecord extends JPanel {
             ps.setString(13, empStatus);
             ps.setString(14, employer);
             ps.setString(15, income);
-            ps.setString(16, idType);
+            ps.setString(16, idType.replace('’', '\'').replace('—', '‐').replace('–', '‐'));
             ps.setString(17, idNo);
             ps.setString(18, clientRef);
 

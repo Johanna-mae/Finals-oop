@@ -16,6 +16,7 @@ class ViewLoans extends JPanel {
 
     JTable loanTable;
     JTable breakdownTable;
+    JButton btnRefreshLoanTable;
 
     DefaultTableModel breakdownModel;
 
@@ -60,6 +61,10 @@ class ViewLoans extends JPanel {
         loanScroll.setBounds(45, 100, 1000, 220);
         contentPanel.add(loanScroll);
 
+        btnRefreshLoanTable = new JButton("Refresh Table");
+        btnRefreshLoanTable.setBounds(910, 330, 130, 30);
+        contentPanel.add(btnRefreshLoanTable);
+
         String query = """
                         SELECT
                                 Loan.loan_reference_number AS "Loan Reference No.",
@@ -74,12 +79,14 @@ class ViewLoans extends JPanel {
                 String loanRefNo, clientName, Term, status;
                 double loanAmount;
 
-                try {
-                        Connection conn = DatabaseConnection.getConnection();
-                        Statement st = conn.createStatement();
-                        ResultSet rs = st.executeQuery(query);
+                DefaultTableModel tblModel = new DefaultTableModel(); 
+
+
+                try (Connection conn = DatabaseConnection.getConnection();
+                     Statement st = conn.createStatement();
+                     ResultSet rs = st.executeQuery(query)) {
+                     
                         ResultSetMetaData rsmd = rs.getMetaData();
-                        DefaultTableModel tblModel = new DefaultTableModel(); 
                         loanTable.setModel(tblModel);
 
                         int cols = rsmd.getColumnCount();
@@ -108,7 +115,7 @@ class ViewLoans extends JPanel {
 
         // ================= BREAKDOWN PANEL =================
         JPanel breakdownPanel = new JPanel(null);
-        breakdownPanel.setBounds(45, 340, 1000, 390);
+        breakdownPanel.setBounds(45, 370, 1000, 390);
         breakdownPanel.setBackground(NORMAL);
         contentPanel.add(breakdownPanel);
 

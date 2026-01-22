@@ -1,8 +1,6 @@
 package finalp;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.sql.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -85,11 +83,10 @@ class ClientsList extends JPanel {
                       FROM Client
                 """;
 
-        try {
+        try (
             Connection conn = DatabaseConnection.getConnection();
             Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(query);
-
+            ResultSet rs = st.executeQuery(query)){
             // Clear table before loading
             tblModel.setRowCount(0);
 
@@ -115,5 +112,7 @@ class ClientsList extends JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading client data: " + e.getMessage());
         }
+
+        System.out.println("Records refreshed.");
     }
 }

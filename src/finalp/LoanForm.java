@@ -9,13 +9,13 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 
 class LoanForm extends JPanel {
-    
+
     Color NORMAL = new Color(0xAAC3DD);
     Color ACTIVE = new Color(0x8AA1B9);
 
     JButton selected = null;
     int applicationCounter = 1000; // start ng numbering sa id
-    
+
     PendingLoanApplication loanapplication;
 
     JTextArea taPurpose;
@@ -28,7 +28,7 @@ class LoanForm extends JPanel {
 
     public LoanForm(PendingLoanApplication loanapplication) {
         this.loanapplication = loanapplication;
-        
+
         setLayout(null);
         setBounds(280, 0, 1090, 800);
         setBackground(Color.WHITE);
@@ -41,7 +41,7 @@ class LoanForm extends JPanel {
         JLabel sub = new JLabel("Enter details to avail loan");
         sub.setBounds(23, 55, 400, 20);
         add(sub);
-        
+
         JSeparator sep = new JSeparator();
         sep.setBounds(23, 80, 1040, 2);
         add(sep);
@@ -106,9 +106,8 @@ class LoanForm extends JPanel {
         box.add(Term);
 
         JComboBox<String> cbTerm = new JComboBox<>(
-            new String[5]
-        );
-        //retrieveMinMaxTerms(retrieveLoanTypesList(cbLoanType), cbTerm);
+                new String[5]);
+        // retrieveMinMaxTerms(retrieveLoanTypesList(cbLoanType), cbTerm);
         cbTerm.setBounds(180, 170, 550, 30);
         cbTerm.setSelectedIndex(-1);
         box.add(cbTerm);
@@ -135,18 +134,19 @@ class LoanForm extends JPanel {
         Status.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(Status);
 
-        cbStatus = new JComboBox<>(new String[]{"For Approval"});
+        cbStatus = new JComboBox<>(new String[] { "For Approval" });
         cbStatus.setBounds(180, 300, 550, 30);
         cbStatus.setSelectedIndex(-1);
         box.add(cbStatus);
-        
+
         // DOCUMENT TYPES 1 & 2
         JLabel docType1 = new JLabel("1st Document Type");
         docType1.setBounds(20, 420, 150, 30);
         docType1.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(docType1);
 
-        cbDocType1 = new JComboBox<>(new String[]{"Valid ID","Proof of Income","ITR","Proof of Billing","Employment Certificate","Business Permit","Collateral Documents"});
+        cbDocType1 = new JComboBox<>(new String[] { "Valid ID", "Proof of Income", "ITR", "Proof of Billing",
+                "Employment Certificate", "Business Permit", "Collateral Documents" });
         cbDocType1.setBounds(180, 420, 550, 30);
         cbDocType1.setSelectedIndex(-1);
         box.add(cbDocType1);
@@ -156,7 +156,8 @@ class LoanForm extends JPanel {
         docType2.setFont(new Font("Arial", Font.BOLD, 14));
         box.add(docType2);
 
-        cbDocType2 = new JComboBox<>(new String[]{"Valid ID","Proof of Income","ITR","Proof of Billing","Employment Certificate","Business Permit","Collateral Documents"});
+        cbDocType2 = new JComboBox<>(new String[] { "Valid ID", "Proof of Income", "ITR", "Proof of Billing",
+                "Employment Certificate", "Business Permit", "Collateral Documents" });
         cbDocType2.setBounds(180, 470, 550, 30);
         cbDocType2.setSelectedIndex(-1);
         cbDocType2.setEnabled(false);
@@ -197,11 +198,10 @@ class LoanForm extends JPanel {
                 for (File f : files) {
                     if (fileModel.size() >= 2) {
                         JOptionPane.showMessageDialog(
-                            this,
-                            "Maximum of 2 files only.",
-                            "Upload Limit",
-                            JOptionPane.ERROR_MESSAGE
-                        );
+                                this,
+                                "Maximum of 2 files only.",
+                                "Upload Limit",
+                                JOptionPane.ERROR_MESSAGE);
                         break;
                     }
 
@@ -212,7 +212,7 @@ class LoanForm extends JPanel {
 
                 if (fileModel.size() > 1) {
                     cbDocType2.setEnabled(true);
-                 }
+                }
             }
         });
 
@@ -222,16 +222,15 @@ class LoanForm extends JPanel {
 
             if (index != -1) {
                 fileModel.remove(index);
-                    if (fileModel.size() < 2) {
+                if (fileModel.size() < 2) {
                     cbDocType2.setEnabled(false);
                 }
             } else {
                 JOptionPane.showMessageDialog(
-                    this,
-                    "Please select a file to remove.",
-                    "No File Selected",
-                    JOptionPane.WARNING_MESSAGE
-                );
+                        this,
+                        "Please select a file to remove.",
+                        "No File Selected",
+                        JOptionPane.WARNING_MESSAGE);
             }
         });
 
@@ -244,37 +243,37 @@ class LoanForm extends JPanel {
                     return;
                 }
 
-                //double amount = ((Number) value).doubleValue();
+                // double amount = ((Number) value).doubleValue();
                 double principal = ((Number) value).doubleValue();
                 String termString = cbTerm.getSelectedItem().toString();
                 int months = Integer.parseInt(termString.split(" ")[0]);
-               
+
                 // Get interest rate from database based on loan type
                 String loanTypeEntry = cbLoanType.getSelectedItem().toString();
                 double annualInterestRate = retrieveInterestRate(loanTypeEntry);
-                
+
                 if (months > 0 && principal > 0) {
                     double monthlyPayment;
-                    
+
                     if (annualInterestRate > 0) {
                         // Monthly interest rate (annual / 12 / 100)
                         double monthlyRate = annualInterestRate / 12 / 100;
-                        
+
                         // Amortization formula: P * [r(1+r)^n] / [(1+r)^n - 1]
                         // Where: P = principal, r = monthly rate, n = number of months
                         double numerator = monthlyRate * Math.pow(1 + monthlyRate, months);
                         double denominator = Math.pow(1 + monthlyRate, months) - 1;
                         monthlyPayment = principal * (numerator / denominator);
 
-                        //System.out.println("monthly rate is " + monthlyRate); //debugs
-                        //System.out.println("numerator is " + numerator);
-                        //System.out.println("denominator is " + denominator);
-                        //System.out.println("compounded monthly payment is " + monthlyPayment);
+                        // System.out.println("monthly rate is " + monthlyRate); //debugs
+                        // System.out.println("numerator is " + numerator);
+                        // System.out.println("denominator is " + denominator);
+                        // System.out.println("compounded monthly payment is " + monthlyPayment);
 
                     } else {
                         // No interest (0% loans)
                         monthlyPayment = principal / months;
-                        //System.out.println("no interest monthly payment is " + monthlyPayment);
+                        // System.out.println("no interest monthly payment is " + monthlyPayment);
                     }
 
                     // ✅ FORMAT AND DISPLAY THE RESULT (this was missing!)
@@ -283,7 +282,7 @@ class LoanForm extends JPanel {
                     formatter.setMaximumFractionDigits(2);
 
                     tfEstimate.setText("₱" + formatter.format(monthlyPayment));
-        
+
                 }
             } catch (Exception ex) {
                 tfEstimate.setText("");
@@ -311,19 +310,21 @@ class LoanForm extends JPanel {
         createLoanApplication.addActionListener(e -> {
             createLoanApplication(cbClient, cbTerm);
         });
-        
-        //functions ng button mouselistener
+
+        // functions ng button mouselistener
         cancel.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent c) {
                 if (selected != cancel) {
                     cancel.setBackground(ACTIVE);
                 }
             }
+
             public void mouseExited(MouseEvent e) {
                 if (selected != cancel) {
                     cancel.setBackground(NORMAL);
                 }
             }
+
             public void mousePressed(MouseEvent cl) {
                 selected = cancel;
 
@@ -331,18 +332,20 @@ class LoanForm extends JPanel {
                 createLoanApplication.setBackground(NORMAL);
             }
         });
-        
+
         createLoanApplication.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent c) {
                 if (selected != createLoanApplication) {
                     createLoanApplication.setBackground(ACTIVE);
                 }
             }
+
             public void mouseExited(MouseEvent e) {
                 if (selected != createLoanApplication) {
                     createLoanApplication.setBackground(NORMAL);
                 }
             }
+
             public void mousePressed(MouseEvent cl) {
                 selected = createLoanApplication;
 
@@ -365,22 +368,22 @@ class LoanForm extends JPanel {
                 }
             }
         });
-    
+
     }
 
     public void retrieveClientList(JComboBox<ClientItem> cbClient) {
         String query = """
-            SELECT client_id, 
-            CONCAT(last_name, ', ', first_name, ' ', LEFT(middle_name, 1), '.') AS full_name
-            FROM Client
-                """;;
+                SELECT client_id,
+                CONCAT(last_name, ', ', first_name, ' ', LEFT(middle_name, 1), '.') AS full_name
+                FROM Client
+                    """;
+        ;
 
         cbClient.removeAllItems();
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 int clientID = rs.getInt("client_id");
@@ -392,7 +395,7 @@ class LoanForm extends JPanel {
             ps.close();
 
         } catch (SQLException e) {
-                e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -400,14 +403,13 @@ class LoanForm extends JPanel {
         int loan_type_id;
         String loan_type = "";
         String query = """
-            SELECT loan_type_id, type_name FROM Loan_Type
-                """;
+                SELECT loan_type_id, type_name FROM Loan_Type
+                    """;
         cbLoanTypes.removeAllItems();
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 loan_type_id = rs.getInt("loan_type_id");
@@ -418,78 +420,77 @@ class LoanForm extends JPanel {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, 
-            "Error loading loan types: " + e.getMessage(),
-            "Database Error", 
-            JOptionPane.ERROR_MESSAGE);
-        }      
+            JOptionPane.showMessageDialog(null,
+                    "Error loading loan types: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void retrieveMinMaxTerms(String typeName, JComboBox<String> cbTerm) {
         cbTerm.removeAllItems();
-        
+
         int min = 0;
         int max = 0;
 
         String query = """
-            SELECT min_term_months, max_term_months FROM Loan_Type WHERE type_name = ?
-                """;
+                SELECT min_term_months, max_term_months FROM Loan_Type WHERE type_name = ?
+                    """;
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(query);
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
             ps.setString(1, typeName);
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                min = rs.getInt("min_term_months");
-                max = rs.getInt("max_term_months");
-            
 
-                for (int i = min; i <= max; i+=6) {
-                    cbTerm.addItem(String.valueOf(i) + " Months");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    min = rs.getInt("min_term_months");
+                    max = rs.getInt("max_term_months");
+
+                    for (int i = min; i <= max; i += 6) {
+                        cbTerm.addItem(String.valueOf(i) + " Months");
+                    }
+                } else {
+                    // No loan type found
+                    JOptionPane.showMessageDialog(null,
+                            "Loan type '" + typeName + "' not found in database.",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
                 }
-            } else {
-            // No loan type found
-                JOptionPane.showMessageDialog(null,
-                "Loan type '" + typeName + "' not found in database.",
-                "Warning",
-                JOptionPane.WARNING_MESSAGE);
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            rs.close();
-            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null,
-            "Error loading loan terms: " + e.getMessage(),
-            "Database Error",
-            JOptionPane.ERROR_MESSAGE);
+                    "Error loading loan terms: " + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public double retrieveInterestRate(String typeName) {
         double interestRate = 0.0;
-        
+
         String query = "SELECT annual_interest_rate FROM Loan_Type WHERE type_name = ?";
-        
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(query);
+
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);
+                ResultSet rs = ps.executeQuery()) {
+
             ps.setString(1, typeName);
-            ResultSet rs = ps.executeQuery();
-            
+
             if (rs.next()) {
                 interestRate = rs.getDouble("annual_interest_rate");
             }
-            
+
             rs.close();
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return interestRate;
     }
 
@@ -501,12 +502,11 @@ class LoanForm extends JPanel {
         int selectedClient = 0;
         int loanTypeID = 0;
 
-
         if (selected == null) {
             JOptionPane.showMessageDialog(this, "Please select a client.");
             return;
         }
-        
+
         if (selectedLoanType == null) {
             JOptionPane.showMessageDialog(this, "Please select a loan type.");
             return;
@@ -519,32 +519,32 @@ class LoanForm extends JPanel {
 
         if (isRequestedAmountNotNull) {
             Object value = tfAmount.getValue();
-            requestedAmount = ((Number) value).intValue();            
+            requestedAmount = ((Number) value).intValue();
             selectedClient = selected.getClientID();
         } else {
             JOptionPane.showMessageDialog(
-                LoanForm.this, 
-                "Error: Value is null", 
-                "Error", 
-                JOptionPane.INFORMATION_MESSAGE );
+                    LoanForm.this,
+                    "Error: Value is null",
+                    "Error",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        if (cbDocType1.getSelectedItem() == null){
+        if (cbDocType1.getSelectedItem() == null) {
             JOptionPane.showMessageDialog(
-                LoanForm.this, 
-                "Error: Document type is null", 
-                "Error", 
-                JOptionPane.INFORMATION_MESSAGE );
+                    LoanForm.this,
+                    "Error: Document type is null",
+                    "Error",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        if (cbDocType2.getSelectedItem() == null && fileModel.size() == 2){
+        if (cbDocType2.getSelectedItem() == null && fileModel.size() == 2) {
             JOptionPane.showMessageDialog(
-                LoanForm.this, 
-                "Error: Document type is null", 
-                "Error", 
-                JOptionPane.INFORMATION_MESSAGE );
+                    LoanForm.this,
+                    "Error: Document type is null",
+                    "Error",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -559,38 +559,45 @@ class LoanForm extends JPanel {
         String loanAppRefNo = ReferenceNumberGenerator.generateLoanApplicationRefNo(5, loanTypeID);
 
         String query = """
-            INSERT INTO Loan_Application (requested_amount, requested_term_months, purpose, application_date, status, client_id, loan_type_id, loan_application_reference_number) VALUES 
-                (?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+                INSERT INTO Loan_Application (requested_amount, requested_term_months, purpose, application_date, status, client_id, loan_type_id, loan_application_reference_number) VALUES
+                    (?, ?, ?, ?, ?, ?, ?, ?)
+                    """;
         int generatedID = -1;
 
-        try{
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setInt(1, requestedAmount);
             ps.setInt(2, requestedTermMonths);
-            ps.setString(3, purpose); System.out.println("purpose is " + purpose);
+            ps.setString(3, purpose);
+            System.out.println("purpose is " + purpose);
             ps.setObject(4, timestamp);
-            ps.setObject(5, status); System.out.println("the status is " + status);
-            ps.setObject(6, selectedClient); System.out.println("the selected client is" + selectedClient);
-            ps.setInt(7, loanTypeID); System.out.println("the loan type id is " + loanTypeID);
+            ps.setObject(5, status);
+            System.out.println("the status is " + status);
+            ps.setObject(6, selectedClient);
+            System.out.println("the selected client is" + selectedClient);
+            ps.setInt(7, loanTypeID);
+            System.out.println("the loan type id is " + loanTypeID);
             ps.setString(8, loanAppRefNo);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 JOptionPane.showMessageDialog(
-                LoanForm.this,
-                "Loan Application Created Successfully",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE
-                );
+                        LoanForm.this,
+                        "Loan Application Created Successfully",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
 
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                generatedID = rs.getInt(1);
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    generatedID = rs.getInt(1);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            if (generatedID !=-1 && !fileModel.isEmpty()){
+            if (generatedID != -1 && !fileModel.isEmpty()) {
                 FileUpload upload = new FileUpload();
                 upload.uploadDocument(generatedID, fileModel, cbDocType1, cbDocType2);
                 JOptionPane.showMessageDialog(this, "Application and Documents Saved!");
@@ -613,5 +620,3 @@ class LoanForm extends JPanel {
         }
     }
 }
-        
-        

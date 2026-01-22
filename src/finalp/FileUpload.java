@@ -41,9 +41,9 @@ public class FileUpload {
                         (?, ?, ?, ?, ?, ?)
                         """;
 
-                try {
-                    Connection conn = DatabaseConnection.getConnection();
-                    PreparedStatement ps = conn.prepareStatement(query);
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(query)) {
+                        
                     ps.setInt(1, applicationID); System.out.println(applicationID);
                     ps.setString(2, documentType); System.out.println(documentType);
                     ps.setString(3, destFile.getPath()); System.out.println(destFile.getPath());

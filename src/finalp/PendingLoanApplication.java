@@ -25,7 +25,7 @@ class PendingLoanApplication extends JPanel {
         JTextArea taPurpose;
         JScrollPane loanScroll;
         JTable pendingLoanApplicationTable;
-        JButton btnCancel, btnApproveLoan;
+        JButton btnCancel, btnApproveLoan, btnRefreshPendingLoansTable;
 
         public PendingLoanApplication() {
                 setLayout(null);
@@ -122,12 +122,16 @@ class PendingLoanApplication extends JPanel {
                 box.add(cbEmployeeName);
 
                 btnCancel = new JButton("Cancel");
-                btnCancel.setBounds(630, 300, 100, 30);
+                btnCancel.setBounds(635, 300, 100, 30);
                 box.add(btnCancel);
 
                 btnApproveLoan = new JButton("Approve Loan");
                 btnApproveLoan.setBounds(760, 300, 150, 30);
                 box.add(btnApproveLoan);
+
+                btnRefreshPendingLoansTable = new JButton("Refresh Table");
+                btnRefreshPendingLoansTable.setBounds(760, 340, 150, 30);
+                box.add(btnRefreshPendingLoansTable);
 
                 pendingLoanApplicationTable = new JTable();
                 pendingLoanApplicationTable.setRowHeight(30);
@@ -151,14 +155,16 @@ class PendingLoanApplication extends JPanel {
                                 WHERE status = "For Approval"
                                         """;
 
-                String no, name, loanType, requestedAmount, requestedTerm, applicationDate, status, purpose, annualInterestRate, clientID;
+                String no, name, loanType, requestedAmount, requestedTerm, applicationDate, status, purpose,
+                                annualInterestRate, clientID;
 
-                try {
-                        Connection conn = DatabaseConnection.getConnection();
-                        Statement st = conn.createStatement();
-                        ResultSet rs = st.executeQuery(query);
+                DefaultTableModel tblModel = (DefaultTableModel) pendingLoanApplicationTable.getModel();
+
+                try (Connection conn = DatabaseConnection.getConnection();
+                                Statement st = conn.createStatement();
+                                ResultSet rs = st.executeQuery(query)) {
+
                         ResultSetMetaData rsmd = rs.getMetaData();
-                        DefaultTableModel tblModel = (DefaultTableModel) pendingLoanApplicationTable.getModel();
 
                         int cols = rsmd.getColumnCount();
                         String[] colName = new String[cols];
@@ -182,9 +188,6 @@ class PendingLoanApplication extends JPanel {
                                                 status, purpose, annualInterestRate, clientID };
                                 tblModel.addRow(row);
                         }
-
-                        st.close();
-
                 } catch (SQLException e) {
                         e.printStackTrace();
                 }
@@ -283,75 +286,81 @@ class PendingLoanApplication extends JPanel {
                                 }
 
                                 if ("Approved".equals(status)) {
-                                        try {
-                                                Connection conn = DatabaseConnection.getConnection();
-                                                conn.setAutoCommit(false);
 
-                                                String updateApplication = """
-                                                                UPDATE Loan_Application
-                                                                SET status = "Approved", review_date = ?, rejection_reason = ?, approval_notes = ?
-                                                                WHERE loan_application_reference_number = ?
-                                                                        """;
+                                        String updateApplication = """
+                                                        UPDATE Loan_Application
+                                                        SET status = "Approved", review_date = ?, rejection_reason = ?, approval_notes = ?
+                                                        WHERE loan_application_reference_number = ?
+                                                                """;
 
-                                                PreparedStatement ps1 = conn.prepareStatement(updateApplication);
-                                                ps1.setString(1, dateReviewed);
-                                                ps1.setString(2, rejectReason);
-                                                ps1.setString(3, approveNotes);
-                                                ps1.setString(4, applicationID);
-                                                ps1.executeUpdate();
+                                        String createLoan = """
+                                                        INSERT INTO Loan (
+                                                                loan_reference_number,
+                                                                principal_amount,
+                                                                interest_rate,
+                                                                terms_months,
+                                                                monthly_payment,
+                                                                total_interest,
+                                                                total_amount_payable,
+                                                                outstanding_balance,
+                                                                loan_start_date,
+                                                                loan_end_date,
+                                                                status,
+                                                                loan_type_id,
+                                                                client_id,
+                                                                created_date
+                                                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL ? MONTH), 'Active', ?, ?, ?)
+                                                                """;
 
-                                                Object timestamp = LocalDateTime.now();
-                                                String loanRefNo = ReferenceNumberGenerator.generateLoanRefNo(5,
-                                                                loanTypeID);
+                                        try (Connection conn = DatabaseConnection.getConnection()) {
+                                             conn.setAutoCommit(false);
 
-                                                String createLoan = """
-                                                                INSERT INTO Loan (
-                                                                        loan_reference_number,
-                                                                        principal_amount,
-                                                                        interest_rate,
-                                                                        terms_months,
-                                                                        monthly_payment,
-                                                                        total_interest,
-                                                                        total_amount_payable,
-                                                                        outstanding_balance,
-                                                                        loan_start_date,
-                                                                        loan_end_date,
-                                                                        status,
-                                                                        loan_type_id,
-                                                                        client_id,
-                                                                        created_date
-                                                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL ? MONTH), 'Active', ?, ?, ?)
-                                                                        """;
+                                                try (PreparedStatement ps1 = conn.prepareStatement(updateApplication);
+                                                                PreparedStatement ps2 = conn.prepareStatement(createLoan)) {
 
-                                                PreparedStatement ps2 = conn.prepareStatement(createLoan);
-                                                ps2.setString(1, loanRefNo);
-                                                ps2.setDouble(2, principal);
-                                                ps2.setDouble(3, annualRate);
-                                                ps2.setInt(4, months);
-                                                ps2.setDouble(5, monthlyPayment);
-                                                ps2.setDouble(6, totalInterest);
-                                                ps2.setDouble(7, totalPayable);
-                                                ps2.setDouble(8, outstandingBalance);
-                                                ps2.setInt(9, months);
-                                                ps2.setInt(10, loanTypeID);
-                                                ps2.setInt(11, clientID);
-                                                ps2.setObject(12, timestamp);
-                                                ps2.executeUpdate();
+                                                        ps1.setString(1, dateReviewed);
+                                                        ps1.setString(2, rejectReason);
+                                                        ps1.setString(3, approveNotes);
+                                                        ps1.setString(4, applicationID);
+                                                        ps1.executeUpdate();
 
-                                                conn.commit();
+                                                        Object timestamp = LocalDateTime.now();
+                                                        String loanRefNo = ReferenceNumberGenerator.generateLoanRefNo(5,
+                                                                        loanTypeID);
 
-                                                JOptionPane.showMessageDialog(
-                                                                PendingLoanApplication.this,
-                                                                "Loan Application Updated",
-                                                                "Success",
-                                                                JOptionPane.INFORMATION_MESSAGE);
+                                                        ps2.setString(1, loanRefNo);
+                                                        ps2.setDouble(2, principal);
+                                                        ps2.setDouble(3, annualRate);
+                                                        ps2.setInt(4, months);
+                                                        ps2.setDouble(5, monthlyPayment);
+                                                        ps2.setDouble(6, totalInterest);
+                                                        ps2.setDouble(7, totalPayable);
+                                                        ps2.setDouble(8, outstandingBalance);
+                                                        ps2.setInt(9, months);
+                                                        ps2.setInt(10, loanTypeID);
+                                                        ps2.setInt(11, clientID);
+                                                        ps2.setObject(12, timestamp);
+                                                        ps2.executeUpdate();
 
-                                                JOptionPane.showMessageDialog(
-                                                                PendingLoanApplication.this,
-                                                                "Loan Record Created",
-                                                                "Success",
-                                                                JOptionPane.INFORMATION_MESSAGE);
+                                                        conn.commit();
 
+                                                        JOptionPane.showMessageDialog(
+                                                                        PendingLoanApplication.this,
+                                                                        "Loan Application Updated",
+                                                                        "Success",
+                                                                        JOptionPane.INFORMATION_MESSAGE);
+
+                                                        JOptionPane.showMessageDialog(
+                                                                        PendingLoanApplication.this,
+                                                                        "Loan Record Created",
+                                                                        "Success",
+                                                                        JOptionPane.INFORMATION_MESSAGE);
+
+                                                } catch (SQLException ex) {
+                                                        conn.rollback();
+                                                        ex.printStackTrace();
+                                                        JOptionPane.showMessageDialog(null, "Error: Transaction rolled back. " + ex.getMessage());
+                                                }
                                         } catch (SQLException ez) {
                                                 ez.printStackTrace();
                                         }
@@ -390,24 +399,28 @@ class PendingLoanApplication extends JPanel {
                                         String status1 = cbStatus.getSelectedItem().toString();
                                         String applicationID1 = tfAppRefNo.getText();
 
-                                        try {
-                                                Connection conn = DatabaseConnection.getConnection();
+                                        String updateApplication_UnderReview = """
+                                                UPDATE Loan_Application
+                                                SET status = ?
+                                                WHERE loan_application_reference_number = ?
+                                                        """;
+
+
+                                        try (
+                                                Connection conn = DatabaseConnection.getConnection()){
                                                 conn.setAutoCommit(false);
 
-                                                String updateApplication_UnderReview = """
-                                                                UPDATE Loan_Application
-                                                                SET status = ?
-                                                                WHERE loan_application_reference_number = ?
-                                                                        """;
+                                                try (PreparedStatement ps3 = conn.prepareStatement(updateApplication_UnderReview);
+) {                                                     ps3.setString(1, status1);
+                                                        ps3.setString(2, applicationID1);
+                                                        ps3.executeUpdate();
 
-                                                PreparedStatement ps3 = conn
-                                                                .prepareStatement(updateApplication_UnderReview);
-                                                ps3.setString(1, status1);
-                                                ps3.setString(2, applicationID1);
-                                                ps3.executeUpdate();
-
-                                                conn.commit();
-
+                                                        conn.commit();
+                                                        
+                                                } catch (SQLException g) {
+                                                        conn.rollback();
+                                                        g.printStackTrace();
+                                                }
                                         } catch (SQLException b) {
                                                 b.printStackTrace();
                                         }
@@ -416,57 +429,69 @@ class PendingLoanApplication extends JPanel {
                                         String status4 = cbStatus.getSelectedItem().toString();
                                         String applicationID4 = tfAppRefNo.getText();
 
-                                        try {
-                                                Connection conn = DatabaseConnection.getConnection();
-                                                conn.setAutoCommit(false);
+                                        String updateApplication_UnderReview = """
+                                                UPDATE Loan_Application
+                                                SET status = ?
+                                                WHERE loan_application_reference_number = ?
+                                                        """;
 
-                                                String updateApplication_UnderReview = """
-                                                                UPDATE Loan_Application
-                                                                SET status = ?
-                                                                WHERE loan_application_reference_number = ?
-                                                                        """;
 
-                                                PreparedStatement ps3 = conn
-                                                                .prepareStatement(updateApplication_UnderReview);
-                                                ps3.setString(1, status4);
-                                                ps3.setString(2, applicationID4);
-                                                ps3.executeUpdate();
+                                        try (Connection conn = DatabaseConnection.getConnection()){
+                                             conn.setAutoCommit(false);
 
-                                                conn.commit();
+                                                try (PreparedStatement ps3 = conn.prepareStatement(updateApplication_UnderReview)) {
+                                                   ps3.setString(1, status4);
+                                                   ps3.setString(2, applicationID4);
+                                                   ps3.executeUpdate();
 
-                                                JOptionPane.showMessageDialog(
-                                                                PendingLoanApplication.this,
-                                                                "Loan Record Cancelled",
-                                                                "Cancelled",
-                                                                JOptionPane.INFORMATION_MESSAGE);
+                                                   conn.commit();
 
+                                                   JOptionPane.showMessageDialog(
+                                                           PendingLoanApplication.this,
+                                                           "Loan Record Cancelled",
+                                                           "Cancelled",
+                                                           JOptionPane.INFORMATION_MESSAGE);
+                                                        
+                                                } catch (SQLException eg) {
+                                                   conn.rollback();
+                                                   eg.printStackTrace();
+                                                }
                                         } catch (SQLException b) {
                                                 b.printStackTrace();
                                         }
-
                                 } else if ("For Approval".equals(status)) {
                                         JOptionPane.showMessageDialog(
                                                         PendingLoanApplication.this,
-                                                        "Successfully Updated Loan's Status ",
+                                                        "Please update this application's",
                                                         "Success",
                                                         JOptionPane.INFORMATION_MESSAGE);
                                 }
 
-                                tfAppRefNo.setText("");
-                                tfClient.setText("");
-                                tfType.setText("");
-                                tfAmount.setText("");
-                                tfTerm.setText("");
-                                tfEstimate.setText("");
-                                tfDate.setText("");
-                                taPurpose.setText("");
-                                cbStatus.setSelectedIndex(-1);
-                                tfDateReviewed.setText("");
-                                taApproveReason.setText("");
-                                taRejectReason.setText("");
-                                cbEmployeeName.setSelectedIndex(-1);
+                                if (!"For Approval".equals(status)) {
+                                        tfAppRefNo.setText("");
+                                        tfClient.setText("");
+                                        tfType.setText("");
+                                        tfAmount.setText("");
+                                        tfTerm.setText("");
+                                        tfEstimate.setText("");
+                                        tfDate.setText("");
+                                        taPurpose.setText("");
+                                        cbStatus.setSelectedIndex(-1);
+                                        tfDateReviewed.setText("");
+                                        taApproveReason.setText("");
+                                        taRejectReason.setText("");
+                                        cbEmployeeName.setSelectedIndex(-1);
+                                        loadTableData();
+                                }
 
+                                
+                        }
+                });
+
+                btnRefreshPendingLoansTable.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
                                 loadTableData();
+                                System.out.println("Pending Loan Table Refreshed");
                         }
                 });
         }
@@ -525,20 +550,15 @@ class PendingLoanApplication extends JPanel {
                                         """;
                 cbEmployee.removeAllItems();
 
-                try {
-                        Connection conn = DatabaseConnection.getConnection();
-                        PreparedStatement ps = conn.prepareStatement(query);
-                        ResultSet rs = ps.executeQuery();
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(query);
+                     ResultSet rs = ps.executeQuery()) {
 
                         while (rs.next()) {
                                 int employeeID = rs.getInt("employee_id");
                                 String full_name = rs.getString("full_name");
                                 cbEmployee.addItem(new EmployeeItem(employeeID, full_name));
                         }
-
-                        rs.close();
-                        ps.close();
-
                 } catch (SQLException e) {
                         e.printStackTrace();
                 }
@@ -546,7 +566,7 @@ class PendingLoanApplication extends JPanel {
 
         public void loadTableData() {
                 DefaultTableModel tblModel = (DefaultTableModel) pendingLoanApplicationTable.getModel();
-                tblModel.setRowCount(0); 
+                tblModel.setRowCount(0);
 
                 String query = """
                                 SELECT
@@ -566,29 +586,25 @@ class PendingLoanApplication extends JPanel {
                                 WHERE status = "For Approval"
                                         """;
 
-                try {
-                        Connection conn = DatabaseConnection.getConnection();
+                try (Connection conn = DatabaseConnection.getConnection();
+                     Statement st = conn.createStatement();
+                     ResultSet rs = st.executeQuery(query)) {
+
                         if (conn == null || conn.isClosed()) {
-                        System.out.println("Connection was closed, re-opening...");
+                                System.out.println("Connection was closed, re-opening...");
                         }
-                        
-                        Statement st = conn.createStatement();
-                        ResultSet rs = st.executeQuery(query);
 
                         while (rs.next()) {
-                        Object[] row = new Object[10];
-                        for (int i = 0; i < 10; i++) {
-                                row[i] = rs.getObject(i + 1);
+                                Object[] row = new Object[10];
+                                for (int i = 0; i < 10; i++) {
+                                        row[i] = rs.getObject(i + 1);
+                                }
+                                tblModel.addRow(row);
                         }
-                        tblModel.addRow(row);
-                        }
-                        
-                        rs.close();
-                        st.close();
 
                 } catch (SQLException e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(this, "Database Error: " + e.getMessage());
                 }
-}
+        }
 }
