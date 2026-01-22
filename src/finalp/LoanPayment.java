@@ -266,7 +266,7 @@ public class LoanPayment extends JPanel {
     String query = """
         INSERT INTO Payment (
             payment_reference_number,
-            paymenr_date,
+            payment_date,
             due_date,
             amount_paid,
             principal_paid,
@@ -310,6 +310,17 @@ public class LoanPayment extends JPanel {
       ps.executeUpdate();
 
       JOptionPane.showMessageDialog(this, "Payment saved successfully!");
+
+      cbClient.setSelectedIndex(-1);
+      cbLoan.setSelectedIndex(-1);
+      tfDue.setText("");
+      tfPrincipal.setText("");
+      tfInterest.setText("");
+      tfAmount.setText("");
+      tfPenalty.setText("");
+      cbMethod.setSelectedIndex(-1);
+      cbEmployee.setSelectedIndex(-1);
+      taRemarks.setText("");
 
     } catch (SQLException e) {
         e.printStackTrace();
