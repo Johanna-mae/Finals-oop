@@ -591,5 +591,4 @@ class Sidebar extends JPanel {
             }
         });
     }
-
 }

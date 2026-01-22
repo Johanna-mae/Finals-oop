@@ -198,7 +198,7 @@ public class EditClientRecord extends JPanel {
         lblIncome.setBounds(60, 263, 160, 30);
         lblIncome.setFont(new Font("Arial", Font.BOLD, 14));
         p.add(lblIncome);
-        String[] incomeRanges = { "Below ₱10,000", "₱10,000 – ₱20,000", "₱20,001 – ₱30,000", "₱30,001 – ₱50,000",
+        String[] incomeRanges = { "Below ₱10,000", "₱10,000 – ₱20,000", "₱20,001 – ₱30,000", "₱40,001 – ₱50,000",
                 "₱50,001 – ₱100,000", "Above ₱100,000" };
         monthlyIncome = new JComboBox<>(incomeRanges);
         monthlyIncome.setBounds(200, 263, 150, 30);
@@ -275,6 +275,91 @@ public class EditClientRecord extends JPanel {
         loadClientData();
     }
 
+    // Helper for creating labels + text fields
+    private JTextField addLabelAndTextField(JPanel p, String label, int lx, int ly, int tx, int ty) {
+        JLabel l = new JLabel(label); 
+        l.setBounds(lx, ly, 100, 30); 
+        l.setFont(new Font("Arial", Font.BOLD, 14)); p.add(l);
+        
+        JTextField t = new JTextField(); 
+        t.setBounds(tx, ty, 150, 30); p.add(t);
+        return t;
+    }
+
+    private void loadClientData() {
+        String query = """
+            SELECT
+                Client.client_reference_number AS "Client Ref No.",
+                CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
+                Client.employment_status AS "Employment Status",
+                Client.monthly_income AS "Monthly Income",
+                Loan_Application.status AS "Application Status"
+            FROM Loan_Application
+            JOIN Client ON Loan_Application.client_id = Client.client_id
+        """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(query)) {
+
+            tableModel.setRowCount(0);
+
+            while(rs.next()){
+                tableModel.addRow(new Object[]{
+                        rs.getString("Client Ref No."),
+                        rs.getString("Client Name"),
+                        rs.getString("Employment Status"),
+                        rs.getString("Monthly Income"),
+                        rs.getString("Application Status")
+                });
+            }
+
+        } catch(SQLException e){
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading client data: " + e.getMessage());
+        }
+    }
+
+    private void updateClientRecord() {
+        int row = clientListTable.getSelectedRow();
+        if(row < 0){
+            JOptionPane.showMessageDialog(this, "Please select a client to update.");
+            return;
+        }
+
+        String clientRef = tableModel.getValueAt(row, 0).toString();
+        String fName = firstName.getText();
+        String lName = lastName.getText();
+        String empStatus = employmentStatus.getSelectedItem().toString();
+        String income = monthlyIncome.getSelectedItem().toString();
+
+        String sql = """
+            UPDATE Client
+            SET first_name = ?, last_name = ?, employment_status = ?, monthly_income = ?
+            WHERE client_reference_number = ?
+        """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, fName);
+            ps.setString(2, lName);
+            ps.setString(3, empStatus);
+            ps.setString(4, income);
+            ps.setString(5, clientRef);
+
+            int updated = ps.executeUpdate();
+
+            if(updated > 0){
+                JOptionPane.showMessageDialog(this, "Client record updated successfully!");
+                loadClientData(); // refresh table
+            } else {
+                JOptionPane.showMessageDialog(this, "Update failed. Please try again.");
+            }
+
+        } catch(SQLException e){
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error updating client: " + e.getMessage());
     private void loadClientData() {
         String query = """
                   SELECT

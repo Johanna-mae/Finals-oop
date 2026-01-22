@@ -1,53 +1,32 @@
 package finalp;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 public class DatabaseConnection {
-    private static Connection connection = null;
 
-    public static Connection returnConnection(){
-        return connection;
-    }
-    
+    // Configuration - Change 'PaLoanSystem' to your actual database name
+    private static final String URL = "jdbc:mysql://localhost:3306/PaLoanSystem";
+    private static final String USER = "root";
+    private static final String PASSWORD = ""; // XAMPP default is empty
+
     public static Connection getConnection() {
-        if (connection == null) {
-            try {
-                Properties props = new Properties();
-                FileInputStream fis = new FileInputStream("config/db.properties");
-                props.load(fis);
-                fis.close();
-                
-                String url = props.getProperty("db.url");
-                String user = props.getProperty("db.user");
-                String password = props.getProperty("db.password");
-                
-                connection = DriverManager.getConnection(url, user, password);
-                System.out.println("Database connected!");
-                
-            } catch (IOException e) {
-                System.err.println("Error reading config file!");
-                e.printStackTrace();
-            } catch (SQLException e) {
-                System.err.println("Database connection failed!");
-                e.printStackTrace();
-            }
+        Connection connection = null;
+        try {
+            // New driver class name for Connector/J 8.0+ and 9.0+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("Successfully connected to XAMPP MySQL!");
+
+        } catch (ClassNotFoundException e) {
+            System.err.println("MySQL Driver not found! Did you add the JAR to Libraries?");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("Connection failed! Check if XAMPP MySQL is running.");
+            e.printStackTrace();
         }
         return connection;
-    }
-    
-    public static void closeConnection() {
-        if (connection != null) {
-            try {
-                connection.close();
-                System.out.println("Database connection closed.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

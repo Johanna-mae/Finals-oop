@@ -1,6 +1,8 @@
 package finalp;
 
 import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -10,17 +12,18 @@ import java.sql.Statement;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-class ClientsList extends JPanel{
+class ClientsList extends JPanel {
     Color NORMAL = new Color(0xAAC3DD);
 
     JTable ClientTable;
-    
+    DefaultTableModel tblModel;
+
     public ClientsList() {
         setLayout(null);
         setBounds(280, 0, 1090, 800);
         setBackground(Color.WHITE);
 
-        // ===== CONTENT PANEL 
+        // ===== CONTENT PANEL =====
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(null);
         contentPanel.setBackground(Color.WHITE);
@@ -30,10 +33,10 @@ class ClientsList extends JPanel{
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setBounds(0, 0, 1090, 800);
         scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16); 
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
         add(scrollPane);
-        
+
         // ===== HEADER =====
         JLabel header = new JLabel("Clients List");
         header.setFont(new Font("Arial", Font.BOLD, 25));
@@ -48,8 +51,15 @@ class ClientsList extends JPanel{
         sep.setBounds(23, 80, 1040, 2);
         contentPanel.add(sep);
 
+        // ===== REFRESH BUTTON =====
+        JButton refreshBtn = new JButton("Refresh");
+        refreshBtn.setBounds(880, 50, 120, 30);
+        refreshBtn.setBackground(NORMAL);
+        contentPanel.add(refreshBtn);
 
-        ClientTable = new JTable();
+        // ===== CLIENT TABLE =====
+        tblModel = new DefaultTableModel();
+        ClientTable = new JTable(tblModel);
         ClientTable.setRowHeight(30);
         ClientTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
@@ -57,49 +67,52 @@ class ClientsList extends JPanel{
         loanScroll.setBounds(45, 100, 1000, 700);
         contentPanel.add(loanScroll);
 
+        // ===== LOAD INITIAL DATA =====
+        loadClientData();
 
-        String query = """
-                        SELECT
-                                Client.client_reference_number AS "Client Reference No.",       
-                                CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
-                                Client.employment_status AS "Employment Status",
-                                Client.monthly_income AS "Monthly Income",
-                                Client.account_status AS "Client Status"
-                        FROM Client
-                        
-                                """;
-//JOIN Client ON Loan_Application.client_id = Client.client_id
+        // ===== REFRESH ACTION =====
+        refreshBtn.addActionListener(e -> loadClientData());
+    }
 
-        String clientID, clientName, employmentStatus, monthlyIncome, status;
+    private void loadClientData() {
+      String query = """
+                      SELECT
+                              Client.client_reference_number AS "Client Reference No.",       
+                              CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
+                              Client.employment_status AS "Employment Status",
+                              Client.monthly_income AS "Monthly Income",
+                              Client.account_status AS "Client Status"
+                      FROM Client
+                """;
 
-        try {
-                        Connection conn = DatabaseConnection.getConnection();
-                        Statement st = conn.createStatement();
-                        ResultSet rs = st.executeQuery(query);
-                        ResultSetMetaData rsmd = rs.getMetaData();
-                        DefaultTableModel tblModel = (DefaultTableModel) ClientTable.getModel();
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(query)) {
 
-                        int cols = rsmd.getColumnCount();
-                        String[] colName = new String[cols];
+            // Clear table before loading
+            tblModel.setRowCount(0);
 
-                        for (int i = 0; i < cols; i++) {
-                                colName[i] = rsmd.getColumnLabel(i + 1);
-                                tblModel.setColumnIdentifiers(colName);
-                        }
-                        while (rs.next()) {
-                                clientID = rs.getString(1);
-                                clientName = rs.getString(2);
-                                employmentStatus = rs.getString(3);
-                                monthlyIncome = rs.getString(4);
-                                status = rs.getString(5);
-                                String[] row = { clientID, clientName, employmentStatus, monthlyIncome, status};
-                                tblModel.addRow(row);
-                        }
+            // Set column names
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int cols = rsmd.getColumnCount();
+            String[] colName = new String[cols];
+            for (int i = 0; i < cols; i++) {
+                colName[i] = rsmd.getColumnLabel(i + 1);
+            }
+            tblModel.setColumnIdentifiers(colName);
 
-                        st.close();
+            // Add rows
+            while (rs.next()) {
+                String[] row = new String[cols];
+                for (int i = 0; i < cols; i++) {
+                    row[i] = rs.getString(i + 1);
+                }
+                tblModel.addRow(row);
+            }
 
         } catch (SQLException e) {
-                e.printStackTrace();
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading client data: " + e.getMessage());
         }
     }
 }
