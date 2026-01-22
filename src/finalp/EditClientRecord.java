@@ -3,6 +3,7 @@ package finalp;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -228,11 +229,11 @@ public class EditClientRecord extends JPanel {
         JButton updateRecord = new JButton("Update Record");
         updateRecord.setBounds(780, 350, 170, 35);
         updateRecord.setBackground(NORMAL);
+        updateRecord.addActionListener(e -> updateClientRecord());
         p.add(updateRecord);
 
         // ===== CLIENT TABLE =====
-        String[] columns = { "Client Ref No.", "Client Name", "Employment Status", "Monthly Income",
-                "Application Status" };
+        String[] columns = { "Client Ref No.", "Client Name", "Employment Status", "Monthly Income", "Client Status" };
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int col) {
@@ -243,6 +244,7 @@ public class EditClientRecord extends JPanel {
         clientListTable.setRowHeight(30);
         clientListTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
 
+        
         JScrollPane sp = new JScrollPane(clientListTable);
         sp.setBounds(60, 550, 965, 400);
         contentPanel.add(sp);
@@ -253,68 +255,111 @@ public class EditClientRecord extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 int row = clientListTable.getSelectedRow();
                 if (row >= 0) {
-                    String name = tableModel.getValueAt(row, 1).toString();
-                    String emp = tableModel.getValueAt(row, 2).toString();
-                    String income = tableModel.getValueAt(row, 3).toString();
+                    String clientRef = tableModel.getValueAt(row, 0).toString(); // get Ref No.
 
-                    firstName.setText(name.split(" ")[0]);
-                    lastName.setText(name.split(" ")[1]);
-                    employmentStatus.setSelectedItem(emp);
-                    monthlyIncome.setSelectedItem(income);
+                    // Fetch full client data from DB
+                    try {
+                        Connection conn = DatabaseConnection.getConnection();
+                        String sql = "SELECT * FROM Client WHERE client_reference_number = ?";
+                        PreparedStatement ps = conn.prepareStatement(sql);
+                        ps.setString(1, clientRef);
+                        ResultSet rs = ps.executeQuery();
+
+                        if (rs.next()) {
+                            firstName.setText(rs.getString("first_name"));
+                            middleName.setText(rs.getString("middle_name"));
+                            lastName.setText(rs.getString("last_name"));
+                            if (rs.getString("sex").equalsIgnoreCase("Male"))
+                                male.setSelected(true);
+                            else
+                                female.setSelected(true);
+                            dateOfBirth.setText(rs.getString("date_of_birth"));
+                            email.setText(rs.getString("email"));
+                            contactNum.setText(rs.getString("phone_number"));
+                            street.setText(rs.getString("address_line"));
+                            brgy.setText(rs.getString("barangay"));
+                            city.setText(rs.getString("city"));
+                            province.setText(rs.getString("province"));
+                            civilStatus.setSelectedItem(rs.getString("civil_status"));
+                            employmentStatus.setSelectedItem(rs.getString("employment_status"));
+                            employerName.setText(rs.getString("employer_name"));
+                            monthlyIncome.setSelectedItem(rs.getString("monthly_income"));
+                            validIDType.setSelectedItem(rs.getString("valid_id_type"));
+                            validIDNo.setText(rs.getString("valid_id_number"));
+                        }
+
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(EditClientRecord.this,
+                                "Error fetching client data: " + ex.getMessage());
+                    }
                 }
             }
         });
 
+        
         // ===== MAIN SCROLL PANE =====
         JScrollPane mainScroll = new JScrollPane(contentPanel);
         mainScroll.setBounds(0, 0, 1090, 800);
         mainScroll.getVerticalScrollBar().setUnitIncrement(16);
         add(mainScroll);
 
+/*
+        add(contentPanel);
+        contentPanel.setBounds(0, 0, 1090, 800);*/
+
+
         // ===== LOAD DATA =====
         loadClientData();
     }
 
-    // Helper for creating labels + text fields
-    private JTextField addLabelAndTextField(JPanel p, String label, int lx, int ly, int tx, int ty) {
-        JLabel l = new JLabel(label); 
-        l.setBounds(lx, ly, 100, 30); 
-        l.setFont(new Font("Arial", Font.BOLD, 14)); p.add(l);
-        
-        JTextField t = new JTextField(); 
-        t.setBounds(tx, ty, 150, 30); p.add(t);
-        return t;
-    }
-
     private void loadClientData() {
         String query = """
-            SELECT
-                Client.client_reference_number AS "Client Ref No.",
-                CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
-                Client.employment_status AS "Employment Status",
-                Client.monthly_income AS "Monthly Income",
-                Loan_Application.status AS "Application Status"
-            FROM Loan_Application
-            JOIN Client ON Loan_Application.client_id = Client.client_id
-        """;
+                    SELECT
+                        Client.client_reference_number AS "Client Ref. No.",
+                        Client.first_name AS "First Name",
+                        Client.middle_name AS "Middle Name",
+                        Client.last_name AS "Last Name",
+                        Client.sex AS "Sex",
+                        Client.date_of_birth AS "Date of Birth",
+                        Client.email AS "Email",
+                        Client.phone_number AS "Contact No.",
+                        Client.address_line AS "Street",
+                        Client.barangay AS "Barangay",
+                        Client.city AS "City",
+                        Client.province AS "Province",
+                        Client.civil_status AS "Civil Status",
+                        Client.employment_status AS "Employment Status",
+                        Client.employer_name AS "Employer Name",
+                        Client.monthly_income AS "Monthly Income",
+                        Client.valid_id_type AS "Valid ID Type",
+                        Client.valid_id_number AS "Valid ID No.",
+                        Client.account_status AS "Status"
+                    FROM Client
+                """;
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(query)) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
 
             tableModel.setRowCount(0);
 
-            while(rs.next()){
-                tableModel.addRow(new Object[]{
-                        rs.getString("Client Ref No."),
-                        rs.getString("Client Name"),
+            while (rs.next()) {
+            String fullName = rs.getString("First Name") + " " +
+                              rs.getString("Middle Name") + " " +
+                              rs.getString("Last Name");
+
+                tableModel.addRow(new Object[] {
+                        rs.getString("Client Ref. No."),
+                        fullName,
                         rs.getString("Employment Status"),
                         rs.getString("Monthly Income"),
-                        rs.getString("Application Status")
+                        rs.getString("Status")
                 });
             }
 
-        } catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading client data: " + e.getMessage());
         }
@@ -322,152 +367,89 @@ public class EditClientRecord extends JPanel {
 
     private void updateClientRecord() {
         int row = clientListTable.getSelectedRow();
-        if(row < 0){
+        if (row < 0) {
             JOptionPane.showMessageDialog(this, "Please select a client to update.");
             return;
         }
 
         String clientRef = tableModel.getValueAt(row, 0).toString();
+
+        // ===== GET FORM DATA =====
         String fName = firstName.getText();
+        String mName = middleName.getText();
         String lName = lastName.getText();
+        String sex = male.isSelected() ? "Male" : "Female";
+        String dob = dateOfBirth.getText();
+        String mail = email.getText();
+        String contact = contactNum.getText();
+        String addrStreet = street.getText();
+        String addrBrgy = brgy.getText();
+        String addrCity = city.getText();
+        String addrProvince = province.getText();
+        String civil = civilStatus.getSelectedItem().toString();
         String empStatus = employmentStatus.getSelectedItem().toString();
+        String employer = employerName.getText();
         String income = monthlyIncome.getSelectedItem().toString();
+        String idType = validIDType.getSelectedItem().toString();
+        String idNo = validIDNo.getText();
 
         String sql = """
-            UPDATE Client
-            SET first_name = ?, last_name = ?, employment_status = ?, monthly_income = ?
-            WHERE client_reference_number = ?
-        """;
+                    UPDATE Client
+                    SET
+                        first_name = ?,
+                        middle_name = ?,
+                        last_name = ?,
+                        sex = ?,
+                        date_of_birth = ?,
+                        email = ?,
+                        phone_number = ?,
+                        address_line = ?,
+                        barangay = ?,
+                        city = ?,
+                        province = ?,
+                        civil_status = ?,
+                        employment_status = ?,
+                        employer_name = ?,
+                        monthly_income = ?,
+                        valid_id_type = ?,
+                        valid_id_number = ?
+                    WHERE client_reference_number = ?
+                """;
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, fName);
-            ps.setString(2, lName);
-            ps.setString(3, empStatus);
-            ps.setString(4, income);
-            ps.setString(5, clientRef);
+            ps.setString(2, mName);
+            ps.setString(3, lName);
+            ps.setString(4, sex);
+            ps.setString(5, dob);
+            ps.setString(6, mail);
+            ps.setString(7, contact);
+            ps.setString(8, addrStreet);
+            ps.setString(9, addrBrgy);
+            ps.setString(10, addrCity);
+            ps.setString(11, addrProvince);
+            ps.setString(12, civil);
+            ps.setString(13, empStatus);
+            ps.setString(14, employer);
+            ps.setString(15, income);
+            ps.setString(16, idType);
+            ps.setString(17, idNo);
+            ps.setString(18, clientRef);
 
             int updated = ps.executeUpdate();
 
-            if(updated > 0){
+            if (updated > 0) {
                 JOptionPane.showMessageDialog(this, "Client record updated successfully!");
                 loadClientData(); // refresh table
             } else {
                 JOptionPane.showMessageDialog(this, "Update failed. Please try again.");
             }
 
-        } catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error updating client: " + e.getMessage());
-    private void loadClientData() {
-        String query = """
-                  SELECT
-                    Client.client_reference_number AS "Client Ref No.",
-                    CONCAT(Client.first_name, ' ', Client.last_name) AS "Client Name",
-                    Client.employment_status AS "Employment Status",
-                    Client.monthly_income AS "Monthly Income",
-                    Loan_Application.status AS "Application Status"
-                  FROM Loan_Application
-                  JOIN Client ON Loan_Application.client_id = Client.client_id
-                """;
-
-        try (Connection conn = DatabaseConnection.getConnection();
-                Statement st = conn.createStatement();
-                ResultSet rs = st.executeQuery(query)) {
-
-            tableModel.setRowCount(0); // clear table before loading
-
-            while (rs.next()) {
-                String clientID = rs.getString("Client Ref No.");
-                String clientName = rs.getString("Client Name");
-                String empStatus = rs.getString("Employment Status");
-                String income = rs.getString("Monthly Income");
-                String status = rs.getString("Application Status");
-
-                tableModel.addRow(new Object[] { clientID, clientName, empStatus, income, status });
-            }
-
-            // ===== EMPLOYER NAME =====
-            JLabel lblEmployer = new JLabel("Employer Name");
-            lblEmployer.setBounds(400, 216, 160, 30);
-            lblEmployer.setFont(new Font("Arial", Font.BOLD, 14));
-            p.add(lblEmployer);
-
-            employerName = new JTextField();
-            employerName.setBounds(530, 216, 150, 30);
-            p.add(employerName);
-
-            // ===== MONTHLY INCOME =====
-            JLabel lblIncome = new JLabel("Monthly Income");
-            lblIncome.setBounds(60, 263, 160, 30);
-            lblIncome.setFont(new Font("Arial", Font.BOLD, 14));
-            p.add(lblIncome);
-
-            String[] incomeRanges = {
-                    "Below ₱10,000",
-                    "₱10,000 – ₱20,000",
-                    "₱20,001 – ₱30,000",
-                    "₱30,001 – ₱50,000",
-                    "₱50,001 – ₱100,000",
-                    "Above ₱100,000"
-            };
-
-            monthlyIncome = new JComboBox<>(incomeRanges);
-            monthlyIncome.setBounds(200, 263, 150, 30);
-            monthlyIncome.setBackground(NORMAL);
-            p.add(monthlyIncome);
-
-            // ===== VALID ID =====
-            JLabel lblValidId = new JLabel("Valid ID");
-            lblValidId.setBounds(380, 263, 150, 30);
-            lblValidId.setFont(new Font("Arial", Font.BOLD, 14));
-            p.add(lblValidId);
-
-            String[] validIds = {
-                    "Passport",
-                    "Driver’s License",
-                    "UMID",
-                    "PhilSys National ID",
-                    "SSS ID",
-                    "GSIS ID",
-                    "Voter’s ID",
-                    "Postal ID",
-                    "PRC ID"
-            };
-
-            validIDType = new JComboBox<>(validIds);
-            validIDType.setBounds(460, 263, 150, 30);
-            validIDType.setBackground(NORMAL);
-            p.add(validIDType);
-
-            // ===== VALID ID NUMBER =====
-            JLabel lblValidIdNo = new JLabel("Valid ID No.");
-            lblValidIdNo.setBounds(640, 263, 150, 30);
-            lblValidIdNo.setFont(new Font("Arial", Font.BOLD, 14));
-            p.add(lblValidIdNo);
-
-            validIDNo = new JTextField();
-            validIDNo.setBounds(740, 263, 150, 30);
-            p.add(validIDNo);
-
-            JButton updateRecord = new JButton("Update Record");
-            updateRecord.setBounds(780, 350, 170, 35);
-            updateRecord.setBackground(NORMAL);
-            p.add(updateRecord);
-
-            add(p);
-
-            JTable clientListTable = new JTable();
-            clientListTable.setRowHeight(30);
-            clientListTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-
-            JScrollPane clientListTableScroll = new JScrollPane(clientListTable);
-            clientListTableScroll.setBounds(60, 550, 965, 400);
-            add(clientListTableScroll);
-        } catch(SQLException e){
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error loading client data: " + e.getMessage());
         }
     }
 }

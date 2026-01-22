@@ -85,9 +85,10 @@ class ClientsList extends JPanel {
                       FROM Client
                 """;
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(query)) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
 
             // Clear table before loading
             tblModel.setRowCount(0);

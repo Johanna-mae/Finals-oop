@@ -470,14 +470,6 @@ class PendingLoanApplication extends JPanel {
                         }
                 });
         }
-/*
-        JButton btnRefresh = new JButton("Refresh Table");
-        btnRefresh.setBounds(850, 730, 150, 30);
-        btnRefresh.setVisible(true);
-        btnRefresh.setEnabled(true);
-        add(btnRefresh);
-        btnRefresh.addActionListener(e -> loadTableData());
-        }*/
 
         private JTextField addField(JPanel box, String label, int x, int y) {
                 JLabel lbl = new JLabel(label);

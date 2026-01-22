@@ -595,7 +595,7 @@ class CreateClient extends JPanel{
                 );
             }
             ps.close();
-            conn.close();
+            //conn.close();
             card.show(container, "step1");
             fn.setText("");
             mn.setText("");
